@@ -28,7 +28,6 @@ public class Chassis {
     LinearOpMode opMode;
     double headingOffset = 0;
     double driveSpeed = 1.0, scaleFactor;
-    //    SampleMecanumDrive drive = new SampleMecanumDrive(opMode.hardwareMap);
     //Teleop Constructor
     public Chassis(HardwareMap hardwareMap, Gamepad gamepad1){
         this.gamepad1 = gamepad1;
@@ -96,5 +95,9 @@ public class Chassis {
         telemetry.addData("rightOdo", rightOdo.getCurrentPosition());
         telemetry.addData("strafeOdo", strafeOdo.getCurrentPosition());
 
+    }
+
+    public void imuTelemetry(Telemetry telemetry) {
+        telemetry.addData("imuHeading", -imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES));
     }
 }
