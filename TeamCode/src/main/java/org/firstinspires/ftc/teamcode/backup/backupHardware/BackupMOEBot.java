@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 
 public class BackupMOEBot {
-    public org.firstinspires.ftc.teamcode.backup.backupHardware.BackupChassis backupChassis;
+    public BackupChassis backupChassis;
     public BackupClaw backupClaw;
     public BackupIMU backupimu;
     public BackupLift backuplift;
