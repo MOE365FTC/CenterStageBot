@@ -34,9 +34,9 @@ public class Batterbot extends OpMode {
         frontRight.setPower(-gamepad1.right_stick_y);
         backRight.setPower(-gamepad1.right_stick_y);
         if(gamepad1.right_trigger > 0.3 ) {
-            batter.setPower(0.7);
+            batter.setPower(0.5);
         } else if(gamepad1.left_trigger > 0.3) {
-            batter.setPower(-0.7);
+            batter.setPower(-0.5);
         } else {
             batter.setPower(0.0);
         }
