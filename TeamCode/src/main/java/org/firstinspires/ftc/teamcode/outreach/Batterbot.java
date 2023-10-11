@@ -18,8 +18,8 @@ public class Batterbot extends OpMode {
         backRight = hardwareMap.get(DcMotor.class, "BRM");
         batter = hardwareMap.get(CRServo.class, "BATTER");
 
-        frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
-        backLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+        frontRight.setDirection(DcMotorSimple.Direction.REVERSE);
+        backRight.setDirection(DcMotorSimple.Direction.REVERSE);
 
         frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -29,10 +29,10 @@ public class Batterbot extends OpMode {
 
     @Override
     public void loop() {
-        frontLeft.setPower(-gamepad1.left_stick_y);
-        backLeft.setPower(-gamepad1.left_stick_y);
-        frontRight.setPower(-gamepad1.right_stick_y);
-        backRight.setPower(-gamepad1.right_stick_y);
+        frontLeft.setPower(-gamepad1.left_stick_y + gamepad1.left_stick_x);
+        backLeft.setPower(-gamepad1.left_stick_y + gamepad1.left_stick_x);
+        frontRight.setPower(-gamepad1.left_stick_y - gamepad1.left_stick_x);
+        backRight.setPower(-gamepad1.left_stick_y - gamepad1.left_stick_x);
         if(gamepad1.right_trigger > 0.3 ) {
             batter.setPower(0.5);
         } else if(gamepad1.left_trigger > 0.3) {
