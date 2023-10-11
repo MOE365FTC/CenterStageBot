@@ -4,22 +4,24 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
+import org.firstinspires.ftc.teamcode.hardware.MOEBot;
 import org.firstinspires.ftc.teamcode.rr.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.rr.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.rr.trajectorysequence.TrajectorySequenceBuilder;
 
 @Autonomous
 public class testAuto extends LinearOpMode {
+    MOEBot robot;
     @Override
     public void runOpMode() throws InterruptedException {
-        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
-        Pose2d startPose = new Pose2d(0, 0, Math.toRadians(0));
-        drive.setPoseEstimate(startPose);
-
-        TrajectorySequence traj = drive.trajectorySequenceBuilder(startPose)
-                .forward(10)
-                .build();
-
+        robot = new MOEBot(hardwareMap, gamepad1, gamepad2, telemetry);
+//        while(!isStarted() && !isStopRequested()) {
+//            //init loop
+//            telemetry.addData("1: ", "reached");
+//            telemetry.update();
+////            robot.vison.detectProp();
+//        }
         waitForStart();
+//        robot.vison.stopDetecting();
     }
 }
