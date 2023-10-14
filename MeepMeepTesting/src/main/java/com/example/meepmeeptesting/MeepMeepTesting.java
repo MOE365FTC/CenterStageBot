@@ -2,6 +2,7 @@ package com.example.meepmeeptesting;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.noahbres.meepmeep.MeepMeep;
 import com.noahbres.meepmeep.roadrunner.DefaultBotBuilder;
 import com.noahbres.meepmeep.roadrunner.entity.RoadRunnerBotEntity;
@@ -34,27 +35,25 @@ public class MeepMeepTesting {
                                 .waitSeconds(0.25)
                                 //spike deposit incomplete; mechanical
                                 .splineTo(new Vector2d(-11.5,-60),Math.toRadians(-90))
-                                .lineToSplineHeading(new Pose2d(-12, 17, Math.toRadians(90)))
-                                .splineTo(new Vector2d(-32,48), Math.toRadians(90))
-                                .waitSeconds(0.25)
-                                .addTemporalMarker(() -> {
-
-                                        })
-                                //pixel backdrop output incomplete; mechanical
-                                .lineToSplineHeading(new Pose2d(-36, -60, Math.toRadians(-90)))
-                                .lineToSplineHeading(new Pose2d(-36, 17, Math.toRadians(90)))
+                                .lineTo(new Vector2d(-12, 17))
                                 .splineTo(new Vector2d(-32,48), Math.toRadians(90))
                                 .waitSeconds(0.25)
                                 //pixel backdrop output incomplete; mechanical
-                                .lineToSplineHeading(new Pose2d(-36, -60, Math.toRadians(-90)))
-                                .lineToSplineHeading(new Pose2d(-36, 17, Math.toRadians(90)))
+                                .lineTo(new Vector2d(-36, -60))
+                                .lineTo(new Vector2d(-36, 17))
+                                .splineTo(new Vector2d(-32,48), Math.toRadians(90))
+                                .waitSeconds(0.25)
+                                //pixel backdrop output incomplete; mechanical
+                                .lineTo(new Vector2d(-36, -60))
+                                .lineTo(new Vector2d(-36, 17))
                                 .splineTo(new Vector2d(-32,48), Math.toRadians(90))
                                 .waitSeconds(0.25)
                                 //pixel backdrop output incomplete; mechanical
                                 .strafeRight(20)
-                                .forward(10)
+                                .back(10)
                                 .build()
-                                //possible more cycles...
+
+
 
 
 
@@ -69,26 +68,26 @@ public class MeepMeepTesting {
                                 .waitSeconds(0.25)
                                 //spike deposit incomplete; mechanical
                                 .splineTo(new Vector2d(11.5,-60),Math.toRadians(-90))
-                                .lineToSplineHeading(new Pose2d(12, 17, Math.toRadians(90)))
+                                .lineTo(new Vector2d(12, 17))
                                 .splineTo(new Vector2d(32,48), Math.toRadians(90))
                                 .waitSeconds(0.25)
                                 //pixel backdrop output incomplete; mechanical
-                                .lineToSplineHeading(new Pose2d(36, -60, Math.toRadians(-90)))
-                                .lineToSplineHeading(new Pose2d(36, 17, Math.toRadians(90)))
+                                .lineTo(new Vector2d(36, -60))
+                                .lineTo(new Vector2d(36, 17))
                                 .splineTo(new Vector2d(32,48), Math.toRadians(90))
                                 .waitSeconds(0.25)
                                 //pixel backdrop output incomplete; mechanical
-                                .lineToSplineHeading(new Pose2d(36, -60, Math.toRadians(-90)))
-                                .lineToSplineHeading(new Pose2d(36, 17, Math.toRadians(90)))
+                                .lineTo(new Vector2d(36, -60))
+                                .lineTo(new Vector2d(36, 17))
                                 .splineTo(new Vector2d(32,48), Math.toRadians(90))
                                 .waitSeconds(0.25)
                                 //pixel backdrop output incomplete; mechanical
                                 .strafeLeft(20)
-                                .forward(12)
+                                .back(12)
                                 .build()
-                                //possible more cycles...
-
                                  */
+
+
 
 
 
@@ -102,13 +101,13 @@ public class MeepMeepTesting {
                                 .splineTo(new Vector2d(-32,46), Math.toRadians(90))
                                 .waitSeconds(0.25)
                                 //pixel backdrop output incomplete; mechanical
-                                .lineToSplineHeading(new Pose2d(-36, -60, Math.toRadians(-90)))
-                                .lineToSplineHeading(new Pose2d(-36, 17, Math.toRadians(90)))
+                                .lineTo(new Vector2d(-36, -60))
+                                .lineTo(new Vector2d(-36, 17))
                                 .splineTo(new Vector2d(-32,48), Math.toRadians(90))
                                 .waitSeconds(0.25)
                                 //pixel backdrop output incomplete; mechanical
-                                .lineToSplineHeading(new Pose2d(-36, -60, Math.toRadians(-90)))
-                                .lineToSplineHeading(new Pose2d(-36, 17, Math.toRadians(90)))
+                                .lineTo(new Vector2d(-36, -60))
+                                .lineTo(new Vector2d(-36, 17))
                                 .splineTo(new Vector2d(-32,48), Math.toRadians(90))
                                 .waitSeconds(0.25)
                                 //pixel backdrop output incomplete; mechanical
@@ -122,31 +121,37 @@ public class MeepMeepTesting {
 
 
 
+
+
+
+
+
                                 /*
                                 //redUp; Pose2d(62, 12, Math.toRadians(180))
                                 //vision incomplete; vedic
                                 .splineTo(new Vector2d(33,12),Math.toRadians(180))
                                 .waitSeconds(0.25)
                                 //spike deposit incomplete; mechanical
-                                .lineToSplineHeading(new Pose2d(34,46, Math.toRadians(90)))
+                                .splineTo(new Vector2d(32,46), Math.toRadians(90))
                                 .waitSeconds(0.25)
                                 //pixel backdrop output incomplete; mechanical
-                                .lineToSplineHeading(new Pose2d(36, -60, Math.toRadians(-90)))
-                                .lineToSplineHeading(new Pose2d(36, 17, Math.toRadians(90)))
+                                .lineTo(new Vector2d(36, -60))
+                                .lineTo(new Vector2d(36, 17))
                                 .splineTo(new Vector2d(32,48), Math.toRadians(90))
                                 .waitSeconds(0.25)
                                 //pixel backdrop output incomplete; mechanical
-                                .lineToSplineHeading(new Pose2d(36, -60, Math.toRadians(-90)))
-                                .lineToSplineHeading(new Pose2d(36, 17, Math.toRadians(90)))
+                                .lineTo(new Vector2d(36, -60))
+                                .lineTo(new Vector2d(36, 17))
                                 .splineTo(new Vector2d(32,48), Math.toRadians(90))
                                 .waitSeconds(0.25)
                                 //pixel backdrop output incomplete; mechanical
                                 .strafeRight(28)
-                                .forward(12)
+                                .forward(10)
                                 .build()
-                                //possible more cycles...
 
                                  */
+
+
 
                 );
 

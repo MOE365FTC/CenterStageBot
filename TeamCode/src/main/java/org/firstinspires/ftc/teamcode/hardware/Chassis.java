@@ -83,11 +83,10 @@ public class Chassis {
         double backRightPower = (rotY + rotX - rx) / denominator;
 
 //        scaleFactor = driveSpeed + gamepad1.right_trigger * (1 - driveSpeed);
-        scaleFactor = driveSpeed;
-        frontLeftMotor.setPower(frontLeftPower * scaleFactor);
-        backLeftMotor.setPower(backLeftPower * scaleFactor);
-        frontRightMotor.setPower(frontRightPower * scaleFactor);
-        backRightMotor.setPower(backRightPower * scaleFactor);
+        frontLeftMotor.setPower(frontLeftPower * driveSpeed);
+        backLeftMotor.setPower(backLeftPower * driveSpeed);
+        frontRightMotor.setPower(frontRightPower * driveSpeed);
+        backRightMotor.setPower(backRightPower * driveSpeed);
     }
 
     public void odoTelemetry(Telemetry telemetry){
