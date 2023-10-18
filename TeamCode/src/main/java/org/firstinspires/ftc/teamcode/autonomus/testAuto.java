@@ -15,13 +15,13 @@ public class testAuto extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         robot = new MOEBot(hardwareMap, gamepad1, gamepad2, telemetry);
-//        while(!isStarted() && !isStopRequested()) {
-//            //init loop
-//            telemetry.addData("1: ", "reached");
-//            telemetry.update();
-////            robot.vison.detectProp();
-//        }
+        while(!isStarted() && !isStopRequested()) {
+            //init loop
+
+            robot.vision.detectProp();
+            telemetry.addData("Prop Pos", robot.vision.getPropPos());
+        }
         waitForStart();
-//        robot.vison.stopDetecting();
+        robot.vision.stopDetecting();
     }
 }

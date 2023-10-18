@@ -20,8 +20,9 @@ public class VisionTensorflow {
     private TfodProcessor tfod;
     private VisionPortal visionPortal;
     private static final boolean USE_WEBCAM = true;  // true for webcam, false for phone camera
-//    String[] LABELS = {"redProp", "blueProp"};
-    String[] LABELS = {"Pixel"};
+    private int propPos = -1;
+
+    String[] LABELS = {"blueProp", "redProp"};
 
     public VisionTensorflow(Telemetry telemetry, HardwareMap hardwareMap) {
         this.telemetry = telemetry;
@@ -32,9 +33,22 @@ public class VisionTensorflow {
     }
 
     public void detectProp() {
-        telemetryTfod(); //run detection
+        List<Recognition> currentRecognitions = tfod.getRecognitions();
+        telemetry.addData("# Objects Detected", currentRecognitions.size());
 
-        // Push telemetry to the Driver Station.
+        // Step through the list of recognitions and display info for each one.
+        for (Recognition recognition : currentRecognitions) {
+            double x = (recognition.getLeft() + recognition.getRight()) / 2 ;
+            double y = (recognition.getTop()  + recognition.getBottom()) / 2 ;
+
+            telemetry.addData(""," ");
+            telemetry.addData("Image", "%s (%.0f %% Conf.)", recognition.getLabel(), recognition.getConfidence() * 100);
+            telemetry.addData("- Position", "%.0f / %.0f", x, y);
+
+            if(x < 300) propPos = 1;
+            else if(x > 650) propPos = 3;
+            else propPos = 2;
+        }
         telemetry.update();
     }
 
@@ -47,39 +61,21 @@ public class VisionTensorflow {
      * Initialize the TensorFlow Object Detection processor.
      */
     private void initTfod() {
-        telemetry.addData("status:", "works2");
-        telemetry.update();
 
         // Create the TensorFlow processor by using a builder.
         tfod = new TfodProcessor.Builder()
-                .setModelAssetName("CenterStage.tflite")
+                .setModelAssetName("CenterstageBeacon.tflite")
                 .setModelLabels(LABELS)
                 .setIsModelTensorFlow2(true)
                 .setIsModelQuantized(true)
                 .setModelInputSize(300)
                 .setModelAspectRatio(16.0 / 9.0)
-
-                // Use setModelAssetName() if the TF Model is built in as an asset.
-                // Use setModelFileName() if you have downloaded a custom team model to the Robot Controller.
-                //.setModelAssetName(TFOD_MODEL_ASSET)
-                //.setModelFileName(TFOD_MODEL_FILE)
-
-                //.setModelLabels(LABELS)
-                //.setIsModelTensorFlow2(true)
-                //.setIsModelQuantized(true)
-                //.setModelInputSize(300)
-                //.setModelAspectRatio(16.0 / 9.0)
-//
                 .build();
 
-        telemetry.addData("status:", "works3");
-        telemetry.update();
 
         // Create the vision portal by using a builder.
         VisionPortal.Builder builder = new VisionPortal.Builder();
 
-        telemetry.addData("status:", "works4");
-        telemetry.update();
 
         // Set the camera (webcam vs. built-in RC phone camera).
         if (USE_WEBCAM) {
@@ -88,8 +84,6 @@ public class VisionTensorflow {
             builder.setCamera(BuiltinCameraDirection.BACK);
         }
 
-        telemetry.addData("status:", "works5");
-        telemetry.update();
 
         // Choose a camera resolution. Not all cameras support all resolutions.
         builder.setCameraResolution(new Size(960, 720));
@@ -118,26 +112,10 @@ public class VisionTensorflow {
         visionPortal.setProcessorEnabled(tfod, true);
 
 
-    }   // end method initTfod()
+    }
 
-    /**
-     * Add telemetry about TensorFlow Object Detection (TFOD) recognitions.
-     */
-    private void telemetryTfod() {
 
-        List<Recognition> currentRecognitions = tfod.getRecognitions();
-        telemetry.addData("# Objects Detected", currentRecognitions.size());
-
-        // Step through the list of recognitions and display info for each one.
-        for (Recognition recognition : currentRecognitions) {
-            double x = (recognition.getLeft() + recognition.getRight()) / 2 ;
-            double y = (recognition.getTop()  + recognition.getBottom()) / 2 ;
-
-            telemetry.addData(""," ");
-            telemetry.addData("Image", "%s (%.0f %% Conf.)", recognition.getLabel(), recognition.getConfidence() * 100);
-            telemetry.addData("- Position", "%.0f / %.0f", x, y);
-            telemetry.addData("- Size", "%.0f x %.0f", recognition.getWidth(), recognition.getHeight());
-        }   // end for() loop
-
-    }   // end method telemetryTfod()
+    public int getPropPos() {
+        return propPos;
+    }
 }

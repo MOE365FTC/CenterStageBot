@@ -8,12 +8,12 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 public class MOEBot {
     public Chassis chassis;
     public VisionTensorflow vision;
+    public DroneLauncher droneLauncher;
 
     public MOEBot(HardwareMap hardwareMap, Gamepad gamepad1, Gamepad gamepad2, Telemetry telemetry) {
-//        chassis = new Chassis(hardwareMap, gamepad1);
-        telemetry.addLine("hardware");
-        telemetry.update();
+        chassis = new Chassis(hardwareMap, gamepad1);
         vision = new VisionTensorflow(telemetry, hardwareMap);
+        droneLauncher = new DroneLauncher(hardwareMap, gamepad1);
     }
 
 }
