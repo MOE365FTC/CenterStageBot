@@ -62,7 +62,8 @@ public class Intake {
 
         if(!rightIntakeStopped)
             rightIntake.setPosition(180);
-        else if(!leftIntakeStopped)
+
+        if(!leftIntakeStopped)
             leftIntake.setPosition(180);
 
         if(leftIntakeStopped && rightIntakeStopped)
@@ -80,7 +81,22 @@ public class Intake {
         * */
     }
 
-    public void autonActuate(){
+    public void autonActuate(boolean startIntake){
+        if(startIntake){
+            intakeMotor.setPower(1);
+            if (limitRight.getState())
+                rightIntake.setPosition(45);
+            else
+                rightIntake.setPosition(180);
 
+            if (limitLeft.getState())
+                leftIntake.setPosition(45);
+            else
+                leftIntake.setPosition(180);
+        }else{
+            intakeMotor.setPower(0);
+            rightIntake.setPosition(45);
+            leftIntake.setPosition(45);
+        }
     }
 }
