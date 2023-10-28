@@ -1,10 +1,14 @@
 package org.firstinspires.ftc.teamcode.hardware;
 
+import android.graphics.Color;
+
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 public class Dispenser {
     Servo leftIris, rightIris, rollServo, pitchServo;
@@ -14,12 +18,14 @@ public class Dispenser {
     double leftPitch = 0.0, rightPitch = 1.0, bottomRoll = 0.0; //servo presets
     int liftMid = 400, liftHigh = 800, liftDefault = 0;//lift presets
     double liftPower = 0.7;
-    boolean leftClosed = false, rightClosed = false;
+    boolean leftClosed = false, rightClosed = false, scheduledOpen = false;
 
     Gamepad gamepad2;
+    Telemetry telemetry;
 
-    public Dispenser(HardwareMap hardwareMap, Gamepad gamepad2) {
+    public Dispenser(HardwareMap hardwareMap, Gamepad gamepad2, Telemetry telemetry) {
         this.gamepad2 = gamepad2;
+        this.telemetry = telemetry;
         leftIris = hardwareMap.get(Servo.class, "leftIris");
         rightIris = hardwareMap.get(Servo.class, "rightIris");
         rollServo = hardwareMap.get(Servo.class, "roll");
@@ -43,12 +49,6 @@ public class Dispenser {
     }
 
     public void actuate() {
-        /* color sensor auto iris close
-
-        if the color sensor shows a pixel in iris, close iris and change boolean value
-
-         */
-
         if(gamepad2.left_bumper && leftClosed) { //left iris toggle
             leftIris.setPosition(irisOpen);
             leftClosed = false;
@@ -71,16 +71,29 @@ public class Dispenser {
             pitchServo.setPosition(rightPitch);
         }
         if(gamepad2.x) { //lift control
+            leftIris.setPosition(irisClose);
+            rightIris.setPosition(irisClose);
             lift(liftMid);
             rollServo.setPosition(straightRoll);
         } else if(gamepad2.y) {
+            leftIris.setPosition(irisClose);
+            rightIris.setPosition(irisClose);
             lift(liftHigh);
             rollServo.setPosition(straightRoll);
         } else  if(gamepad2.a) {
+            scheduledOpen = true; //can't open irises instantly, must wait until lift has stopped
             pitchServo.setPosition(defaultPitch);
             rollServo.setPosition(bottomRoll);
             lift(liftDefault);
         }
+        //code segment to reopen irises once dispenser is back in intake position and lifts are at rest
+        if(scheduledOpen && !leftLift.isBusy() && !rightLift.isBusy()) {
+            leftIris.setPosition(irisOpen);
+            rightIris.setPosition(irisOpen);
+            scheduledOpen = false;
+        }
+
+        telemetryPixelColors();
     }
 
     private void lift(int targetPos) {
@@ -113,9 +126,36 @@ public class Dispenser {
         }
     }
 
-//    public boolean hasPlaced() {
-//        //return true if color sensors detect nothing and it is in the lift is in the default (down) position
-//    }
+    public boolean leftIrisIsEmpty() {
+        return detectPixelColors(colorSensorLeft).equals("None");
+    }
+
+    public boolean rightIrisIsEmpty() {
+        return detectPixelColors(colorSensorRight).equals("None");
+    }
+
+    private void telemetryPixelColors() {
+        telemetry.addData("Left Pixel", detectPixelColors(colorSensorLeft));
+        telemetry.addData("Right Pixel", detectPixelColors(colorSensorRight));
+    }
+
+    private String detectPixelColors(ColorSensor cs) {
+        if(colorInRange(cs, 500,1000,700, 1300, 50, 500)) {
+            return "Yellow";
+        } else if(colorInRange(cs, 0,500,350,950,0,500)) {
+            return "Green";
+        } else if(colorInRange(cs, 200,800,350,950,500,1000)) {
+            return "Purple";
+        } else if(colorInRange(cs, 1000,1600, 2000,2500,1200,1700)) {
+            return "White";
+        } else {
+            return "None";
+        }
+    }
+
+    private boolean colorInRange(ColorSensor cs, int lowR, int highR, int lowG, int highG, int lowB, int highB) {
+        return lowR < cs.red() && cs.red() < highR && lowG < cs.green() && cs.green() < highG && lowB < cs.blue() && cs.blue() < highB;
+    }
 
     public enum autonLiftPositions {
         HIGH,

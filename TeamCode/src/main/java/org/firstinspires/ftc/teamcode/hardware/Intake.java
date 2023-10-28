@@ -10,18 +10,21 @@ public class Intake {
 
     HardwareMap hardwareMap;
     Gamepad gamepad1, gamepad2;
+    Dispenser dispenser;
 
     DcMotor intakeMotor;
 
     Servo leftIntake, rightIntake;
 
     DigitalChannel limitLeft, limitRight;
-    boolean turnOnIntake = true;
+    double intakeSpeed = 1.0;
+    double intakeUp = 0.5, intakeDown = 0.0;
     boolean leftIntakeStopped, rightIntakeStopped = false;
-    public Intake(HardwareMap hardwareMap, Gamepad gamepad1, Gamepad gamepad2){
+    public Intake(HardwareMap hardwareMap, Gamepad gamepad1, Gamepad gamepad2, Dispenser dispenser){
         this.hardwareMap = hardwareMap;
         this.gamepad1 = gamepad1;
         this.gamepad2 = gamepad2;
+        this.dispenser = dispenser;
 
         intakeMotor = hardwareMap.get(DcMotor.class, "IM");
 
@@ -33,52 +36,41 @@ public class Intake {
 
         intakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        leftIntake.setPosition(45);
-        rightIntake.setPosition(45);
-        intakeMotor.setPower(0);
+        leftIntake.setPosition(intakeDown);
+        rightIntake.setPosition(intakeDown);
     }
 
 
     public void actuate(){
-        if(turnOnIntake) {
-            if (gamepad1.left_trigger > 0) {
-                intakeMotor.setPower(1);
-            } else if (gamepad1.right_trigger > 0) {
-                intakeMotor.setPower(-1);
-            }
+        if (gamepad1.left_trigger > 0) {
+            intakeMotor.setPower(intakeSpeed);
+        } else if (gamepad1.right_trigger > 0) {
+            intakeMotor.setPower(-intakeSpeed);
+        } else {
+            intakeMotor.setPower(0.0);
         }
 
         if (limitRight.getState()) {
             rightIntakeStopped = true;
-            rightIntake.setPosition(45);
+            rightIntake.setPosition(intakeUp);
             gamepad1.rumble(100);
         }
 
         if (limitLeft.getState()) {
             leftIntakeStopped = true;
-            leftIntake.setPosition(45);
+            leftIntake.setPosition(intakeUp);
             gamepad1.rumble(100);
         }
 
         if(!rightIntakeStopped)
-            rightIntake.setPosition(180);
+            rightIntake.setPosition(intakeDown);
 
         if(!leftIntakeStopped)
-            leftIntake.setPosition(180);
+            leftIntake.setPosition(intakeDown);
 
-        if(leftIntakeStopped && rightIntakeStopped)
-            turnOnIntake = false;
 
-        /*
-        *
-        * CHICKEN SCRAP
-        *
-        * if(dispenser.hasPlaced()){
-        *   turnOnIntake = true;
-        *   leftIntakeStopped = false;
-        *   rightIntakeStopped = false;
-        * }
-        * */
+        if(dispenser.leftIrisIsEmpty()) leftIntakeStopped = false;
+        if(dispenser.rightIrisIsEmpty()) rightIntakeStopped = false;
     }
 
     public void autonActuate(boolean startIntake){

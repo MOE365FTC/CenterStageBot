@@ -27,8 +27,6 @@ public class VisionTensorflow {
     public VisionTensorflow(Telemetry telemetry, HardwareMap hardwareMap) {
         this.telemetry = telemetry;
         this.hardwareMap = hardwareMap;
-        this.telemetry.addData("status:", "works");
-        this.telemetry.update();
         initTfod();
     }
 
