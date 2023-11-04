@@ -28,29 +28,26 @@ public class MeepMeepTesting {
                 .followTrajectorySequence(drive ->
                         drive.trajectorySequenceBuilder(new Pose2d(-62, -35, 0))
 
-
+                                //COORDINATE SYSTEM SOMEHOW WORKS NOW CAUSE IMAGE IS ROTATED, MAYBE WILL CAUSE ISSUE
                                 //blueDown; Pose2d(-62, -35, 0)
                                 //vision incomplete; vedic
-                                .splineTo(new Vector2d(-33,-35),Math.toRadians(0))
+                                .splineTo(new Vector2d(-37,-35),Math.toRadians(0))
+                                .turn(Math.toRadians(-90))
                                 .waitSeconds(0.25)
                                 //spike deposit incomplete; mechanical
-                                .splineTo(new Vector2d(-11.5,-60),Math.toRadians(-90))
-                                .lineTo(new Vector2d(-12, 17))
-                                .splineTo(new Vector2d(-32,48), Math.toRadians(90))
-                                .waitSeconds(0.25)
-                                //pixel backdrop output incomplete; mechanical
-                                .lineTo(new Vector2d(-36, -60))
-                                .lineTo(new Vector2d(-36, 17))
-                                .splineTo(new Vector2d(-32,48), Math.toRadians(90))
-                                .waitSeconds(0.25)
-                                //pixel backdrop output incomplete; mechanical
-                                .lineTo(new Vector2d(-36, -60))
-                                .lineTo(new Vector2d(-36, 17))
-                                .splineTo(new Vector2d(-32,48), Math.toRadians(90))
-                                .waitSeconds(0.25)
-                                //pixel backdrop output incomplete; mechanical
-                                .strafeRight(28)
-                                .back(10)
+                                .splineToSplineHeading(new Pose2d(-37, -55, Math.toRadians(90)), Math.toRadians(0))
+                                .lineTo(new Vector2d(-11.5,-54))
+//                                .lineTo(new Vector2d(-12, 17))
+//                                .splineTo(new Vector2d(-32,48), Math.toRadians(90))
+//                                .waitSeconds(0.25)
+//                                //pixel backdrop output incomplete; mechanical
+//                                .splineTo(new Vector2d(-12, 17), Math.toRadians(-90))
+//                                .lineTo(new Vector2d(-11.5,-60))
+//                                //pixel backdrop output incomplete; mechanical
+//                                .lineTo(new Vector2d(-12, 17))
+//                                .splineTo(new Vector2d(-32,48), Math.toRadians(90))
+//                                .strafeLeft(14)
+//                                .back(10)
                                 .build()
 
 
@@ -61,31 +58,31 @@ public class MeepMeepTesting {
 
 
 
-                                /*
-                                //redDown; Pose2d(62, -35, Math.toRadians(180))
-                                //vision incomplete; vedic
-                                .splineTo(new Vector2d(33,-35),Math.toRadians(180))
-                                .waitSeconds(0.25)
-                                //spike deposit incomplete; mechanical
-                                .splineTo(new Vector2d(11.5,-60),Math.toRadians(-90))
-                                .lineTo(new Vector2d(12, 17))
-                                .splineTo(new Vector2d(32,48), Math.toRadians(90))
-                                .waitSeconds(0.25)
-                                //pixel backdrop output incomplete; mechanical
-                                .lineTo(new Vector2d(36, -60))
-                                .lineTo(new Vector2d(36, 17))
-                                .splineTo(new Vector2d(32,48), Math.toRadians(90))
-                                .waitSeconds(0.25)
-                                //pixel backdrop output incomplete; mechanical
-                                .lineTo(new Vector2d(36, -60))
-                                .lineTo(new Vector2d(36, 17))
-                                .splineTo(new Vector2d(32,48), Math.toRadians(90))
-                                .waitSeconds(0.25)
-                                //pixel backdrop output incomplete; mechanical
-                                .strafeLeft(28)
-                                .back(12)
-                                .build()
-                                 */
+
+//                                //redDown; Pose2d(62, -35, Math.toRadians(180))
+//                                //vision incomplete; vedic
+//                                .splineTo(new Vector2d(33,-35),Math.toRadians(180))
+//                                .waitSeconds(0.25)
+//                                //spike deposit incomplete; mechanical
+//                                .splineTo(new Vector2d(11.5,-60),Math.toRadians(-90))
+//                                .lineTo(new Vector2d(12, 17))
+//                                .splineTo(new Vector2d(32,48), Math.toRadians(90))
+//                                .waitSeconds(0.25)
+//                                //pixel backdrop output incomplete; mechanical
+//                                .lineTo(new Vector2d(36, -60))
+//                                .lineTo(new Vector2d(36, 17))
+//                                .splineTo(new Vector2d(32,48), Math.toRadians(90))
+//                                .waitSeconds(0.25)
+//                                //pixel backdrop output incomplete; mechanical
+//                                .lineTo(new Vector2d(36, -60))
+//                                .lineTo(new Vector2d(36, 17))
+//                                .splineTo(new Vector2d(32,48), Math.toRadians(90))
+//                                .waitSeconds(0.25)
+//                                //pixel backdrop output incomplete; mechanical
+//                                .strafeLeft(28)
+//                                .back(12)
+//                                .build()
+
 
 
 
