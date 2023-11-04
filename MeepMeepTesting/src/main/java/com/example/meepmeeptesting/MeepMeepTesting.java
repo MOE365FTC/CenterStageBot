@@ -49,7 +49,7 @@ public class MeepMeepTesting {
                                 .splineTo(new Vector2d(-32,48), Math.toRadians(90))
                                 .waitSeconds(0.25)
                                 //pixel backdrop output incomplete; mechanical
-                                .strafeRight(20)
+                                .strafeRight(28)
                                 .back(10)
                                 .build()
 
@@ -82,7 +82,7 @@ public class MeepMeepTesting {
                                 .splineTo(new Vector2d(32,48), Math.toRadians(90))
                                 .waitSeconds(0.25)
                                 //pixel backdrop output incomplete; mechanical
-                                .strafeLeft(20)
+                                .strafeLeft(28)
                                 .back(12)
                                 .build()
                                  */
