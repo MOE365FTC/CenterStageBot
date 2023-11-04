@@ -21,5 +21,8 @@ public class Teleop extends OpMode {
     @Override
     public void loop() {
         robot.chassis.fieldCentricDrive();
+        robot.intake.actuate();
+        robot.dispenser.actuate();
+        robot.droneLauncher.actuate();
     }
 }
