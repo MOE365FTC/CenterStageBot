@@ -18,62 +18,49 @@ public class redLeftRR extends LinearOpMode {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         robot = new MOEBot(hardwareMap, gamepad1, gamepad2, telemetry);
 
-        Pose2d startPose = new Pose2d(-62,-12,0);
+        Pose2d startPose = new Pose2d(62,-35, Math.toRadians(-180));
         drive.setPoseEstimate(startPose);
 
-        TrajectorySequence pixelLeft = drive.trajectorySequenceBuilder(startPose)
-                //vision
-                .lineToLinearHeading(new Pose2d(33,12, Math.toRadians(270)))
+        TrajectorySequence pixelCenter = drive.trajectorySequenceBuilder(startPose)
+                .lineToLinearHeading(new Pose2d(37,-35, Math.toRadians(90)))
                 .waitSeconds(0.25)
-                //spike deposit
-                .lineToLinearHeading(new Pose2d(45,14, Math.toRadians(90)))
-                .splineToConstantHeading(new Vector2d(46,30), Math.toRadians(90))
-                .splineTo(new Vector2d(32,46), Math.toRadians(90))
-                .waitSeconds(0.25)
-                //pixel backdrop dispense
+                //spike deposit incomplete; mechanical
+                .back(24)
+                .lineTo(new Vector2d(11.5,-54))
+                //intake one pixel
+                .lineTo(new Vector2d(11.5, 30))
+                .splineTo(new Vector2d(35, 46), Math.toRadians(90))
+                //score
+                .strafeLeft(10)
+                .splineToConstantHeading(new Vector2d(13, 60), Math.toRadians(90))
                 .build();
 
-        TrajectorySequence pixelCenter = drive.trajectorySequenceBuilder(startPose)
-                //vision
-                .lineToLinearHeading(new Pose2d(33,12, Math.toRadians(180)))
+        TrajectorySequence pixelLeft = drive.trajectorySequenceBuilder(startPose)
+                .lineToConstantHeading(new Vector2d(37,-35))
                 .waitSeconds(0.25)
-                //spike deposit
-                .lineToLinearHeading(new Pose2d(45,14, Math.toRadians(90)))
-                .splineToConstantHeading(new Vector2d(46,30), Math.toRadians(90))
-                .splineTo(new Vector2d(32,46), Math.toRadians(90))
-                .waitSeconds(0.25)
-                //pixel backdrop dispense
+                //spike deposit incomplete; mechanical
+                .lineToLinearHeading(new Pose2d(11.5,-54, Math.toRadians(90)))
+                //intake one pixel
+                .lineTo(new Vector2d(11.5, 30))
+                .splineTo(new Vector2d(30, 46), Math.toRadians(90))
+                //score
+                .strafeLeft(5)
+                .splineToConstantHeading(new Vector2d(13, 60), Math.toRadians(90))
                 .build();
 
         TrajectorySequence pixelRight = drive.trajectorySequenceBuilder(startPose)
-                //vision
-                .lineToLinearHeading(new Pose2d(33,12, Math.toRadians(90)))
+                .splineToSplineHeading(new Pose2d(35, -35, Math.toRadians(0)), Math.toRadians(0))
                 .waitSeconds(0.25)
-                //spike deposit
-                .lineToLinearHeading(new Pose2d(45,14, Math.toRadians(90)))
-                .splineToConstantHeading(new Vector2d(46,30), Math.toRadians(90))
-                .splineTo(new Vector2d(32,46), Math.toRadians(90))
-                .waitSeconds(0.25)
-                //pixel backdrop dispense
+                //spike deposit incomplete; mechanical
+                .lineToLinearHeading(new Pose2d(11.5, -54, Math.toRadians(90)))
+                //intake one pixel
+                .lineTo(new Vector2d(11.5, 30))
+                .splineTo(new Vector2d(43, 46), Math.toRadians(90))
+                //score
+                .strafeLeft(20)
+                .splineToConstantHeading(new Vector2d(13, 60), Math.toRadians(90))
                 .build();
 
-
-
-
-        TrajectorySequence redCycle = drive.trajectorySequenceBuilder(new Pose2d(-32, 46))
-                .lineTo(new Vector2d(-36, -60))
-                .lineTo(new Vector2d(-36, 17))
-                .splineTo(new Vector2d(-32,48), Math.toRadians(90))
-                .waitSeconds(0.25)
-                //pixel backdrop output
-                .lineTo(new Vector2d(-36, -60))
-                .lineTo(new Vector2d(-36, 17))
-                .splineTo(new Vector2d(-32,48), Math.toRadians(90))
-                .waitSeconds(0.25)
-                //pixel backdrop output
-                .strafeLeft(28)
-                .forward(10)
-                .build();
 
         while(!isStarted() && !isStopRequested()) {
             //init loop
@@ -84,6 +71,18 @@ public class redLeftRR extends LinearOpMode {
 
         waitForStart();
         robot.vision.stopDetecting();
+
+        switch(robot.vision.getPropPos()) {
+            case 1:
+                drive.followTrajectorySequence(pixelLeft);
+                break;
+            case 2:
+                drive.followTrajectorySequence(pixelCenter);
+                break;
+            case 3:
+                drive.followTrajectorySequence(pixelRight);
+                break;
+        }
 
 
     }
