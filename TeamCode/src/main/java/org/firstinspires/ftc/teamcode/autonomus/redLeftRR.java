@@ -25,7 +25,7 @@ public class redLeftRR extends LinearOpMode {
                 .lineToLinearHeading(new Pose2d(37,-35, Math.toRadians(90)))
                 .waitSeconds(0.25)
                 //spike deposit incomplete; mechanical
-                .back(24)
+                .back(15)
                 .lineTo(new Vector2d(11.5,-54))
                 //intake one pixel
                 .lineTo(new Vector2d(11.5, 30))
@@ -36,9 +36,10 @@ public class redLeftRR extends LinearOpMode {
                 .build();
 
         TrajectorySequence pixelLeft = drive.trajectorySequenceBuilder(startPose)
-                .lineToConstantHeading(new Vector2d(37,-35))
+                .lineToConstantHeading(new Vector2d(34,-35))
                 .waitSeconds(0.25)
                 //spike deposit incomplete; mechanical
+                .forward(20)
                 .lineToLinearHeading(new Pose2d(11.5,-54, Math.toRadians(90)))
                 //intake one pixel
                 .lineTo(new Vector2d(11.5, 30))

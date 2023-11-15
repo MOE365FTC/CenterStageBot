@@ -21,71 +21,43 @@ public class redRightRR extends LinearOpMode {
         Pose2d startPose = new Pose2d(62,12,Math.toRadians(180));
         drive.setPoseEstimate(startPose);
 
-        TrajectorySequence pixelLeft = drive.trajectorySequenceBuilder(startPose)
+        TrajectorySequence pixelRight = drive.trajectorySequenceBuilder(startPose)
                 //vision
                 .lineToLinearHeading(new Pose2d(33,12, Math.toRadians(0)))
                 .waitSeconds(0.25)
                 //spike deposit
-                .lineToLinearHeading(new Pose2d(45,14, Math.toRadians(90)))
-                .splineToConstantHeading(new Vector2d(46,30), Math.toRadians(90))
-                .splineToConstantHeading(new Vector2d(43,46), Math.toRadians(90))
+                .forward(15)
+                .lineToLinearHeading(new Pose2d(43,46, Math.toRadians(90)))
                 .waitSeconds(0.25)
-                //pixel backdrop dispense
-
-                //more cycles
+                //backdrop
                 .lineTo(new Vector2d(55,46))
                 .splineToConstantHeading(new Vector2d(60,60), Math.toRadians(90))
                 .build();
 
         TrajectorySequence pixelCenter = drive.trajectorySequenceBuilder(startPose)
                 //vision
-                .lineToLinearHeading(new Pose2d(33,12, Math.toRadians(-90)))
+                .lineToLinearHeading(new Pose2d(35,12, Math.toRadians(-90)))
                 .waitSeconds(0.25)
                 //spike deposit
-                .lineToLinearHeading(new Pose2d(45,14, Math.toRadians(90)))
-                .splineToConstantHeading(new Vector2d(46,30), Math.toRadians(90))
-                .splineTo(new Vector2d(35,46), Math.toRadians(90))
+                .back(15)
+                .lineToLinearHeading(new Pose2d(35,46, Math.toRadians(90)))
                 .waitSeconds(0.25)
-                //pixel backdrop dispense
-
-                //more cycles
+                //backdrop
                 .lineTo(new Vector2d(55,46))
                 .splineToConstantHeading(new Vector2d(60,60), Math.toRadians(90))
                 .build();
 
-        TrajectorySequence pixelRight = drive.trajectorySequenceBuilder(startPose)
+        TrajectorySequence pixelLeft = drive.trajectorySequenceBuilder(startPose)
                 ///vision
                 .lineToLinearHeading(new Pose2d(33,12, Math.toRadians(180)))
-                .waitSeconds(0.25)
                 //spike deposit
-                .lineToLinearHeading(new Pose2d(45,14, Math.toRadians(90)))
-                .splineToConstantHeading(new Vector2d(46,30), Math.toRadians(90))
-                .splineToConstantHeading(new Vector2d(29,46), Math.toRadians(90))
+                .lineToLinearHeading(new Pose2d(29,46, Math.toRadians(90)))
                 .waitSeconds(0.25)
                 //pixel backdrop dispense
-
-                //more cycles
                 .lineTo(new Vector2d(55,46))
                 .splineToConstantHeading(new Vector2d(60,60), Math.toRadians(90))
                 .build();
 
-
-
-
-        TrajectorySequence blueCycle = drive.trajectorySequenceBuilder(new Pose2d(-32, 46))
-                .lineTo(new Vector2d(-36, -60))
-                .lineTo(new Vector2d(-36, 17))
-                .splineTo(new Vector2d(-32,48), Math.toRadians(90))
-                .waitSeconds(0.25)
-                //pixel backdrop output
-                .lineTo(new Vector2d(-36, -60))
-                .lineTo(new Vector2d(-36, 17))
-                .splineTo(new Vector2d(-32,48), Math.toRadians(90))
-                .waitSeconds(0.25)
-                //pixel backdrop output
-                .strafeLeft(28)
-                .forward(10)
-                .build();
 
         while(!isStarted() && !isStopRequested()) {
             //init loop

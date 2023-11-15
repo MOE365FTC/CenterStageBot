@@ -26,11 +26,10 @@ public class blueRightRR extends LinearOpMode {
 
 
         TrajectorySequence pixelCenter = drive.trajectorySequenceBuilder(startPose)
-                .lineToLinearHeading(new Pose2d(-37,-35, Math.toRadians(-90)))
+                .lineToConstantHeading(new Vector2d(-24,-45))
                 .waitSeconds(0.25)
                 //spike deposit incomplete; mechanical
-                .splineToSplineHeading(new Pose2d(-37, -55, Math.toRadians(90)), Math.toRadians(0))
-                .lineTo(new Vector2d(-11.5,-54))
+                .lineToLinearHeading(new Pose2d(-11.5,-54, Math.toRadians(90)))
                 //intake one pixel
                 .lineTo(new Vector2d(-11.5, 30))
                 .splineTo(new Vector2d(-35, 46), Math.toRadians(90))
@@ -40,10 +39,10 @@ public class blueRightRR extends LinearOpMode {
                 .build();
 
         TrajectorySequence pixelLeft = drive.trajectorySequenceBuilder(startPose)
-                .lineTo(new Vector2d(-37,-35))
+                .lineTo(new Vector2d(-29,-35))
                 .waitSeconds(0.25)
                 //spike deposit incomplete; mechanical
-                .splineToSplineHeading(new Pose2d(-11.5,-54, Math.toRadians(90)), Math.toRadians(0))
+                .lineToLinearHeading(new Pose2d(-11.5,-54, Math.toRadians(90)))
                 //intake one pixel
                 .lineTo(new Vector2d(-11.5, 30))
                 .splineTo(new Vector2d(-42, 46), Math.toRadians(90))
@@ -52,7 +51,7 @@ public class blueRightRR extends LinearOpMode {
                 .build();
 
         TrajectorySequence pixelRight = drive.trajectorySequenceBuilder(startPose)
-                .splineToSplineHeading(new Pose2d(-35, -35, Math.toRadians(-180)), Math.toRadians(0))
+                .lineToConstantHeading(new Vector2d(-27, -57))
                 .waitSeconds(0.25)
                 //spike deposit incomplete; mechanical
                 .lineToLinearHeading(new Pose2d(-11.5, -54, Math.toRadians(90)))
