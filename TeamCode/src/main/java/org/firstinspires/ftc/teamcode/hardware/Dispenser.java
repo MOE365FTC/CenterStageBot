@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.hardware;
 
-import android.graphics.Color;
-
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
@@ -11,14 +9,21 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 public class Dispenser {
-    Servo leftIris, rightIris, rollServo, pitchServo;
-    DcMotor leftLift, rightLift;
+    //DEVICES
+    Servo leftIris, rightIris, pitchServo;
+    DcMotor leftLift, rightLift, tiltMotor;
     ColorSensor colorSensorLeft, colorSensorRight;
-    double irisOpen = 0.0, irisClose = 1.0, defaultPitch = 0.5, straightRoll = 0.5; //defaults
-    double leftPitch = 0.0, rightPitch = 1.0, bottomRoll = 0.0; //servo presets
-    int liftMid = 400, liftHigh = 800, liftDefault = 0;//lift presets
-    double liftPower = 0.7;
+
+    //PRESETS
+    double irisOpen = 0.0, irisClose = 1.0, intakePitch = 0.5, scorePitch = 0.0; //defaults
+    int extendMid = 400, extendFull = 800, extendIntake = 100;//lift presets
+    int tiltIntake = 0, tiltScore = 800;
+    double extendPower = 0.7;
+    double tiltPower = 0.8;
+
+    //TOGGLES
     boolean leftClosed = false, rightClosed = false, scheduledOpen = false;
+    boolean oldLeftBumper = false, oldRightBumper = false;
 
     Gamepad gamepad2;
     Telemetry telemetry;
@@ -28,79 +33,98 @@ public class Dispenser {
         this.telemetry = telemetry;
         leftIris = hardwareMap.get(Servo.class, "leftIris");
         rightIris = hardwareMap.get(Servo.class, "rightIris");
-        rollServo = hardwareMap.get(Servo.class, "roll");
-        pitchServo = hardwareMap.get(Servo.class, "pitch");
+        pitchServo = hardwareMap.get(Servo.class, "pitchServo");
         leftLift = hardwareMap.get(DcMotor.class, "LLM");
         rightLift = hardwareMap.get(DcMotor.class, "RLM");
+        tiltMotor = hardwareMap.get(DcMotor.class, "tiltMotor");
         colorSensorRight = hardwareMap.get(ColorSensor.class, "CSR");
         colorSensorLeft = hardwareMap.get(ColorSensor.class, "CSL");
+
         leftIris.setPosition(irisOpen);
         rightIris.setPosition(irisOpen);
-        rollServo.setPosition(straightRoll);
-        pitchServo.setPosition(defaultPitch);
+        pitchServo.setPosition(intakePitch);
+
         leftLift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightLift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        tiltMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
         leftLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        tiltMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         leftLift.setTargetPosition(0);
         rightLift.setTargetPosition(0);
+        tiltMotor.setTargetPosition(0);
         leftLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         rightLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        tiltMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
 
     public void actuate() {
-        if(gamepad2.left_bumper && leftClosed) { //left iris toggle
-            leftIris.setPosition(irisOpen);
-            leftClosed = false;
-        } else if(gamepad2.left_bumper) {
-            leftIris.setPosition(irisClose);
-            leftClosed = true;
+        if(gamepad2.left_bumper && !oldLeftBumper) { //left iris toggle
+            if(leftClosed) {
+                leftIris.setPosition(irisOpen);
+                leftClosed = false;
+            } else {
+                leftIris.setPosition(irisClose);
+                leftClosed = true;
+            }
         }
-        if(gamepad2.right_bumper && rightClosed) { //right iris toggle
-            rightIris.setPosition(irisOpen);
-            rightClosed = false;
-        } else if(gamepad2.right_bumper) {
-            rightIris.setPosition(irisClose);
-            rightClosed = true;
+        oldLeftBumper = gamepad2.left_bumper;
+
+        if(gamepad2.right_bumper && !oldRightBumper) { //right iris toggle
+            if(rightClosed) {
+                leftIris.setPosition(irisOpen);
+                rightClosed = false;
+            } else {
+                leftIris.setPosition(irisClose);
+                rightClosed = true;
+            }
         }
-        if(gamepad2.dpad_left) { //pitch control
-            pitchServo.setPosition(leftPitch);
-        } else if(gamepad2.dpad_up) {
-            pitchServo.setPosition(defaultPitch);
-        } else if(gamepad2.dpad_right) {
-            pitchServo.setPosition(rightPitch);
-        }
-        if(gamepad2.x) { //lift control
-            leftIris.setPosition(irisClose);
-            rightIris.setPosition(irisClose);
-            lift(liftMid);
-            rollServo.setPosition(straightRoll);
-        } else if(gamepad2.y) {
+        oldRightBumper = gamepad2.right_bumper;
+
+        if(gamepad2.y) { //max height lift
             leftIris.setPosition(irisClose);
             rightIris.setPosition(irisClose);
-            lift(liftHigh);
-            rollServo.setPosition(straightRoll);
-        } else  if(gamepad2.a) {
-            scheduledOpen = true; //can't open irises instantly, must wait until lift has stopped
-            pitchServo.setPosition(defaultPitch);
-            rollServo.setPosition(bottomRoll);
-            lift(liftDefault);
+            tiltLift(tiltScore);
+            extendLift(extendFull);
+            pitchServo.setPosition(scorePitch);
+        } else if(gamepad2.x) { //mid height lift
+            leftIris.setPosition(irisClose);
+            rightIris.setPosition(irisClose);
+            tiltLift(tiltScore);
+            extendLift(extendMid);
+            pitchServo.setPosition(scorePitch);
+        } else if(gamepad2.b) { //low height lift
+            leftIris.setPosition(irisClose);
+            rightIris.setPosition(irisClose);
+            tiltLift(tiltScore); //no extension on low since the base arm itself is high enough
+            pitchServo.setPosition(scorePitch);
+        } else if(gamepad2.a) { //intake height lift
+//            scheduledOpen = true; //can't open irises instantly, must wait until lift has stopped
+            tiltLift(tiltIntake);
+            extendLift(extendIntake);
+            pitchServo.setPosition(intakePitch);
         }
         //code segment to reopen irises once dispenser is back in intake position and lifts are at rest
-        if(scheduledOpen && !leftLift.isBusy() && !rightLift.isBusy()) {
-            leftIris.setPosition(irisOpen);
-            rightIris.setPosition(irisOpen);
-            scheduledOpen = false;
-        }
+//        if(scheduledOpen && !leftLift.isBusy() && !rightLift.isBusy()) {
+//            leftIris.setPosition(irisOpen);
+//            rightIris.setPosition(irisOpen);
+//            scheduledOpen = false;
+//        }
 
         telemetryPixelColors();
     }
 
-    private void lift(int targetPos) {
+    private void extendLift(int targetPos) {
         leftLift.setTargetPosition(targetPos);
         rightLift.setTargetPosition(targetPos);
-        leftLift.setPower(liftPower);
-        rightLift.setPower(liftPower);
+        leftLift.setPower(extendPower);
+        rightLift.setPower(extendPower);
+    }
+
+    private void tiltLift(int targetPos) {
+        tiltMotor.setTargetPosition(targetPos);
+        tiltMotor.setPower(tiltPower);
     }
 
     public void autonIris(boolean open) {
@@ -110,18 +134,19 @@ public class Dispenser {
 
     public void autonLift(autonLiftPositions liftPos) {
         switch (liftPos) {
-            case DEFAULT:
-                pitchServo.setPosition(defaultPitch);
-                rollServo.setPosition(straightRoll);
-                lift(liftDefault);
+            case INTAKE:
+                pitchServo.setPosition(intakePitch);
+                tiltLift(tiltIntake);
+                extendLift(extendIntake);
+                break;
+            case LOW:
+                pitchServo.setPosition(scorePitch);
+                tiltLift(tiltScore);
                 break;
             case MID:
-                lift(liftMid);
-                rollServo.setPosition(straightRoll);
-                break;
-            case HIGH:
-                lift(liftHigh);
-                rollServo.setPosition(straightRoll);
+                pitchServo.setPosition(scorePitch);
+                tiltLift(tiltScore);
+                extendLift(extendMid);
                 break;
         }
     }
@@ -158,8 +183,8 @@ public class Dispenser {
     }
 
     public enum autonLiftPositions {
-        HIGH,
         MID,
-        DEFAULT
+        LOW,
+        INTAKE,
     }
 }

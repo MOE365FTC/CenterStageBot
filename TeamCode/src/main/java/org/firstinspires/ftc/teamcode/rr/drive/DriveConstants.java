@@ -17,6 +17,8 @@ import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 @Config
 public class DriveConstants {
 
+    //***NOTE****: This class is tuned to the PowerPlay robot, reset this by copying from github when tuning CenterStage
+
     /*
      * These are motor constants that should be listed online for your motors.
      */
@@ -43,9 +45,9 @@ public class DriveConstants {
      * angular distances although most angular parameters are wrapped in Math.toRadians() for
      * convenience. Make sure to exclude any gear ratio included in MOTOR_CONFIG from GEAR_RATIO.
      */
-    public static double WHEEL_RADIUS = 2; // in
-    public static double GEAR_RATIO = 1; // output (wheel) speed / input (motor) speed
-    public static double TRACK_WIDTH = 1; // in
+    public static double WHEEL_RADIUS = 1.89; // in
+    public static double GEAR_RATIO = 1.0; // output (wheel) speed / input (motor) speed
+    public static double TRACK_WIDTH = 8.45; // in
 
     /*
      * These are the feedforward parameters used to model the drive motor behavior. If you are using
@@ -53,8 +55,8 @@ public class DriveConstants {
      * motor encoders or have elected not to use them for velocity control, these values should be
      * empirically tuned.
      */
-    public static double kV = 1.0 / rpmToVelocity(MAX_RPM);
-    public static double kA = 0;
+    public static double kV = 0.0162031653632007; //1.0 / rpmToVelocity(MAX_RPM)
+    public static double kA = 0.002;
     public static double kStatic = 0;
 
     /*
@@ -64,10 +66,10 @@ public class DriveConstants {
      * small and gradually increase them later after everything is working. All distance units are
      * inches.
      */
-    public static double MAX_VEL = 30;
-    public static double MAX_ACCEL = 30;
-    public static double MAX_ANG_VEL = Math.toRadians(60);
-    public static double MAX_ANG_ACCEL = Math.toRadians(60);
+    public static double MAX_VEL = 63.345; //old: 80.345
+    public static double MAX_ACCEL = 60; //old: 90
+    public static double MAX_ANG_VEL = Math.toRadians(120); //60
+    public static double MAX_ANG_ACCEL = Math.toRadians(150); //75
 
 
     public static double encoderTicksToInches(double ticks) {

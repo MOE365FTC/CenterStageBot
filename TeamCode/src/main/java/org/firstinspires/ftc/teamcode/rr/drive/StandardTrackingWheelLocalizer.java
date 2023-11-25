@@ -7,6 +7,7 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.localization.ThreeTrackingWheelLocalizer;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+
 import org.firstinspires.ftc.teamcode.rr.util.Encoder;
 
 import java.util.Arrays;
@@ -27,27 +28,34 @@ import java.util.List;
  */
 @Config
 public class StandardTrackingWheelLocalizer extends ThreeTrackingWheelLocalizer {
-    public static double TICKS_PER_REV = 0;
-    public static double WHEEL_RADIUS = 2; // in
+
+    //***NOTE***: This class is tuned to the PowerPlay robot, reset by copying from github when tuning CenterStage
+
+    public static double TICKS_PER_REV = 8192;
+    public static double WHEEL_RADIUS = .748; // in
     public static double GEAR_RATIO = 1; // output (wheel) speed / input (encoder) speed
 
-    public static double LATERAL_DISTANCE = 10; // in; distance between the left and right wheels
-    public static double FORWARD_OFFSET = 4; // in; offset of the lateral wheel
-
-    private Encoder leftEncoder, rightEncoder, frontEncoder;
-
+    public static double LATERAL_DISTANCE = 8.316; //8.346 in; distance between the left and right wheels
+    public static double FORWARD_OFFSET = -.0472; //.0472 in; offset of the lateral wheel
+    //center odo 6.5mm to the right
+    public Encoder leftEncoder, rightEncoder, frontEncoder;
+    public static double X_MULTIPLIER = 1.003322314;
+    public static double Y_MULTIPLIER = 1.005098659; //0.9963
     public StandardTrackingWheelLocalizer(HardwareMap hardwareMap) {
         super(Arrays.asList(
                 new Pose2d(0, LATERAL_DISTANCE / 2, 0), // left
                 new Pose2d(0, -LATERAL_DISTANCE / 2, 0), // right
-                new Pose2d(FORWARD_OFFSET, 0, Math.toRadians(90)) // front
+                new Pose2d(FORWARD_OFFSET, -.2559, Math.toRadians(90)) // front
         ));
 
-        leftEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, "leftEncoder"));
-        rightEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, "rightEncoder"));
-        frontEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, "frontEncoder"));
+        leftEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, "OLE11"));
+        rightEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, "ORE13"));
+        frontEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, "OCE12"));
 
         // TODO: reverse any encoders using Encoder.setDirection(Encoder.Direction.REVERSE)
+//        leftEncoder.setDirection(Encoder.Direction.REVERSE);
+//        frontEncoder.setDirection(Encoder.Direction.REVERSE);
+        rightEncoder.setDirection(Encoder.Direction.REVERSE);
     }
 
     public static double encoderTicksToInches(double ticks) {
@@ -58,9 +66,9 @@ public class StandardTrackingWheelLocalizer extends ThreeTrackingWheelLocalizer 
     @Override
     public List<Double> getWheelPositions() {
         return Arrays.asList(
-                encoderTicksToInches(leftEncoder.getCurrentPosition()),
-                encoderTicksToInches(rightEncoder.getCurrentPosition()),
-                encoderTicksToInches(frontEncoder.getCurrentPosition())
+                encoderTicksToInches(leftEncoder.getCurrentPosition() * X_MULTIPLIER),
+                encoderTicksToInches(rightEncoder.getCurrentPosition() * X_MULTIPLIER),
+                encoderTicksToInches(frontEncoder.getCurrentPosition() * Y_MULTIPLIER)
         );
     }
 
@@ -72,9 +80,9 @@ public class StandardTrackingWheelLocalizer extends ThreeTrackingWheelLocalizer 
         //  compensation method
 
         return Arrays.asList(
-                encoderTicksToInches(leftEncoder.getRawVelocity()),
-                encoderTicksToInches(rightEncoder.getRawVelocity()),
-                encoderTicksToInches(frontEncoder.getRawVelocity())
+                encoderTicksToInches(leftEncoder.getCorrectedVelocity() * X_MULTIPLIER),
+                encoderTicksToInches(rightEncoder.getCorrectedVelocity() * X_MULTIPLIER),
+                encoderTicksToInches(frontEncoder.getCorrectedVelocity() * Y_MULTIPLIER)
         );
     }
 }
