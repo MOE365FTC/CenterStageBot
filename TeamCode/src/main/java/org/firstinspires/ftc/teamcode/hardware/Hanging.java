@@ -8,25 +8,26 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 @Config
 public class Hanging {
-    DcMotor slideLeft, slideRight;
+    DcMotor leftHangMotor, rightHangMotor;
     Gamepad gamepad1;
+
+    double hangPower = 0.75;
 
     public Hanging(HardwareMap hardwareMap, Gamepad gamepad1){
         this.gamepad1 = gamepad1;
 
-        slideLeft = hardwareMap.get(DcMotor.class, "SLL");
-        slideRight = hardwareMap.get(DcMotor.class, "SLR");
+        leftHangMotor = hardwareMap.get(DcMotor.class, "hangMotor");
+        leftHangMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        slideLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        slideRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightHangMotor = hardwareMap.get(DcMotor.class, "hangMotor");
+        rightHangMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
     public void actuate(){
         if (gamepad1.dpad_up) {
-            slideLeft.setTargetPosition(900);
-            slideRight.setTargetPosition(900);
-
-            slideLeft.setPower(0.75);
-            slideRight.setPower(0.75);
+            leftHangMotor.setTargetPosition(900);
+            rightHangMotor.setTargetPosition(900);
+            leftHangMotor.setPower(hangPower);
+            rightHangMotor.setPower(hangPower);
         }
     }
 }

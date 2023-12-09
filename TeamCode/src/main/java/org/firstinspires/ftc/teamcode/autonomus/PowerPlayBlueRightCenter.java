@@ -40,9 +40,9 @@ public class PowerPlayBlueRightCenter extends LinearOpMode {
                 .addTemporalMarker(() -> { //place pixel on tick mark
                     //robot.backupClaw.release();
                 })
-                .splineTo(new Vector2d(8, -3), Math.toRadians(90)) //go to backdrop: go to gate with motor pushing center
-                .splineToConstantHeading(new Vector2d(-10,28), Math.toRadians(90)) //go to backdrop: avoid teammate's pixels
-                .splineToConstantHeading(new Vector2d(-35,54), Math.toRadians(90)) //go to backdrop
+                .splineTo(new Vector2d(0, -3), Math.toRadians(90)) //go to backdrop: go to gate with motor pushing center
+//                                .splineToConstantHeading(new Vector2d(-10,28), Math.toRadians(90)) //go to backdrop: avoid teammate's pixels
+                .splineToLinearHeading(new Pose2d(-35,54,Math.toRadians(90)), Math.toRadians(180)) //go to backdrop
                 .waitSeconds(0.01) //stop momentum
                 //score
                 .strafeRight(12) //park: dont run into board

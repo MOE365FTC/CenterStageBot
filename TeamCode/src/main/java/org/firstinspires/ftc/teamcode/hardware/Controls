@@ -1,16 +1,12 @@
 
 Gamepad 1:
 Drive: L/R Joysticks
-Intake: Left Trigger
-Reverse Intake: Right Trigger
+Drone Launcher: Dpad Right
+Hang: Dpad Up
 
 Gamepad 2:
 Toggle Left Iris: Left Bumper
 Toggle Right Iris: Right Bumper
-
-Dispenser Pitch Left: Dpad Left
-Dispenser Pitch Default: Dpad Up
-Dispenser Pitch Right: Dpad Right
 
 Lift (High): Y
 Lift (Mid): X

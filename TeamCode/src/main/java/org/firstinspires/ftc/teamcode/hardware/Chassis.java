@@ -24,9 +24,10 @@ public class Chassis {
     public DcMotorEx leftOdo, strafeOdo, rightOdo;
 
     Gamepad gamepad1;
-    IMU imu;
-    LinearOpMode opMode;
-    double headingOffset = 0;
+    static IMU imu; //static imu solves all problems?
+    double headingOffset = 0; //default might want to be set to 90 since auto ends rotated 90deg to left
+    //BUT the red auto ends 90 to the right so there may have to be some STATIC FIELD STUFF
+    //THE APP KEEPS RUNNING CONSTANTLY SO JAVA STATIC FIELDS STAY THROUGHOUT AUTO AND TELEOP, only objects are recreated in teleop
     double driveSpeed = 1.0, scaleFactor;
     //Teleop Constructor
     public Chassis(HardwareMap hardwareMap, Gamepad gamepad1){
@@ -37,9 +38,10 @@ public class Chassis {
         frontRightMotor = hardwareMap.get(DcMotor.class, "FRM03");
         backRightMotor = hardwareMap.get(DcMotor.class, "BRM01");
 
-        leftOdo = hardwareMap.get(DcMotorEx.class, "OLE11");
-        strafeOdo = hardwareMap.get(DcMotorEx.class, "OCE12");
-        rightOdo = hardwareMap.get(DcMotorEx.class, "ORE13");
+//        leftOdo = hardwareMap.get(DcMotorEx.class, "OLE11");
+//        strafeOdo = hardwareMap.get(DcMotorEx.class, "OCE12");
+//        rightOdo = hardwareMap.get(DcMotorEx.class, "ORE13");
+//        rightOdo.setDirection(DcMotorSimple.Direction.REVERSE);
 
 //     backRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 //     frontRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -51,19 +53,14 @@ public class Chassis {
         backRightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         imu = hardwareMap.get(IMU.class, "imu");
-        RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.UP;
-        RevHubOrientationOnRobot.UsbFacingDirection  usbDirection  = RevHubOrientationOnRobot.UsbFacingDirection.FORWARD;
+        RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.RIGHT;
+        RevHubOrientationOnRobot.UsbFacingDirection  usbDirection  = RevHubOrientationOnRobot.UsbFacingDirection.UP;
         RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
         imu.initialize(new IMU.Parameters(orientationOnRobot));
-//     frontLeftMotor.setTargetPosition(0);
-//     backLeftMotor.setTargetPosition(0);
-//     frontRightMotor.setTargetPosition(0);
-//     backRightMotor.setTargetPosition(0);
+    }
 
-//     frontLeftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-//     backLeftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-//     frontRightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-//     backRightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    public void resetIMU() {
+        headingOffset = -imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES); //reset imu when called
     }
 
     public void fieldCentricDrive(){
@@ -71,7 +68,11 @@ public class Chassis {
         double x = gamepad1.left_stick_x;
         double rx = gamepad1.right_stick_x;
 
-        double botHeading = Math.toRadians(-imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES));
+        if(gamepad1.right_stick_button) {
+            headingOffset = -imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
+        }
+
+        double botHeading = Math.toRadians(-imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES) - headingOffset);
 
         double rotX = x * Math.cos(botHeading) - y * Math.sin(botHeading);
         double rotY = x * Math.sin(botHeading) + y * Math.cos(botHeading);
@@ -97,6 +98,6 @@ public class Chassis {
     }
 
     public void imuTelemetry(Telemetry telemetry) {
-        telemetry.addData("imuHeading", -imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES));
+        telemetry.addData("imuHeading", -imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES) - headingOffset);
     }
 }
