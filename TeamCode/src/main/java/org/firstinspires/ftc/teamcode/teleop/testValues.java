@@ -18,5 +18,6 @@ public class testValues extends OpMode {
     public void loop() {
         robot.chassis.imuTelemetry(telemetry);
         robot.chassis.fieldCentricDrive();
+        robot.dispenser.telemetryLiftPosition();
     }
 }

@@ -17,8 +17,8 @@ public class MOEBot {
         chassis = new Chassis(hardwareMap, gamepad1);
 //        vision = new VisionTensorflow(telemetry, hardwareMap);
 //        droneLauncher = new DroneLauncher(hardwareMap, gamepad1);
-//        dispenser = new DispenserDec17(hardwareMap, gamepad2, telemetry);
-//        hang = new Hanging(hardwareMap, gamepad1);
+        dispenser = new DispenserDec17(hardwareMap, gamepad2, telemetry);
+        hang = new Hanging(hardwareMap, gamepad2);
 
 //        dispenser = new Dispenser(hardwareMap, gamepad2, telemetry);
 //        intake = new Intake(hardwareMap, gamepad1, gamepad2, dispenser);

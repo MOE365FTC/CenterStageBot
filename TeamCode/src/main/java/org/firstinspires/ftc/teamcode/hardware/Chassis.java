@@ -38,10 +38,10 @@ public class Chassis {
         frontRightMotor = hardwareMap.get(DcMotor.class, "FRM03");
         backRightMotor = hardwareMap.get(DcMotor.class, "BRM01");
 
-//        leftOdo = hardwareMap.get(DcMotorEx.class, "OLE11");
-//        strafeOdo = hardwareMap.get(DcMotorEx.class, "OCE12");
-//        rightOdo = hardwareMap.get(DcMotorEx.class, "ORE13");
-//        rightOdo.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftOdo = hardwareMap.get(DcMotorEx.class, "hangMotorL");
+        strafeOdo = hardwareMap.get(DcMotorEx.class, "hangMotorR");
+        rightOdo = hardwareMap.get(DcMotorEx.class, "odoRight");
+        rightOdo.setDirection(DcMotorSimple.Direction.REVERSE);
 
 //     backRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 //     frontRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);

@@ -2,33 +2,52 @@ package org.firstinspires.ftc.teamcode.hardware;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 @Config
 public class Hanging {
-    DcMotor leftHangMotor, rightHangMotor;
-    Gamepad gamepad1;
+    DcMotorEx leftHangMotor, rightHangMotor;
+    Servo hangLockServo;
+    Gamepad gamepad2;
 
-    double hangPower = 0.75;
+    double hangPower = 1;
+    double hookLockedPos = 0.2, hookReleasedPos = 0.5;
 
-    public Hanging(HardwareMap hardwareMap, Gamepad gamepad1){
-        this.gamepad1 = gamepad1;
+    public Hanging(HardwareMap hardwareMap, Gamepad gamepad2){
+        this.gamepad2 = gamepad2;
 
-        leftHangMotor = hardwareMap.get(DcMotor.class, "hangMotor");
-        leftHangMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftHangMotor = hardwareMap.get(DcMotorEx.class, "hangMotorL");
+        leftHangMotor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
 
-        rightHangMotor = hardwareMap.get(DcMotor.class, "hangMotor");
-        rightHangMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightHangMotor = hardwareMap.get(DcMotorEx.class, "hangMotorR");
+        rightHangMotor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+
+        leftHangMotor.setDirection(DcMotorEx.Direction.REVERSE);
+        rightHangMotor.setDirection(DcMotorEx.Direction.REVERSE);
+
+        hangLockServo = hardwareMap.get(Servo.class, "hangLock");
+        hangLockServo.setPosition(hookLockedPos);
     }
     public void actuate(){
-        if (gamepad1.dpad_up) {
-            leftHangMotor.setTargetPosition(900);
-            rightHangMotor.setTargetPosition(900);
+        if (gamepad2.right_trigger > 0.7) {
             leftHangMotor.setPower(hangPower);
             rightHangMotor.setPower(hangPower);
         }
+        else if (gamepad2.left_trigger > 0.8) {
+            leftHangMotor.setPower(-hangPower);
+            rightHangMotor.setPower(-hangPower);
+        }
+        else{
+            leftHangMotor.setPower(0);
+            rightHangMotor.setPower(0);
+        }
+
+        if(gamepad2.b)
+            hangLockServo.setPosition(hookReleasedPos);
     }
 }
 
