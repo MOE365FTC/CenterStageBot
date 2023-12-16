@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.hardware;
 
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -15,10 +16,11 @@ public class DispenserDec17 {
     ColorSensor colorSensorLeft, colorSensorRight;
 
     //PRESETS
-    double irisOpen = 0.2, irisClose = 0, intakePitch = 1, scorePitch = 0.68; //defaults
-    int extendLow = 200, extendMid = 400, extendFull = 800, extendPreIntake = 100, extendIntake = 20;//lift presets
+    double irisExpand = 0.2, irisContract = 0, intakePitch = 1, scorePitch = 0.68; //defaults
+    int extendLow = 560, extendMid = 1350, extendFull = 2100, extendPreIntake = 200, extendIntake = 20;//lift presets
     double extendPower = 0.7;
     double LEFT_STICK_THRESHOLD = 0.75; // pulling the left joystick below this limit makes the intake dive to pick up
+    int setPos = 0;
 
     //TOGGLES
     boolean leftClosed = false, rightClosed = false, scheduledOpen = false;
@@ -37,45 +39,53 @@ public class DispenserDec17 {
 //        colorSensorRight = hardwareMap.get(ColorSensor.class, "CSR");
 //        colorSensorLeft = hardwareMap.get(ColorSensor.class, "CSL");
 
-        leftIris.setPosition(irisOpen);
-        rightIris.setPosition(irisOpen);
+        leftIris.setPosition(irisExpand);
+        rightIris.setPosition(irisExpand);
         pitchServo.setPosition(intakePitch);
 
+        liftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
         liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        liftMotor.setTargetPosition(0);
+        liftMotor.setTargetPosition(extendPreIntake);
+        setPos = extendPreIntake;
         liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
 
     public void actuate() {
         if(gamepad2.left_bumper)
-            leftIris.setPosition(irisClose);
+            leftIris.setPosition(irisContract);
         else if(gamepad2.left_stick_y < LEFT_STICK_THRESHOLD)
-            leftIris.setPosition(irisOpen);
+            leftIris.setPosition(irisExpand);
 
         if(gamepad2.right_bumper)
-            rightIris.setPosition(irisClose);
+            rightIris.setPosition(irisContract);
         else if(gamepad2.left_stick_y < LEFT_STICK_THRESHOLD)
-            rightIris.setPosition(irisOpen);
+            rightIris.setPosition(irisExpand);
 
         if(gamepad2.left_stick_y > LEFT_STICK_THRESHOLD){
-            leftIris.setPosition(irisClose);
-            rightIris.setPosition(irisClose);
-            extendLift(extendIntake);
+            leftIris.setPosition(irisContract);
+            rightIris.setPosition(irisContract);
+            pitchServo.setPosition(intakePitch);
+            setPos = extendIntake;
         }
         if(gamepad2.dpad_up) { //max height lift
-            extendLift(extendFull);
+            setPos = extendFull;
             pitchServo.setPosition(scorePitch);
         } else if(gamepad2.dpad_right) { //mid height lift
-            extendLift(extendMid);
+            setPos = extendMid;
             pitchServo.setPosition(scorePitch);
         } else if(gamepad2.dpad_left) { //low height lift
-            extendLift(extendLow);
+            setPos = extendLow;
             pitchServo.setPosition(scorePitch);
         } else if(gamepad2.dpad_down) { //intake height lift
 //            scheduledOpen = true; //can't open irises instantly, must wait until lift has stopped
-            extendLift(extendPreIntake);
+            setPos = extendPreIntake;
             pitchServo.setPosition(intakePitch);
+        } else if(gamepad2.y) {
+            setPos = liftMotor.getCurrentPosition() + 50;
+        } else if(gamepad2.a) {
+            setPos = liftMotor.getCurrentPosition() - 50;
         }
         //code segment to reopen irises once dispenser is back in intake position and lifts are at rest
 //        if(scheduledOpen && !leftLift.isBusy() && !rightLift.isBusy()) {
@@ -85,6 +95,7 @@ public class DispenserDec17 {
 //        }
 
 //        telemetryPixelColors();
+        extendLift(setPos);
     }
 
     private void extendLift(int targetPos) {
@@ -93,14 +104,22 @@ public class DispenserDec17 {
     }
 
 
-    public void autonIris(boolean open) {
-      leftIris.setPosition(open ? irisOpen : irisClose);
-      rightIris.setPosition(open ? irisOpen : irisClose);
+    public void autonIris(boolean expand) {
+      leftIris.setPosition(expand ? irisExpand : irisContract);
+      rightIris.setPosition(expand ? irisExpand : irisContract);
+    }
+
+    public void autonLeftIris(boolean expand) {
+        leftIris.setPosition(expand ? irisExpand : irisContract);
+    }
+
+    public void autonRightIris(boolean open) {
+        rightIris.setPosition(open ? irisExpand : irisContract);
     }
 
     public void autonLift(autonLiftPositions liftPos) {
         switch (liftPos) {
-            case INTAKE:
+            case PRE_INTAKE:
                 pitchServo.setPosition(intakePitch);
                 extendLift(extendPreIntake);
                 break;
@@ -151,8 +170,8 @@ public class DispenserDec17 {
     }
 
     public enum autonLiftPositions {
-        MID,
+        PRE_INTAKE,
         LOW,
-        INTAKE,
+        MID,
     }
 }

@@ -37,7 +37,7 @@ public class Hanging {
             leftHangMotor.setPower(hangPower);
             rightHangMotor.setPower(hangPower);
         }
-        else if (gamepad2.left_trigger > 0.8) {
+        else if (gamepad2.left_trigger > 0.7) {
             leftHangMotor.setPower(-hangPower);
             rightHangMotor.setPower(-hangPower);
         }

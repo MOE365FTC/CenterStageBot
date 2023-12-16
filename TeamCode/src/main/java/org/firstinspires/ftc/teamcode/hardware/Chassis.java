@@ -66,7 +66,7 @@ public class Chassis {
     public void fieldCentricDrive(){
         double y = -gamepad1.left_stick_y;
         double x = gamepad1.left_stick_x;
-        double rx = gamepad1.right_stick_x;
+        double rx = gamepad1.right_stick_x * 0.5;
 
         if(gamepad1.right_stick_button) {
             headingOffset = -imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
@@ -83,7 +83,11 @@ public class Chassis {
         double frontRightPower = (rotY - rotX - rx) / denominator;
         double backRightPower = (rotY + rotX - rx) / denominator;
 
-//        scaleFactor = driveSpeed + gamepad1.right_trigger * (1 - driveSpeed);
+        if(gamepad1.right_bumper)
+            driveSpeed = 0.5;
+        else
+            driveSpeed = 1;
+        
         frontLeftMotor.setPower(frontLeftPower * driveSpeed);
         backLeftMotor.setPower(backLeftPower * driveSpeed);
         frontRightMotor.setPower(frontRightPower * driveSpeed);

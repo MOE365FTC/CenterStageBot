@@ -11,13 +11,14 @@ public class testValues extends OpMode {
     @Override
     public void init() {
         robot = new MOEBot(hardwareMap, gamepad1, gamepad2, telemetry);
-        robot.chassis.resetIMU();
+//        robot.chassis.resetIMU();
     }
 
     @Override
     public void loop() {
         robot.chassis.imuTelemetry(telemetry);
         robot.chassis.fieldCentricDrive();
+        robot.dispenser.actuate();
         robot.dispenser.telemetryLiftPosition();
     }
 }

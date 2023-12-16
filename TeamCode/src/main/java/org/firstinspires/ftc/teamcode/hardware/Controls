@@ -5,9 +5,16 @@ Drone Launcher: Dpad Right
 Hang: Dpad Up
 
 Gamepad 2:
-Toggle Left Iris: Left Bumper
-Toggle Right Iris: Right Bumper
+Left Iris (Hold) --> Close: Left Bumper
+Right Iris (Hold) --> Close: RightBumper
 
-Lift (High): Y
-Lift (Mid): X
-Lift (Bottom): A
+Lift (High): Dpad Up
+Lift (Mid): Dpad Right
+Lift (Low): Dpad Left
+Lift (PreIntake): Dpad Down
+
+Lift + Iris Reset: Left Stick down
+
+Hang Up: Right Trigger
+Hang Down: Left Trigger
+Hang Lock: B
