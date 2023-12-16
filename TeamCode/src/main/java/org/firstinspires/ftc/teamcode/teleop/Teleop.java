@@ -38,7 +38,7 @@ public class Teleop extends OpMode {
         robot.chassis.fieldCentricDrive();
         robot.dispenser.actuate();
         robot.dispenser.telemetryLiftPosition();
-//        robot.droneLauncher.actuate();
+        robot.droneLauncher.actuate();
         robot.hang.actuate();
 
 //        if(gamepad1.dpad_down && !drive.isBusy() && drive.getPoseEstimate().getY() < 0) { //zig zag macro

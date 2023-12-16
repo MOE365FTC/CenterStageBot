@@ -15,7 +15,7 @@ public class Hanging {
     Gamepad gamepad2;
 
     double hangPower = 1;
-    double hookLockedPos = 0.2, hookReleasedPos = 0.5;
+    double hookLockedPos = 0.95, hookReleasedPos = 0.7;
 
     public Hanging(HardwareMap hardwareMap, Gamepad gamepad2){
         this.gamepad2 = gamepad2;
