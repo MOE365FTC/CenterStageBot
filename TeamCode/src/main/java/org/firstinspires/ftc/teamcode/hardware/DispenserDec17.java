@@ -23,6 +23,7 @@ public class DispenserDec17 {
     int setPos = 0;
     int stage = 0;
     boolean stageLock = false;
+    boolean oldX;
 
     //TOGGLES
     boolean leftClosed = false, rightClosed = false, scheduledOpen = false;
@@ -65,7 +66,7 @@ public class DispenserDec17 {
         } else if(-gamepad2.left_stick_y < 0.10 && -gamepad2.left_stick_y > -0.10) {
             stageLock = false;
         }
-        if(-gamepad2.left_stick_y > 0.75 || -gamepad2.left_stick_y < 0.75) {
+        if(-gamepad2.left_stick_y > 0.75 || -gamepad2.left_stick_y < -0.75) {
             switch(stage) {
                 case 0:
                     leftIris.setPosition(irisContract);
@@ -128,8 +129,10 @@ public class DispenserDec17 {
             stage = 1;
             pitchServo.setPosition(intakePitch);
         } else if(gamepad2.y) {
+            stage = -1;
             setPos = liftMotor.getCurrentPosition() + 50;
         } else if(gamepad2.a) {
+            stage = -1;
             setPos = liftMotor.getCurrentPosition() - 50;
         }
         //code segment to reopen irises once dispenser is back in intake position and lifts are at rest
@@ -141,6 +144,7 @@ public class DispenserDec17 {
 
 //        telemetryPixelColors();
         extendLift(setPos);
+        resetLiftEncoder();
     }
 
     private void extendLift(int targetPos) {
@@ -211,6 +215,16 @@ public class DispenserDec17 {
         } else {
             return "None";
         }
+    }
+
+    public void resetLiftEncoder() {
+        if(gamepad2.x && !oldX) {
+            liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            liftMotor.setTargetPosition(0);
+            stage = 0;
+            liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        }
+        oldX = gamepad2.x;
     }
 
     private boolean colorInRange(ColorSensor cs, int lowR, int highR, int lowG, int highG, int lowB, int highB) {
