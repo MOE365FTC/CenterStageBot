@@ -1,5 +1,6 @@
-package org.firstinspires.ftc.teamcode.autonomus;
+package org.firstinspires.ftc.teamcode.autonomous;
 
+import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -8,10 +9,8 @@ import org.firstinspires.ftc.teamcode.hardware.MOEBot;
 import org.firstinspires.ftc.teamcode.rr.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.rr.trajectorysequence.TrajectorySequence;
 
-import com.acmerobotics.roadrunner.geometry.Pose2d;
-
 @Autonomous
-public class blueLeftRR extends LinearOpMode {
+public class redRightRR extends LinearOpMode {
     MOEBot robot;
 
     @Override
@@ -19,45 +18,44 @@ public class blueLeftRR extends LinearOpMode {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         robot = new MOEBot(hardwareMap, gamepad1, gamepad2, telemetry);
 
-        Pose2d startPose = new Pose2d(-62,12,0);
+        Pose2d startPose = new Pose2d(62,12,Math.toRadians(180));
         drive.setPoseEstimate(startPose);
 
-        TrajectorySequence pixelLeft = drive.trajectorySequenceBuilder(startPose)
+        TrajectorySequence pixelRight = drive.trajectorySequenceBuilder(startPose)
                 //vision
-                .lineToLinearHeading(new Pose2d(-33,12, Math.toRadians(0)))
+                .lineToLinearHeading(new Pose2d(33,12, Math.toRadians(0)))
                 .waitSeconds(0.25)
                 //spike deposit
-                .back(15)
-                .lineToLinearHeading(new Pose2d(-43,46, Math.toRadians(90)))
+                .forward(15)
+                .lineToLinearHeading(new Pose2d(43,46, Math.toRadians(90)))
                 .waitSeconds(0.25)
-                //pixel backdrop dispense
-                .lineTo(new Vector2d(-55,46))
-                .splineToConstantHeading(new Vector2d(-60,60), Math.toRadians(90))
+                //backdrop
+                .lineTo(new Vector2d(55,46))
+                .splineToConstantHeading(new Vector2d(60,60), Math.toRadians(90))
                 .build();
 
         TrajectorySequence pixelCenter = drive.trajectorySequenceBuilder(startPose)
                 //vision
-                .lineToLinearHeading(new Pose2d(-35,12, Math.toRadians(-90)))
+                .lineToLinearHeading(new Pose2d(35,12, Math.toRadians(-90)))
                 .waitSeconds(0.25)
                 //spike deposit
                 .back(15)
-                .lineToLinearHeading(new Pose2d(-35,46, Math.toRadians(90)))
+                .lineToLinearHeading(new Pose2d(35,46, Math.toRadians(90)))
                 .waitSeconds(0.25)
-                //pixel backdrop dispense
-                .lineTo(new Vector2d(-55,46))
-                .splineToConstantHeading(new Vector2d(-60,60), Math.toRadians(90))
+                //backdrop
+                .lineTo(new Vector2d(55,46))
+                .splineToConstantHeading(new Vector2d(60,60), Math.toRadians(90))
                 .build();
 
-        TrajectorySequence pixelRight = drive.trajectorySequenceBuilder(startPose)
+        TrajectorySequence pixelLeft = drive.trajectorySequenceBuilder(startPose)
                 ///vision
-                .lineToLinearHeading(new Pose2d(-33,12, Math.toRadians(180)))
-                .waitSeconds(0.25)
+                .lineToLinearHeading(new Pose2d(33,12, Math.toRadians(180)))
                 //spike deposit
-                .lineToLinearHeading(new Pose2d(-29,46, Math.toRadians(90)))
+                .lineToLinearHeading(new Pose2d(29,46, Math.toRadians(90)))
                 .waitSeconds(0.25)
                 //pixel backdrop dispense
-                .lineTo(new Vector2d(-55,46))
-                .splineToConstantHeading(new Vector2d(-60,60), Math.toRadians(90))
+                .lineTo(new Vector2d(55,46))
+                .splineToConstantHeading(new Vector2d(60,60), Math.toRadians(90))
                 .build();
 
 

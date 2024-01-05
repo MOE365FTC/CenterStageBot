@@ -17,17 +17,13 @@ public class DispenserDec17 {
 
     //PRESETS
     double irisExpand = 0.2, irisContract = 0, intakePitch = 1, scorePitch = 0.68; //defaults
-    int extendLow = 510, extendMid = 1300, extendFull = 2050, extendPreIntake = 150, extendIntake = 20;//lift presets
+    int extendLow = 510, extendMid = 1300, extendHigh = 2050, extendPreIntake = 150, extendIntake = 20; //lift presets
     double extendPower = 0.7;
     double LEFT_STICK_THRESHOLD = 0.75; // pulling the left joystick below this limit makes the intake dive to pick up
-    int setPos = 0;
-    int stage = 0;
-    boolean stageLock = false;
+    int setPos = 0; //the target position the lift is set to
+    int stage = 0; //the state the lift is in (0 - intake, 1 - preIntake, 2 - low, 3 - med, 4 - high)
+    boolean stageLock = false; //stageLock prevents holding the joystick up/down in the SmartLift section (Lines 56-92)
     boolean oldX;
-
-    //TOGGLES
-    boolean leftClosed = false, rightClosed = false, scheduledOpen = false;
-    boolean oldLeftBumper = false, oldRightBumper = false;
 
     Gamepad gamepad2;
     Telemetry telemetry;
@@ -39,8 +35,6 @@ public class DispenserDec17 {
         rightIris = hardwareMap.get(Servo.class, "rightIris");
         pitchServo = hardwareMap.get(Servo.class, "pitchServo");
         liftMotor = hardwareMap.get(DcMotor.class, "LM");
-//        colorSensorRight = hardwareMap.get(ColorSensor.class, "CSR");
-//        colorSensorLeft = hardwareMap.get(ColorSensor.class, "CSL");
 
         leftIris.setPosition(irisExpand);
         rightIris.setPosition(irisExpand);
@@ -50,23 +44,24 @@ public class DispenserDec17 {
         liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        liftMotor.setTargetPosition(extendPreIntake);
+        liftMotor.setTargetPosition(extendPreIntake); //init set to pre intake position (power is not provided until run)
         setPos = extendPreIntake;
         stage = 1;
         liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
 
     public void actuate() {
-        if(-gamepad2.left_stick_y < -0.75 && !stageLock) {
+        //SmartLift system
+        if(-gamepad2.left_stick_y < -0.75 && !stageLock) { //flick joystick down to lower by one stage (can't hold)
             if(stage!=0) stage--;
             stageLock = true;
-        } else if(-gamepad2.left_stick_y > 0.75 && !stageLock){
+        } else if(-gamepad2.left_stick_y > 0.75 && !stageLock){ //flick joystick up to raise by one stage (can't hold)
             if(stage!=4) stage++;
             stageLock = true;
-        } else if(-gamepad2.left_stick_y < 0.10 && -gamepad2.left_stick_y > -0.10) {
+        } else if(-gamepad2.left_stick_y < 0.10 && -gamepad2.left_stick_y > -0.10) { //turns off stage lock when joystick returns to center
             stageLock = false;
         }
-        if(-gamepad2.left_stick_y > 0.75 || -gamepad2.left_stick_y < -0.75) {
+        if(-gamepad2.left_stick_y > 0.75 || -gamepad2.left_stick_y < -0.75) { //if actively switching stages, move lift
             switch(stage) {
                 case 0:
                     leftIris.setPosition(irisContract);
@@ -88,31 +83,27 @@ public class DispenserDec17 {
                     break;
                 case 4:
                     pitchServo.setPosition(scorePitch);
-                    setPos = extendFull;
+                    setPos = extendHigh;
                     break;
                 default:
                     setPos = extendPreIntake;
             }
         }
 
+        //IRIS CONTROLS
         if(gamepad2.left_bumper)
             leftIris.setPosition(irisContract);
-        else if(gamepad2.left_stick_y < LEFT_STICK_THRESHOLD)
+        else if(gamepad2.left_stick_y < LEFT_STICK_THRESHOLD) //expanded by default (down on stick is a positive value)
             leftIris.setPosition(irisExpand);
 
         if(gamepad2.right_bumper)
             rightIris.setPosition(irisContract);
-        else if(gamepad2.left_stick_y < LEFT_STICK_THRESHOLD)
+        else if(gamepad2.left_stick_y < LEFT_STICK_THRESHOLD) //expanded by default (down on stick is a positive value)
             rightIris.setPosition(irisExpand);
 
-//        if(gamepad2.left_stick_y > LEFT_STICK_THRESHOLD){
-//            leftIris.setPosition(irisContract);
-//            rightIris.setPosition(irisContract);
-//            pitchServo.setPosition(intakePitch);
-//            setPos = extendIntake;
-//        }
+        //LIFT PRESETS
         if(gamepad2.dpad_up) { //max height lift
-            setPos = extendFull;
+            setPos = extendHigh;
             stage = 4;
             pitchServo.setPosition(scorePitch);
         } else if(gamepad2.dpad_right) { //mid height lift
@@ -124,7 +115,6 @@ public class DispenserDec17 {
             stage = 2;
             pitchServo.setPosition(scorePitch);
         } else if(gamepad2.dpad_down) { //intake height lift
-//            scheduledOpen = true; //can't open irises instantly, must wait until lift has stopped
             setPos = extendPreIntake;
             stage = 1;
             pitchServo.setPosition(intakePitch);
@@ -135,16 +125,9 @@ public class DispenserDec17 {
             stage = -1;
             setPos = liftMotor.getCurrentPosition() - 50;
         }
-        //code segment to reopen irises once dispenser is back in intake position and lifts are at rest
-//        if(scheduledOpen && !leftLift.isBusy() && !rightLift.isBusy()) {
-//            leftIris.setPosition(irisOpen);
-//            rightIris.setPosition(irisOpen);
-//            scheduledOpen = false;
-//        }
 
-//        telemetryPixelColors();
-        extendLift(setPos);
-        resetLiftEncoder();
+        extendLift(setPos); //gives power to actually move the lift to target position
+        resetLiftEncoder(); //runs another actuate function to allow the ability to reset lift encoder
     }
 
     private void extendLift(int targetPos) {
@@ -153,20 +136,20 @@ public class DispenserDec17 {
     }
 
 
-    public void autonIris(boolean expand) {
+    public void autonIris(boolean expand) { //auton method for iris control
         leftIris.setPosition(expand ? irisExpand : irisContract);
         rightIris.setPosition(expand ? irisExpand : irisContract);
     }
 
-    public void autonLeftIris(boolean expand) {
+    public void autonLeftIris(boolean expand) { //individual auton iris control
         leftIris.setPosition(expand ? irisExpand : irisContract);
     }
 
-    public void autonRightIris(boolean open) {
+    public void autonRightIris(boolean open) { //individual auton iris control
         rightIris.setPosition(open ? irisExpand : irisContract);
     }
 
-    public void autonLift(autonLiftPositions liftPos) {
+    public void autonLift(autonLiftPositions liftPos) { //auton lift control (pass in an enum value)
         switch (liftPos) {
             case AUTON_INTAKE:
                 pitchServo.setPosition(intakePitch);

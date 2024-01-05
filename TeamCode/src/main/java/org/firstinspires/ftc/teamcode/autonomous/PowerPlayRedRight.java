@@ -1,24 +1,23 @@
-package org.firstinspires.ftc.teamcode.autonomus;
+package org.firstinspires.ftc.teamcode.autonomous;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.backup.backupHardware.BackupMOEBot;
 import org.firstinspires.ftc.teamcode.hardware.DispenserDec17;
 import org.firstinspires.ftc.teamcode.hardware.MOEBot;
 import org.firstinspires.ftc.teamcode.rr.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.rr.trajectorysequence.TrajectorySequence;
 
 @Autonomous
-public class PowerPlayBlueLeft extends LinearOpMode {
+public class PowerPlayRedRight extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         MOEBot robot = new MOEBot(hardwareMap, gamepad1, gamepad2, telemetry);
 
-        Pose2d startPose = new Pose2d(-62, 12, Math.toRadians(0));
+        Pose2d startPose = new Pose2d(62, 12, Math.toRadians(180));
         drive.setPoseEstimate(startPose);
 
         TrajectorySequence pixelCenter = drive.trajectorySequenceBuilder(startPose)
@@ -29,14 +28,14 @@ public class PowerPlayBlueLeft extends LinearOpMode {
                 .addTemporalMarker(() -> {
                     robot.dispenser.autonLift(DispenserDec17.autonLiftPositions.AUTON_INTAKE);
                 })
-                .forward(31)
+                .forward(32)
                 .waitSeconds(0.5)
                 .addTemporalMarker(() -> {
                     robot.dispenser.autonRightIris(false);
                 })
                 .waitSeconds(0.5)
-                .lineToConstantHeading(new Vector2d(-50, 20))
-                .lineToLinearHeading(new Pose2d(-29, 48, Math.toRadians(90)))
+                .lineToConstantHeading(new Vector2d(50, 20))
+                .lineToLinearHeading(new Pose2d(34, 48, Math.toRadians(90)))
                 //lift
                 .addTemporalMarker(() -> {
                     robot.dispenser.autonLift(DispenserDec17.autonLiftPositions.LOW);
@@ -47,7 +46,10 @@ public class PowerPlayBlueLeft extends LinearOpMode {
                 })
                 .waitSeconds(0.1)
                 .back(5)
-                .strafeLeft(26) //park: dont run into board
+                .addTemporalMarker(() -> {
+                    robot.dispenser.autonLift(DispenserDec17.autonLiftPositions.PRE_INTAKE);
+                })
+                .strafeRight(26) //park: dont run into board
                 .forward(7) //park
                 .build();
 
@@ -59,15 +61,15 @@ public class PowerPlayBlueLeft extends LinearOpMode {
                 .addTemporalMarker(() -> {
                     robot.dispenser.autonLift(DispenserDec17.autonLiftPositions.AUTON_INTAKE);
                 })
-                .lineToLinearHeading(new Pose2d(-29, 10, Math.toRadians(-90)))
+                .lineToLinearHeading(new Pose2d(28, 12, Math.toRadians(90)))
                 .waitSeconds(0.5)
                 .addTemporalMarker(() -> {
                     robot.dispenser.autonRightIris(false);
                 })
                 .waitSeconds(0.5)
-                .lineToConstantHeading(new Vector2d(-50, 20))
-                .lineToLinearHeading(new Pose2d(-25, 48, Math.toRadians(90)))
-                //lift
+                .strafeRight(15)
+                .lineToConstantHeading(new Vector2d(55, 30))
+                .lineToLinearHeading(new Pose2d(40, 48, Math.toRadians(90)))
                 .addTemporalMarker(() -> {
                     robot.dispenser.autonLift(DispenserDec17.autonLiftPositions.LOW);
                 })
@@ -77,7 +79,10 @@ public class PowerPlayBlueLeft extends LinearOpMode {
                 })
                 .waitSeconds(0.1)
                 .back(5)
-                .strafeLeft(31) //park: dont run into board
+                .addTemporalMarker(() -> {
+                    robot.dispenser.autonLift(DispenserDec17.autonLiftPositions.PRE_INTAKE);
+                })
+                .strafeRight(12) //park: dont run into board
                 .forward(7) //park
                 .build();
 
@@ -89,15 +94,15 @@ public class PowerPlayBlueLeft extends LinearOpMode {
                 .addTemporalMarker(() -> {
                     robot.dispenser.autonLift(DispenserDec17.autonLiftPositions.AUTON_INTAKE);
                 })
-                .lineToLinearHeading(new Pose2d(-29, 14, Math.toRadians(90)))
+                .lineToLinearHeading(new Pose2d(30, 8, Math.toRadians(-90)))
                 .waitSeconds(0.5)
                 .addTemporalMarker(() -> {
                     robot.dispenser.autonRightIris(false);
                 })
                 .waitSeconds(0.5)
-                .strafeLeft(15)
-                .lineToConstantHeading(new Vector2d(-55, 30))
-                .lineToLinearHeading(new Pose2d(-33, 48, Math.toRadians(90)))
+                .lineToConstantHeading(new Vector2d(50, 20))
+                .lineToLinearHeading(new Pose2d(28, 48, Math.toRadians(90)))
+                //lift
                 .addTemporalMarker(() -> {
                     robot.dispenser.autonLift(DispenserDec17.autonLiftPositions.LOW);
                 })
@@ -107,7 +112,10 @@ public class PowerPlayBlueLeft extends LinearOpMode {
                 })
                 .waitSeconds(0.1)
                 .back(5)
-                .strafeLeft(22) //park: dont run into board
+                .addTemporalMarker(() -> {
+                    robot.dispenser.autonLift(DispenserDec17.autonLiftPositions.PRE_INTAKE);
+                })
+                .strafeRight(30) //park: dont run into board
                 .forward(7) //park
                 .build();
 

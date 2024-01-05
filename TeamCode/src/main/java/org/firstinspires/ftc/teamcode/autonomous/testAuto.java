@@ -1,13 +1,9 @@
-package org.firstinspires.ftc.teamcode.autonomus;
+package org.firstinspires.ftc.teamcode.autonomous;
 
-import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.hardware.MOEBot;
-import org.firstinspires.ftc.teamcode.rr.drive.SampleMecanumDrive;
-import org.firstinspires.ftc.teamcode.rr.trajectorysequence.TrajectorySequence;
-import org.firstinspires.ftc.teamcode.rr.trajectorysequence.TrajectorySequenceBuilder;
 
 @Autonomous
 public class testAuto extends LinearOpMode {

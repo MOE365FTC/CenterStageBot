@@ -1,18 +1,17 @@
-package org.firstinspires.ftc.teamcode.autonomus;
+package org.firstinspires.ftc.teamcode.autonomous;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.backup.backupHardware.BackupMOEBot;
 import org.firstinspires.ftc.teamcode.hardware.DispenserDec17;
 import org.firstinspires.ftc.teamcode.hardware.MOEBot;
 import org.firstinspires.ftc.teamcode.rr.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.rr.trajectorysequence.TrajectorySequence;
 
 @Autonomous
-public class PowerPlayRedLeftCenter extends LinearOpMode {
+public class PowerPlayBlueRightCenter extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
@@ -23,7 +22,7 @@ public class PowerPlayRedLeftCenter extends LinearOpMode {
         int delaySeconds = 0;
         int MAX_DELAY_TIME = 10;
 
-        Pose2d startPose = new Pose2d(62, -39, Math.toRadians(180));
+        Pose2d startPose = new Pose2d(-62, -39, Math.toRadians(0));
         drive.setPoseEstimate(startPose);
 
         while(!isStarted() && !isStopRequested() && !delaySet) {
@@ -51,35 +50,36 @@ public class PowerPlayRedLeftCenter extends LinearOpMode {
                 })
                 .waitSeconds(1.0)
                 .addTemporalMarker(() -> {
-                                    robot.dispenser.autonLift(DispenserDec17.autonLiftPositions.AUTON_INTAKE);
+                    robot.dispenser.autonLift(DispenserDec17.autonLiftPositions.AUTON_INTAKE);
                 })
                 .waitSeconds(0.5)
-                .lineToLinearHeading(new Pose2d(31, -44, Math.toRadians(-90))) //goto tick marks
+                .lineToLinearHeading(new Pose2d(-31, -35, Math.toRadians(90))) //goto tick marks
                 .waitSeconds(0.25) //stop momentum
+                .forward(2)
                 .addTemporalMarker(() -> { //place pixel on tick mark
                     robot.dispenser.autonRightIris(false);
                 })
-                .waitSeconds(0.25)
-                .lineToLinearHeading(new Pose2d(-1, -38, Math.toRadians(90)))
-                .lineToConstantHeading(new Vector2d(-1, 20))
+                .back(2)
+                .lineToConstantHeading(new Vector2d(10, -35))
+                .lineToConstantHeading(new Vector2d(10, 20))
 //                                .splineTo(new Vector2d(8, -3), Math.toRadians(90)) //go to backdrop: go to gate with motor pushing center
 //                                .splineToConstantHeading(new Vector2d(-10,28), Math.toRadians(90)) //go to backdrop: avoid teammate's pixels
-                .splineToLinearHeading(new Pose2d(33,44, Math.toRadians(90)), Math.toRadians(180)) //go to backdrop
+                .splineToLinearHeading(new Pose2d(-17,48, Math.toRadians(90)), Math.toRadians(180)) //go to backdrop
                 .waitSeconds(0.25) //stop momentum
                 .addTemporalMarker(() -> {
-                                    robot.dispenser.autonLift(DispenserDec17.autonLiftPositions.LOW);
+                    robot.dispenser.autonLift(DispenserDec17.autonLiftPositions.LOW);
                 })
                 .waitSeconds(0.1)
-                .forward(5)
+                .forward(7)
                 .addTemporalMarker(() -> {
-                                    robot.dispenser.autonLeftIris(false);
+                    robot.dispenser.autonLeftIris(false);
                 })
                 .waitSeconds(0.1)
-                .back(5)
+                .back(7)
                 .addTemporalMarker(() -> {
-                                    robot.dispenser.autonLift(DispenserDec17.autonLiftPositions.PRE_INTAKE);
+                    robot.dispenser.autonLift(DispenserDec17.autonLiftPositions.PRE_INTAKE);
                 })
-                .strafeLeft(24) //park: dont run into board
+                .strafeRight(30) //park: dont run into board
                 .forward(7) //park
                 .build();
 
@@ -93,17 +93,16 @@ public class PowerPlayRedLeftCenter extends LinearOpMode {
                     robot.dispenser.autonLift(DispenserDec17.autonLiftPositions.AUTON_INTAKE);
                 })
                 .waitSeconds(0.5)
-                .lineToConstantHeading(new Vector2d(31, -40)) //goto tick marks
+                .lineToConstantHeading(new Vector2d(-31, -35)) //goto tick marks
                 .waitSeconds(0.25) //stop momentum
                 .addTemporalMarker(() -> { //place pixel on tick mark
                     robot.dispenser.autonRightIris(false);
                 })
-                .waitSeconds(0.25)
-                .strafeLeft(18)
-                .lineToConstantHeading(new Vector2d(-1, -58))
-                .turn(Math.toRadians(-90))
-                .lineToConstantHeading(new Vector2d(-1, 20))
-                .splineToLinearHeading(new Pose2d(35,43,Math.toRadians(90)), Math.toRadians(180)) //go to backdrop
+                .strafeRight(18)
+                .forward(20)
+                .splineTo(new Vector2d(8, -3), Math.toRadians(90)) //go to backdrop: go to gate with motor pushing center
+//                                .splineToConstantHeading(new Vector2d(-10,28), Math.toRadians(90)) //go to backdrop: avoid teammate's pixels
+                .splineToLinearHeading(new Pose2d(-21.5,48,Math.toRadians(90)), Math.toRadians(180)) //go to backdrop
                 .waitSeconds(0.25) //stop momentum
                 .addTemporalMarker(() -> {
                     robot.dispenser.autonLift(DispenserDec17.autonLiftPositions.LOW);
@@ -118,7 +117,7 @@ public class PowerPlayRedLeftCenter extends LinearOpMode {
                 .addTemporalMarker(() -> {
                     robot.dispenser.autonLift(DispenserDec17.autonLiftPositions.PRE_INTAKE);
                 })
-                .strafeLeft(26) //park: dont run into board
+                .strafeRight(22) //park: dont run into board
                 .forward(7) //park
                 .build();
 
@@ -132,18 +131,17 @@ public class PowerPlayRedLeftCenter extends LinearOpMode {
                     robot.dispenser.autonLift(DispenserDec17.autonLiftPositions.AUTON_INTAKE);
                 })
                 .waitSeconds(0.5)
-                .lineToLinearHeading(new Pose2d(29, -38, Math.toRadians(90))) //goto tick marks
+                .lineToLinearHeading(new Pose2d(-30, -37, Math.toRadians(-90))) //goto tick marks
                 .waitSeconds(0.25) //stop momentum
                 .addTemporalMarker(() -> { //place pixel on tick mark
                     robot.dispenser.autonRightIris(false);
                 })
-                .waitSeconds(0.25)
-                .back(4)
-                .lineToConstantHeading(new Vector2d(-1, -38))
-                .lineToConstantHeading(new Vector2d(-1, 20))
+                .strafeLeft(15)
+                .lineToLinearHeading(new Pose2d(6, -35, Math.toRadians(90)))
+                .forward(20)
 //                                .splineTo(new Vector2d(8, -3), Math.toRadians(90)) //go to backdrop: go to gate with motor pushing center
 //                                .splineToConstantHeading(new Vector2d(-10,28), Math.toRadians(90)) //go to backdrop: avoid teammate's pixels
-                .splineToLinearHeading(new Pose2d(40,44, Math.toRadians(90)), Math.toRadians(180)) //go to backdrop
+                .splineToLinearHeading(new Pose2d(-30,48, Math.toRadians(90)), Math.toRadians(180)) //go to backdrop
                 .waitSeconds(0.25) //stop momentum
                 .addTemporalMarker(() -> {
                     robot.dispenser.autonLift(DispenserDec17.autonLiftPositions.LOW);
@@ -158,7 +156,7 @@ public class PowerPlayRedLeftCenter extends LinearOpMode {
                 .addTemporalMarker(() -> {
                     robot.dispenser.autonLift(DispenserDec17.autonLiftPositions.PRE_INTAKE);
                 })
-                .strafeLeft(30) //park: dont run into board
+                .strafeRight(12) //park: dont run into board
                 .forward(7) //park
                 .build();
 
@@ -175,15 +173,12 @@ public class PowerPlayRedLeftCenter extends LinearOpMode {
 
         switch(robot.vision.getPropPos()){
             case 1:
-                robot.dispenser.autonIris(true);
                 drive.followTrajectorySequence(pixelLeft);
                 break;
             case 2:
-                robot.dispenser.autonIris(true);
                 drive.followTrajectorySequence(pixelCenter);
                 break;
             case 3:
-                robot.dispenser.autonIris(true);
                 drive.followTrajectorySequence(pixelRight);
                 break;
         }

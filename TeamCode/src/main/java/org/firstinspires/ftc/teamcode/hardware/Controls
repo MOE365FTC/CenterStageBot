@@ -1,6 +1,7 @@
 
 Gamepad 1:
 Drive: L/R Joysticks
+Slow Drive: HOLD Right Bumper
 Drone Launcher: Dpad Right
 Hang: Dpad Up
 
@@ -12,8 +13,8 @@ Lift (High): Dpad Up
 Lift (Mid): Dpad Right
 Lift (Low): Dpad Left
 Lift (PreIntake): Dpad Down
-
-Lift + Iris Reset: Left Stick down
+SmartLift System: Left Stick
+Reset Lift Encoder: X
 
 Hang Up: Right Trigger
 Hang Down: Left Trigger

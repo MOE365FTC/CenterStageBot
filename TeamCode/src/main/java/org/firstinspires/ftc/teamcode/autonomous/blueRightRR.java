@@ -1,6 +1,4 @@
-package org.firstinspires.ftc.teamcode.autonomus;
-
-import android.graphics.LinearGradient;
+package org.firstinspires.ftc.teamcode.autonomous;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;

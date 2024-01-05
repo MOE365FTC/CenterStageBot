@@ -19,18 +19,19 @@ public class VisionTensorflow {
     HardwareMap hardwareMap;
     private TfodProcessor tfod;
     private VisionPortal visionPortal;
-    private static final boolean USE_WEBCAM = true;  // true for webcam, false for phone camera
+    private static final boolean USE_WEBCAM = true;  //true for webcam, false for phone camera
     private int propPos = -1;
 
-    String[] LABELS = {"blueProp", "redProp"};
+    String[] LABELS = {"blueProp", "redProp"}; //categories for object detection
 
+    //Vision Constructor (runs on init)
     public VisionTensorflow(Telemetry telemetry, HardwareMap hardwareMap) {
         this.telemetry = telemetry;
         this.hardwareMap = hardwareMap;
         initTfod();
     }
 
-    public void detectProp() {
+    public void detectProp() { //public actuate function called from autonomous init loop
         List<Recognition> currentRecognitions = tfod.getRecognitions();
         telemetry.addData("# Objects Detected", currentRecognitions.size());
 
@@ -43,6 +44,7 @@ public class VisionTensorflow {
             telemetry.addData("Image", "%s (%.0f %% Conf.)", recognition.getLabel(), recognition.getConfidence() * 100);
             telemetry.addData("- Position", "%.0f / %.0f", x, y);
 
+            //classifies spike mark position based on x-coords of detected bounding box
             if(x < 300) propPos = 1;
             else if(x > 650) propPos = 3;
             else propPos = 2;
@@ -52,7 +54,7 @@ public class VisionTensorflow {
 
     public void stopDetecting() {
         visionPortal.close();
-    }
+    } //saves memory
 
 
     /**

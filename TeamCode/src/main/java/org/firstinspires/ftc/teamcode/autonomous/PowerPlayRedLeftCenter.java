@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.autonomus;
+package org.firstinspires.ftc.teamcode.autonomous;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
@@ -11,7 +11,7 @@ import org.firstinspires.ftc.teamcode.rr.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.rr.trajectorysequence.TrajectorySequence;
 
 @Autonomous
-public class PowerPlayBlueSpikeOnly extends LinearOpMode {
+public class PowerPlayRedLeftCenter extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
@@ -22,7 +22,7 @@ public class PowerPlayBlueSpikeOnly extends LinearOpMode {
         int delaySeconds = 0;
         int MAX_DELAY_TIME = 10;
 
-        Pose2d startPose = new Pose2d(-62, -39, Math.toRadians(0));
+        Pose2d startPose = new Pose2d(62, -39, Math.toRadians(180));
         drive.setPoseEstimate(startPose);
 
         while(!isStarted() && !isStopRequested() && !delaySet) {
@@ -50,17 +50,36 @@ public class PowerPlayBlueSpikeOnly extends LinearOpMode {
                 })
                 .waitSeconds(1.0)
                 .addTemporalMarker(() -> {
-                    robot.dispenser.autonLift(DispenserDec17.autonLiftPositions.AUTON_INTAKE);
+                                    robot.dispenser.autonLift(DispenserDec17.autonLiftPositions.AUTON_INTAKE);
                 })
                 .waitSeconds(0.5)
-                .lineToLinearHeading(new Pose2d(-31, -35, Math.toRadians(90))) //goto tick marks
+                .lineToLinearHeading(new Pose2d(31, -44, Math.toRadians(-90))) //goto tick marks
                 .waitSeconds(0.25) //stop momentum
-                .forward(2)
                 .addTemporalMarker(() -> { //place pixel on tick mark
                     robot.dispenser.autonRightIris(false);
                 })
                 .waitSeconds(0.25)
-                .back(4)
+                .lineToLinearHeading(new Pose2d(-1, -38, Math.toRadians(90)))
+                .lineToConstantHeading(new Vector2d(-1, 20))
+//                                .splineTo(new Vector2d(8, -3), Math.toRadians(90)) //go to backdrop: go to gate with motor pushing center
+//                                .splineToConstantHeading(new Vector2d(-10,28), Math.toRadians(90)) //go to backdrop: avoid teammate's pixels
+                .splineToLinearHeading(new Pose2d(33,44, Math.toRadians(90)), Math.toRadians(180)) //go to backdrop
+                .waitSeconds(0.25) //stop momentum
+                .addTemporalMarker(() -> {
+                                    robot.dispenser.autonLift(DispenserDec17.autonLiftPositions.LOW);
+                })
+                .waitSeconds(0.1)
+                .forward(5)
+                .addTemporalMarker(() -> {
+                                    robot.dispenser.autonLeftIris(false);
+                })
+                .waitSeconds(0.1)
+                .back(5)
+                .addTemporalMarker(() -> {
+                                    robot.dispenser.autonLift(DispenserDec17.autonLiftPositions.PRE_INTAKE);
+                })
+                .strafeLeft(24) //park: dont run into board
+                .forward(7) //park
                 .build();
 
         TrajectorySequence pixelCenter = drive.trajectorySequenceBuilder(startPose)
@@ -73,13 +92,33 @@ public class PowerPlayBlueSpikeOnly extends LinearOpMode {
                     robot.dispenser.autonLift(DispenserDec17.autonLiftPositions.AUTON_INTAKE);
                 })
                 .waitSeconds(0.5)
-                .lineToConstantHeading(new Vector2d(-31, -35)) //goto tick marks
+                .lineToConstantHeading(new Vector2d(31, -40)) //goto tick marks
                 .waitSeconds(0.25) //stop momentum
                 .addTemporalMarker(() -> { //place pixel on tick mark
                     robot.dispenser.autonRightIris(false);
                 })
                 .waitSeconds(0.25)
-                .back(4)
+                .strafeLeft(18)
+                .lineToConstantHeading(new Vector2d(-1, -58))
+                .turn(Math.toRadians(-90))
+                .lineToConstantHeading(new Vector2d(-1, 20))
+                .splineToLinearHeading(new Pose2d(35,43,Math.toRadians(90)), Math.toRadians(180)) //go to backdrop
+                .waitSeconds(0.25) //stop momentum
+                .addTemporalMarker(() -> {
+                    robot.dispenser.autonLift(DispenserDec17.autonLiftPositions.LOW);
+                })
+                .waitSeconds(0.1)
+                .forward(5)
+                .addTemporalMarker(() -> {
+                    robot.dispenser.autonLeftIris(false);
+                })
+                .waitSeconds(0.1)
+                .back(5)
+                .addTemporalMarker(() -> {
+                    robot.dispenser.autonLift(DispenserDec17.autonLiftPositions.PRE_INTAKE);
+                })
+                .strafeLeft(26) //park: dont run into board
+                .forward(7) //park
                 .build();
 
         TrajectorySequence pixelRight = drive.trajectorySequenceBuilder(startPose)
@@ -92,13 +131,34 @@ public class PowerPlayBlueSpikeOnly extends LinearOpMode {
                     robot.dispenser.autonLift(DispenserDec17.autonLiftPositions.AUTON_INTAKE);
                 })
                 .waitSeconds(0.5)
-                .lineToLinearHeading(new Pose2d(-30, -37, Math.toRadians(-90))) //goto tick marks
+                .lineToLinearHeading(new Pose2d(29, -38, Math.toRadians(90))) //goto tick marks
                 .waitSeconds(0.25) //stop momentum
                 .addTemporalMarker(() -> { //place pixel on tick mark
                     robot.dispenser.autonRightIris(false);
                 })
                 .waitSeconds(0.25)
                 .back(4)
+                .lineToConstantHeading(new Vector2d(-1, -38))
+                .lineToConstantHeading(new Vector2d(-1, 20))
+//                                .splineTo(new Vector2d(8, -3), Math.toRadians(90)) //go to backdrop: go to gate with motor pushing center
+//                                .splineToConstantHeading(new Vector2d(-10,28), Math.toRadians(90)) //go to backdrop: avoid teammate's pixels
+                .splineToLinearHeading(new Pose2d(40,44, Math.toRadians(90)), Math.toRadians(180)) //go to backdrop
+                .waitSeconds(0.25) //stop momentum
+                .addTemporalMarker(() -> {
+                    robot.dispenser.autonLift(DispenserDec17.autonLiftPositions.LOW);
+                })
+                .waitSeconds(0.1)
+                .forward(5)
+                .addTemporalMarker(() -> {
+                    robot.dispenser.autonLeftIris(false);
+                })
+                .waitSeconds(0.1)
+                .back(5)
+                .addTemporalMarker(() -> {
+                    robot.dispenser.autonLift(DispenserDec17.autonLiftPositions.PRE_INTAKE);
+                })
+                .strafeLeft(30) //park: dont run into board
+                .forward(7) //park
                 .build();
 
         while(!isStarted() && !isStopRequested()) {
@@ -114,12 +174,15 @@ public class PowerPlayBlueSpikeOnly extends LinearOpMode {
 
         switch(robot.vision.getPropPos()){
             case 1:
+                robot.dispenser.autonIris(true);
                 drive.followTrajectorySequence(pixelLeft);
                 break;
             case 2:
+                robot.dispenser.autonIris(true);
                 drive.followTrajectorySequence(pixelCenter);
                 break;
             case 3:
+                robot.dispenser.autonIris(true);
                 drive.followTrajectorySequence(pixelRight);
                 break;
         }
