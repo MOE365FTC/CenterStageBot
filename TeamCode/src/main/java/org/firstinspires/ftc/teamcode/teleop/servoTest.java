@@ -13,11 +13,11 @@ public class servoTest extends OpMode {
     ServoImplEx servo;
     Servo servo1;
     ServoControllerEx controller;
+    boolean disableServo = false;
     @Override
     public void init() {
         servo = hardwareMap.get(ServoImplEx.class, "SR001");
         servo1 = hardwareMap.get(Servo.class, "SR002");
-        controller = (ServoControllerEx) servo.getController();
     }
 
 
@@ -25,17 +25,25 @@ public class servoTest extends OpMode {
     @Override
     public void loop() {
         if (gamepad1.a){
-            controller.setServoPwmDisable(servo.getPortNumber());
+            disableServo = true;
         }
         else if (gamepad1.b){
-            servo.setPwmEnable();
-            servo.setPosition(0.0);
+            if(!disableServo){
+                servo.setPosition(0.0);
+            }else{
+                servo.setPwmDisable();
+            }
             servo1.setPosition(0.0);
         } else if (gamepad1.x) {
+            disableServo = false;
             servo.setPwmEnable();
         } else if (gamepad1.y) {
-            servo.setPosition(0.7);
+            if(!disableServo)
+                servo.setPosition(0.7);
+            else
+                servo.setPwmDisable();
         } else if (gamepad1.right_trigger > 0.3){
-            servo1.setPosition(0.7);}
+            servo1.setPosition(0.7);
+        }
     }
 }
