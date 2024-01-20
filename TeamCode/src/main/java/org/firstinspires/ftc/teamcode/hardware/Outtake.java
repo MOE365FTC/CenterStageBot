@@ -49,7 +49,7 @@ public class Outtake {
         rightIris = hardwareMap.get(Servo.class, "rightIris");
         pitchServo = hardwareMap.get(Servo.class, "pitchServo");
         extensionMotor = hardwareMap.get(DcMotor.class, "extend");
-        tiltMotor = hardwareMap.get(DcMotor.class, "extend");
+        tiltMotor = hardwareMap.get(DcMotor.class, "tilt");
 
         leftIris.setPosition(irisExpand);
         rightIris.setPosition(irisExpand);
