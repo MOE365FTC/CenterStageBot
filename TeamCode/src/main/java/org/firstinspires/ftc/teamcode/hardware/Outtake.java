@@ -16,21 +16,25 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 public class Outtake {
     private PIDController controller;
     Servo leftIris, rightIris, pitchServo;
-    DcMotor extensionMotor, tiltMotor; //extensionMotor controls the length of arm, tiltMotor controls rotation/angle of the arm
+    DcMotor extensionMotor, tiltMotor, intakeMotor, intakeSlides; //extensionMotor controls the length of arm, tiltMotor controls rotation/angle of the arm
 
     //presets
     double irisExpand = 0.2, irisContract = 0, intakePitch = 1, scorePitch = 0.68; //defaults
-    int backboardTilt; //tuning needed; angle of backboard is ~ 60 degrees(arm wont be be pressed right on the back board)
-    double extendPower; //tuning needed
-    double tiltPower; //tuning needed
+    double extendPower = 0.7; //tuning needed
+    double tiltPower = 0.7; //tuning needed
+    double intakeSlidesPower = 0.7; //tuning needed
+    double intakePower = 0.7; //tuning needed
     double extendStickThreshhold = 0.3; //
     double extendResetPos, tiltResetPos, pitchResetPos;
+    int pitchAutoThreshold;
+    int intakeStartPos = 0;
 
     //pidf rot arm
     public static double p = 0, i = 0, d = 0, f = 0;
     public static int target = 0;
 
-    private final double ticks_in_degree=700/180;//needs calibration
+    private final double tiltMotorTicksPerDegree=700/180;//needs calibration
+    int pitchServoTotalDegrees = 180;//
 
 
 
@@ -39,10 +43,11 @@ public class Outtake {
     boolean oldLeftBumper = false, oldRightBumper = false;
     boolean stageLock = false; //status if locked onto stage
 
-
+    Gamepad gamepad1;
     Gamepad gamepad2;
     Telemetry telemetry;
-    public Outtake(HardwareMap hardwareMap, Gamepad gamepad2, Telemetry telemetry){
+    public Outtake(HardwareMap hardwareMap, Gamepad gamepad1, Gamepad gamepad2, Telemetry telemetry){
+        this.gamepad1 = gamepad1;
         this.gamepad2 = gamepad2;
         this.telemetry = telemetry;
         leftIris = hardwareMap.get(Servo.class, "leftIris");
@@ -50,6 +55,8 @@ public class Outtake {
         pitchServo = hardwareMap.get(Servo.class, "pitchServo");
         extensionMotor = hardwareMap.get(DcMotor.class, "extend");
         tiltMotor = hardwareMap.get(DcMotor.class, "tilt");
+        intakeMotor = hardwareMap.get(DcMotor.class, "IM");
+        intakeSlides = hardwareMap.get(DcMotor.class, "IS");
 
         leftIris.setPosition(irisExpand);
         rightIris.setPosition(irisExpand);
@@ -57,9 +64,17 @@ public class Outtake {
 
         extensionMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         tiltMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        intakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        intakeSlides.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-//        extensionMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        extensionMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        extensionMotor.setTargetPosition(0);
+        extensionMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 //        tiltMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        intakeSlides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        intakeSlides.setTargetPosition(0);
+        intakeSlides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         controller = new PIDController(p,i,d);
         this.telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
@@ -79,14 +94,17 @@ public class Outtake {
         else
             rightIris.setPosition(irisExpand);
 
+        //pitch servo
+
+        if (extensionMotor.getCurrentPosition() > pitchAutoThreshold)
+            pitchServo.setPosition((120 - (tiltMotor.getCurrentPosition() / tiltMotorTicksPerDegree )) / pitchServoTotalDegrees);
+
         //extend arm
 
         if (-gamepad2.left_stick_y > 0.75)
-            extensionMotor.setPower(extendPower);
+            extendArm(extensionMotor.getCurrentPosition() + 100);
         else if (-gamepad2.left_stick_y < -0.75)
-            extensionMotor.setPower(-extendPower);
-        else
-            extensionMotor.setPower(0);
+            extendArm(extensionMotor.getCurrentPosition() - 100);
 
         //rot arm
 
@@ -97,25 +115,39 @@ public class Outtake {
         else
             tiltMotor.setPower(0);
 
-        //pidf rot arm
+        //intake
+
+        if (gamepad1.right_trigger > 0.75)
+            extendIntake(intakeSlides.getCurrentPosition()+50);
+        else if (gamepad1.left_trigger > 0.75)
+            extendIntake(intakeSlides.getCurrentPosition()-50);
+        else if (gamepad1.b)
+            extendIntake(intakeStartPos);
+        if (gamepad1.a)
+            intakeMotor.setPower(intakePower);
+
+    }
+    private void extendArm(int targetPos) {
+        extensionMotor.setTargetPosition(targetPos);
+        extensionMotor.setPower(extendPower);
+    }
+
+    private void extendIntake(int targetPos) {
+        intakeSlides.setTargetPosition(targetPos);
+        intakeSlides.setPower(intakeSlidesPower);
+    }
+    public void armPID(int target) {
 
         controller.setPID(p,i,d);
         int armPos = tiltMotor.getCurrentPosition();
         double pid = controller.calculate(armPos,target);
-        double ff = Math.cos(Math.toRadians(target/ticks_in_degree)) * f;
+        double ff = Math.cos(Math.toRadians(target/tiltMotorTicksPerDegree)) * f;
 
         tiltPower = pid + ff;
 
         telemetry.addData("pos", armPos);
         telemetry.addData("target", target);
         telemetry.update();
-
-
-
-    }
-    private void extendArm(int targetPos) {
-        extensionMotor.setTargetPosition(targetPos);
-        extensionMotor.setPower(extendPower);
     }
 
 
