@@ -5,6 +5,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.controller.PIDController;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -30,10 +31,10 @@ public class Outtake {
     int intakeStartPos = 0;
 
     //pidf rot arm
-    public static double p = 0, i = 0, d = 0, f = 0;
-    public static int target = 0;
+    public static double p = 0.01, i = 0.1, d = 0.001, f = 0.1; //has slight problems on way down;
+    public static int target = 500;
 
-    private final double tiltMotorTicksPerDegree=700/180;//needs calibration
+    private final double tiltMotorTicksPerDegree=2050/180;//needs calibration
     int pitchServoTotalDegrees = 180;//
 
 
@@ -52,31 +53,33 @@ public class Outtake {
         this.telemetry = telemetry;
         leftIris = hardwareMap.get(Servo.class, "leftIris");
         rightIris = hardwareMap.get(Servo.class, "rightIris");
-        pitchServo = hardwareMap.get(Servo.class, "pitchServo");
-        extensionMotor = hardwareMap.get(DcMotor.class, "extend");
-        tiltMotor = hardwareMap.get(DcMotor.class, "tilt");
-        intakeMotor = hardwareMap.get(DcMotor.class, "IM");
-        intakeSlides = hardwareMap.get(DcMotor.class, "IS");
-
+//        pitchServo = hardwareMap.get(Servo.class, "pitchServo");
+//        extensionMotor = hardwareMap.get(DcMotor.class, "extend");
+        tiltMotor = hardwareMap.get(DcMotor.class, "LM");
+//        intakeMotor = hardwareMap.get(DcMotor.class, "IM");
+//        intakeSlides = hardwareMap.get(DcMotor.class, "IS");
+//
         leftIris.setPosition(irisExpand);
         rightIris.setPosition(irisExpand);
-        pitchServo.setPosition(intakePitch);
 
-        extensionMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        tiltMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        intakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        intakeSlides.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        tiltMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+//        pitchServo.setPosition(intakePitch);
 
-        extensionMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        extensionMotor.setTargetPosition(0);
-        extensionMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//        extensionMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        tiltMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        intakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        intakeSlides.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+//        extensionMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        extensionMotor.setTargetPosition(0);
+//        extensionMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 //        tiltMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//
+//        intakeSlides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        intakeSlides.setTargetPosition(0);
+//        intakeSlides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        intakeSlides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        intakeSlides.setTargetPosition(0);
-        intakeSlides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        controller = new PIDController(p,i,d);
+        controller = new PIDController(p, i, d);
         this.telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
     }
@@ -96,35 +99,39 @@ public class Outtake {
 
         //pitch servo
 
-        if (extensionMotor.getCurrentPosition() > pitchAutoThreshold)
-            pitchServo.setPosition((120 - (tiltMotor.getCurrentPosition() / tiltMotorTicksPerDegree )) / pitchServoTotalDegrees);
+//        if (extensionMotor.getCurrentPosition() > pitchAutoThreshold)
+//            pitchServo.setPosition((120 - (tiltMotor.getCurrentPosition() / tiltMotorTicksPerDegree )) / pitchServoTotalDegrees);
 
         //extend arm
 
-        if (-gamepad2.left_stick_y > 0.75)
-            extendArm(extensionMotor.getCurrentPosition() + 100);
-        else if (-gamepad2.left_stick_y < -0.75)
-            extendArm(extensionMotor.getCurrentPosition() - 100);
+//        if (-gamepad2.left_stick_y > 0.75)
+//            extendArm(extensionMotor.getCurrentPosition() + 100);
+//        else if (-gamepad2.left_stick_y < -0.75)
+//            extendArm(extensionMotor.getCurrentPosition() - 100);
 
         //rot arm
 
-        if (-gamepad2.right_stick_y > 0.75)
-            tiltMotor.setPower(tiltPower);
-        else if (-gamepad2.right_stick_y < -0.75)
-            tiltMotor.setPower(-tiltPower);
-        else
-            tiltMotor.setPower(0);
+//        if (-gamepad2.right_stick_y > 0.75)
+//            tiltMotor.setPower(tiltPower);
+//        else if (-gamepad2.right_stick_y < -0.75)
+//            tiltMotor.setPower(-tiltPower);
+//        else
+//            tiltMotor.setPower(0);
 
         //intake
 
-        if (gamepad1.right_trigger > 0.75)
-            extendIntake(intakeSlides.getCurrentPosition()+50);
-        else if (gamepad1.left_trigger > 0.75)
-            extendIntake(intakeSlides.getCurrentPosition()-50);
-        else if (gamepad1.b)
-            extendIntake(intakeStartPos);
-        if (gamepad1.a)
-            intakeMotor.setPower(intakePower);
+//        if (gamepad1.right_trigger > 0.75)
+//            extendIntake(intakeSlides.getCurrentPosition()+50);
+//        else if (gamepad1.left_trigger > 0.75)
+//            extendIntake(intakeSlides.getCurrentPosition()-50);
+//        else if (gamepad1.b)
+//            extendIntake(intakeStartPos);
+//        if (gamepad1.a)
+//            intakeMotor.setPower(intakePower);
+
+        //pidf loop arm
+
+        armPID(target);
 
     }
     private void extendArm(int targetPos) {
@@ -138,15 +145,18 @@ public class Outtake {
     }
     public void armPID(int target) {
 
-        controller.setPID(p,i,d);
+        controller.setPID(p, i, d);
         int armPos = tiltMotor.getCurrentPosition();
         double pid = controller.calculate(armPos,target);
         double ff = Math.cos(Math.toRadians(target/tiltMotorTicksPerDegree)) * f;
 
         tiltPower = pid + ff;
+        tiltMotor.setPower(tiltPower);
 
         telemetry.addData("pos", armPos);
         telemetry.addData("target", target);
+        telemetry.addData("tilt power", tiltPower);
+        telemetry.addData("pid", pid);
         telemetry.update();
     }
 
