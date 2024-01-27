@@ -33,11 +33,11 @@ public class Hanging {
         hangLockServo.setPosition(hookLockedPos);
     }
     public void actuate(){
-        if (gamepad2.right_trigger > 0.7) {
+        if (gamepad2.y) {
             leftHangMotor.setPower(hangPower);
             rightHangMotor.setPower(hangPower);
         }
-        else if (gamepad2.left_trigger > 0.7) {
+        else if (gamepad2.a) {
             leftHangMotor.setPower(-hangPower);
             rightHangMotor.setPower(-hangPower);
         }

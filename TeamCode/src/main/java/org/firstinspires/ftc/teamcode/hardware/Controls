@@ -1,3 +1,30 @@
+Future Bot:
+
+Gamepad 1:
+Drive: L/R Joysticks
+Slow Drive: HOLD Right Bumper
+Drone Launcher: Dpad Right
+Intake Slide: In: Left Trigger, Out: Right Trigger, Full In: B
+Intake Motor: Run: A
+
+
+
+Gamepad 2:
+Left Iris (Hold) --> Close: Left Bumper
+Right Iris (Hold) --> Close: RightBumper
+
+Extend Arm --> Left Stick Y
+Tilt Arm --> Manual: Right Stick Y
+Presets --> In: Dpad Down, Board: Dpad Up
+
+Hang Up: Y
+Hang Down: A
+Hang Lock: B
+
+
+
+
+Old Bot:
 
 Gamepad 1:
 Drive: L/R Joysticks
