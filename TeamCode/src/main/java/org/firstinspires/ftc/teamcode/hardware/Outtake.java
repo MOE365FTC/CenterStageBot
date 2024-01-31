@@ -25,7 +25,7 @@ public class Outtake {
     public static final double irisExpand = 0.2, irisContract = 0, intakePitch = 1, scorePitch = 0.68; //defaults
     public static final double liftPower = 0.7, intakeSlidesPower = 0.7, intakeWheelPower = 0.7; //tuning needed
     public static final int pitchAutoThreshold = 150; //tuning needed
-    public static final int intakeSlidesBase = 0, tiltBase = 0, tiltBoard = 700, liftBase = 0, liftLow = 200; //tuning needed
+    public static final int intakeSlidesBase = 0, intakeSlidesOut = 100, tiltBase = 0, tiltBoard = 700, liftBase = 0, liftLow = 200; //tuning needed
     double tiltPower;
 
     //pidf rot arm
@@ -128,9 +128,11 @@ public class Outtake {
             extendIntake(intakeSlides.getCurrentPosition()-50);
         else if (gamepad1.b)
             extendIntake(intakeSlidesBase);
+        else if (gamepad1.x)
+            extendIntake(intakeSlidesOut);
 
         //presets
-        if(gamepad2.dpad_up) {;
+        if(gamepad2.dpad_up) {
             tiltTarget = tiltBoard;
             timer.schedule(delayedExtendToLow, 500);
         } else if (gamepad2.dpad_down) {
@@ -191,8 +193,14 @@ public class Outtake {
         rightIris.setPosition(open ? irisExpand : irisContract);
     }
 
-    public void autonIntakeSlides(int position) {
-        extendIntake(position);
+    public void autonIntakeSlides(autonExtendPositions pos) {
+        switch(pos) {
+            case BASE:
+                extendIntake(intakeSlidesBase);
+                break;
+            case EXTENDED_FULL:
+                extendIntake(intakeSlidesOut);
+        }
     }
 
     public void autonLift(autonLiftPositions pos) {
@@ -219,5 +227,10 @@ public class Outtake {
     public enum autonLiftPositions {
         BASE,
         LOW
+    }
+
+    public enum autonExtendPositions {
+        EXTENDED_FULL,
+        BASE
     }
 }
