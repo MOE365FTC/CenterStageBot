@@ -19,39 +19,31 @@ import java.util.TimerTask;
 public class Outtake {
     private PIDController controller;
     Servo leftIris, rightIris, pitchServo;
-    DcMotor extensionMotor, tiltMotor, intakeMotor, intakeSlides; //extensionMotor controls the length of arm, tiltMotor controls rotation/angle of the arm
+    DcMotor liftMotor, tiltMotor, intakeMotor, intakeSlides; //extensionMotor controls the length of arm, tiltMotor controls rotation/angle of the arm
 
     //presets
     public static final double irisExpand = 0.2, irisContract = 0, intakePitch = 1, scorePitch = 0.68; //defaults
-    public static final double extendPower = 0.7; //tuning needed
-    public static double tiltPower = 0.7; //tuning needed
-    public static final double intakeSlidesPower = 0.7; //tuning needed
-    public static final double intakePower = 0.7; //tuning needed
+    public static final double liftPower = 0.7, intakeSlidesPower = 0.7, intakeWheelPower = 0.7; //tuning needed
     public static final int pitchAutoThreshold = 150; //tuning needed
-    public static final int intakeSlidesBase = 0; //tuning needed
-    public static final int tiltBase = 0; //needs tuning
-    public static final int tiltBoard = 700; //needs tuning
-    public static final int extendBase = 0, extendLow = 200; //lift presets; needs tuning
+    public static final int intakeSlidesBase = 0, tiltBase = 0, tiltBoard = 700, liftBase = 0, liftLow = 200; //tuning needed
+    double tiltPower;
+
     //pidf rot arm
     public static double p = 0.01, i = 0.1, d = 0.001, f = 0.1; //has slight problems on way down;
-    public static int tiltTarget = tiltBase;
+    public static int tiltTarget = tiltBase; //initialize to tiltBase
 
-    private final double tiltMotorTicksPerDegree=2050/180;//needs calibration
-    int pitchServoTotalDegrees = 180;//
+    //pitch servo parameters
+    private final double tiltMotorTicksPerDegree= 2050.0/180.0;//needs calibration
+    int pitchServoTotalDegrees = 180; //check this
 
-
-
-    //status
-    boolean leftClosed = false, rightClosed = false, scheduledOpen = false;
-    boolean oldLeftBumper = false, oldRightBumper = false;
-    boolean stageLock = false; //status if locked onto stage
+    //timers
+    TimerTask delayedExtendToLow, delayedTiltToBase;
+    Timer timer;
 
     Gamepad gamepad1;
     Gamepad gamepad2;
     Telemetry telemetry;
 
-    TimerTask delayedArm, delayedTilt;
-    Timer timer;
     public Outtake(HardwareMap hardwareMap, Gamepad gamepad1, Gamepad gamepad2, Telemetry telemetry){
         this.gamepad1 = gamepad1;
         this.gamepad2 = gamepad2;
@@ -59,26 +51,25 @@ public class Outtake {
         leftIris = hardwareMap.get(Servo.class, "leftIris");
         rightIris = hardwareMap.get(Servo.class, "rightIris");
         pitchServo = hardwareMap.get(Servo.class, "pitchServo");
-        extensionMotor = hardwareMap.get(DcMotor.class, "extend");
-        tiltMotor = hardwareMap.get(DcMotor.class, "LM");
-        intakeMotor = hardwareMap.get(DcMotor.class, "IM");
-        intakeSlides = hardwareMap.get(DcMotor.class, "IS");
+        liftMotor = hardwareMap.get(DcMotor.class, "armExtend");
+        tiltMotor = hardwareMap.get(DcMotor.class, "armTilt");
+        intakeMotor = hardwareMap.get(DcMotor.class, "intakeMotor");
+        intakeSlides = hardwareMap.get(DcMotor.class, "intakeSlides");
 
         leftIris.setPosition(irisExpand);
         rightIris.setPosition(irisExpand);
 
-        tiltMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        tiltMotor.setDirection(DcMotorSimple.Direction.REVERSE); //CHECK THIS
         pitchServo.setPosition(intakePitch);
 
-        extensionMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         tiltMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         intakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         intakeSlides.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        extensionMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        extensionMotor.setTargetPosition(0);
-        extensionMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-//        tiltMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        liftMotor.setTargetPosition(0);
+        liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         intakeSlides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         intakeSlides.setTargetPosition(0);
@@ -88,26 +79,22 @@ public class Outtake {
         this.telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         timer = new Timer("timer");
-        delayedArm = new TimerTask() {
+        delayedExtendToLow = new TimerTask() {
             @Override
             public void run() {
-                extendArm(extendLow);
+                liftArm(liftLow);
             }
         };
-
-        delayedTilt = new TimerTask() {
+        delayedTiltToBase = new TimerTask() {
             @Override
             public void run() {
                 tiltTarget = tiltBase;
             }
         };
-
-
     }
 
     public void actuate() {
         //iris
-
         if(gamepad2.left_bumper)
             leftIris.setPosition(irisContract);
         else
@@ -119,36 +106,22 @@ public class Outtake {
             rightIris.setPosition(irisExpand);
 
         //pitch servo
-
-        if (extensionMotor.getCurrentPosition() > pitchAutoThreshold)
+        if (liftMotor.getCurrentPosition() > pitchAutoThreshold && !liftMotor.isBusy())
             pitchServo.setPosition((120 - (tiltMotor.getCurrentPosition() / tiltMotorTicksPerDegree )) / pitchServoTotalDegrees);
 
-        //extend arm
-
+        //manual lift arm
         if (-gamepad2.left_stick_y > 0.75)
-            extendArm(extensionMotor.getCurrentPosition() + 100);
+            liftArm(liftMotor.getCurrentPosition() + 100);
         else if (-gamepad2.left_stick_y < -0.75)
-            extendArm(extensionMotor.getCurrentPosition() - 100);
+            liftArm(liftMotor.getCurrentPosition() - 100);
 
-        //presets
-
-        if(gamepad2.dpad_up) {;
-            tiltTarget = tiltBoard;
-            timer.schedule(delayedArm, 500);
-        } else if (gamepad2.dpad_down) {
-            extendArm(extendBase);
-            timer.schedule(delayedTilt, 500);
-        }
-
-        //rot arm
-
+        //manual tilt arm
         if (-gamepad2.right_stick_y > 0.75)
             tiltTarget += 25;
         else if (-gamepad2.right_stick_y < -0.75)
             tiltTarget -= 25;
 
         //intake slides
-
         if (gamepad1.right_trigger > 0.75)
             extendIntake(intakeSlides.getCurrentPosition()+50);
         else if (gamepad1.left_trigger > 0.75)
@@ -156,28 +129,38 @@ public class Outtake {
         else if (gamepad1.b)
             extendIntake(intakeSlidesBase);
 
-        //intake motor
+        //presets
+        if(gamepad2.dpad_up) {;
+            tiltTarget = tiltBoard;
+            timer.schedule(delayedExtendToLow, 500);
+        } else if (gamepad2.dpad_down) {
+            liftArm(liftBase);
+            timer.schedule(delayedTiltToBase, 500);
+        }
 
+
+
+        //intake motor
         if (gamepad1.a)
-            intakeMotor.setPower(intakePower);
+            intakeMotor.setPower(intakeWheelPower);
         else
             intakeMotor.setPower(0);
 
         //pidf loop arm
-
-        armPID(tiltTarget);
+        tiltPID(tiltTarget);
 
     }
-    private void extendArm(int targetPos) {
-        extensionMotor.setTargetPosition(targetPos);
-        extensionMotor.setPower(extendPower);
+    private void liftArm(int targetPos) {
+        liftMotor.setTargetPosition(targetPos);
+        liftMotor.setPower(liftPower);
     }
 
     private void extendIntake(int targetPos) {
         intakeSlides.setTargetPosition(targetPos);
         intakeSlides.setPower(intakeSlidesPower);
     }
-    public void armPID(int target) {
+
+    public void tiltPID(int target) {
 
         controller.setPID(p, i, d);
         int armPos = tiltMotor.getCurrentPosition();
@@ -195,8 +178,6 @@ public class Outtake {
     }
 
 
-
-
     public void autonIris(boolean expand) { //auton method for iris control
         leftIris.setPosition(expand ? irisExpand : irisContract);
         rightIris.setPosition(expand ? irisExpand : irisContract);
@@ -208,5 +189,35 @@ public class Outtake {
 
     public void autonRightIris(boolean open) { //individual auton iris control
         rightIris.setPosition(open ? irisExpand : irisContract);
+    }
+
+    public void autonIntakeSlides(int position) {
+        extendIntake(position);
+    }
+
+    public void autonLift(autonLiftPositions pos) {
+        switch(pos) {
+            case LOW:
+                liftArm(liftLow);
+            case BASE:
+                liftArm(liftBase);
+            default:
+                liftArm(liftBase);
+        }
+    }
+
+    public void autonTiltOut(boolean tiltOut) {
+        tiltPID(tiltBoard); //this needs to be looping in order to work, maybe a thread?
+    }
+
+    public void telemetryOuttake() {
+        telemetry.addData("Extension", liftMotor.getCurrentPosition());
+        telemetry.addData("Tilt", tiltMotor.getCurrentPosition());
+        telemetry.addData("intakeSlides", intakeSlides.getCurrentPosition());
+    }
+
+    public enum autonLiftPositions {
+        BASE,
+        LOW
     }
 }
