@@ -4,8 +4,12 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.controller.PIDController;
+import com.qualcomm.robotcore.hardware.AnalogInput;
+import com.qualcomm.robotcore.hardware.AnalogSensor;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -19,7 +23,10 @@ import java.util.TimerTask;
 public class Outtake {
     private PIDController controller;
     Servo leftIris, rightIris, pitchServo;
+    CRServo gateLeft, gateRight;
     DcMotor liftMotor, tiltMotor, intakeMotor, intakeSlides; //extensionMotor controls the length of arm, tiltMotor controls rotation/angle of the arm
+    DigitalChannel gateLeftSwitch, gateRightSwitch;
+
 
     //presets
     public static final double irisExpand = 0.2, irisContract = 0, intakePitch = 1, scorePitch = 0.68; //defaults
@@ -27,6 +34,10 @@ public class Outtake {
     public static final int pitchAutoThreshold = 150; //tuning needed
     public static final int intakeSlidesBase = 0, intakeSlidesOut = 100, tiltBase = 0, tiltBoard = 700, liftBase = 0, liftLow = 200; //tuning needed
     double tiltPower;
+
+    double gatePower = 0.7;
+    boolean oldGateLeftClicked = true, oldGateRightClicked = true;
+
 
     //pidf rot arm
     public static double p = 0.01, i = 0.1, d = 0.001, f = 0.1; //has slight problems on way down;
@@ -51,10 +62,15 @@ public class Outtake {
         leftIris = hardwareMap.get(Servo.class, "leftIris");
         rightIris = hardwareMap.get(Servo.class, "rightIris");
         pitchServo = hardwareMap.get(Servo.class, "pitchServo");
+        gateLeft = hardwareMap.get(CRServo.class, "gateLeft");
+        gateRight = hardwareMap.get(CRServo.class, "gateRight");
         liftMotor = hardwareMap.get(DcMotor.class, "armExtend");
         tiltMotor = hardwareMap.get(DcMotor.class, "armTilt");
         intakeMotor = hardwareMap.get(DcMotor.class, "intakeMotor");
         intakeSlides = hardwareMap.get(DcMotor.class, "intakeSlides");
+
+        gateLeftSwitch.setMode(DigitalChannel.Mode.INPUT);
+        gateRightSwitch.setMode(DigitalChannel.Mode.INPUT);
 
         leftIris.setPosition(irisExpand);
         rightIris.setPosition(irisExpand);
@@ -216,6 +232,20 @@ public class Outtake {
 
     public void autonTiltOut(boolean tiltOut) {
         tiltPID(tiltBoard); //this needs to be looping in order to work, maybe a thread?
+    }
+
+    public void rotateGate(){ //logic may have errors
+        //if this is called in auton it needs to be looped
+        gateLeft.setPower(gatePower);
+        gateRight.setPower(gatePower);
+        if(gateLeftSwitch.getState() && !oldGateLeftClicked) {
+            gateLeft.setPower(0);
+        }
+        if(gateRightSwitch.getState() && !oldGateRightClicked) {
+            gateRight.setPower(0);
+        }
+        oldGateRightClicked = gateRightSwitch.getState();
+        oldGateLeftClicked = gateLeftSwitch.getState();
     }
 
     public void telemetryOuttake() {
