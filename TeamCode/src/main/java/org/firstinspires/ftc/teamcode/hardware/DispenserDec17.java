@@ -119,15 +119,13 @@ public class DispenserDec17 {
             stage = 1;
             pitchServo.setPosition(intakePitch);
         } else if(gamepad2.y) {
-            stage = -1;
             setPos = liftMotor.getCurrentPosition() + 50;
         } else if(gamepad2.a) {
-            stage = -1;
             setPos = liftMotor.getCurrentPosition() - 50;
         }
 
-        extendLift(setPos); //gives power to actually move the lift to target position
-        resetLiftEncoder(); //runs another actuate function to allow the ability to reset lift encoder
+        extendLift(setPos); //gives power to actuatilly move the lift to target position
+        resetLiftEncoder(); //runs another actuate funcon to allow the ability to reset lift encoder
     }
 
     private void extendLift(int targetPos) {

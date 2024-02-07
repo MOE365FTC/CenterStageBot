@@ -40,7 +40,11 @@ public class Outtake {
 
 
     //pidf rot arm
-    public static double p = 0.01, i = 0.1, d = 0.001, f = 0.1; //has slight problems on way down;
+    //1st try; stuttery on way down but good on up: p 0.01, i 0.1, d 0.001, f 0.1
+    //2nd try; low volt: p 0.007, i 0.2, d 0.0011, f 0.06
+    //3rd try; overall: p 0.0075, i 0.03, d 0.004, f 0.07
+    //notes to tune: 1. find lowest f value that hold position, 2. find close p value, 3. find d and f, 4. loop step 2 and 3
+    public static double p = 0.0075, i = 0.3, d = 0.0004, f = 0.07; //has slight problems on way down;
     public static int tiltTarget = tiltBase; //initialize to tiltBase
 
     //pitch servo parameters
@@ -62,15 +66,15 @@ public class Outtake {
         leftIris = hardwareMap.get(Servo.class, "leftIris");
         rightIris = hardwareMap.get(Servo.class, "rightIris");
         pitchServo = hardwareMap.get(Servo.class, "pitchServo");
-        gateLeft = hardwareMap.get(CRServo.class, "gateLeft");
-        gateRight = hardwareMap.get(CRServo.class, "gateRight");
-        liftMotor = hardwareMap.get(DcMotor.class, "armExtend");
-        tiltMotor = hardwareMap.get(DcMotor.class, "armTilt");
-        intakeMotor = hardwareMap.get(DcMotor.class, "intakeMotor");
-        intakeSlides = hardwareMap.get(DcMotor.class, "intakeSlides");
+//        gateLeft = hardwareMap.get(CRServo.class, "gateLeft");
+//        gateRight = hardwareMap.get(CRServo.class, "gateRight");
+//        liftMotor = hardwareMap.get(DcMotor.class, "armExtend");
+        tiltMotor = hardwareMap.get(DcMotor.class, "LM");
+//        intakeMotor = hardwareMap.get(DcMotor.class, "intakeMotor");
+//        intakeSlides = hardwareMap.get(DcMotor.class, "intakeSlides");
 
-        gateLeftSwitch.setMode(DigitalChannel.Mode.INPUT);
-        gateRightSwitch.setMode(DigitalChannel.Mode.INPUT);
+//        gateLeftSwitch.setMode(DigitalChannel.Mode.INPUT);
+//        gateRightSwitch.setMode(DigitalChannel.Mode.INPUT);
 
         leftIris.setPosition(irisExpand);
         rightIris.setPosition(irisExpand);
@@ -78,18 +82,18 @@ public class Outtake {
         tiltMotor.setDirection(DcMotorSimple.Direction.REVERSE); //CHECK THIS
         pitchServo.setPosition(intakePitch);
 
-        liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         tiltMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        intakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        intakeSlides.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        intakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        intakeSlides.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        liftMotor.setTargetPosition(0);
-        liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//        liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        liftMotor.setTargetPosition(0);
+//        liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        intakeSlides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        intakeSlides.setTargetPosition(0);
-        intakeSlides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//        intakeSlides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        intakeSlides.setTargetPosition(0);
+//        intakeSlides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         controller = new PIDController(p, i, d);
         this.telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
@@ -122,47 +126,47 @@ public class Outtake {
             rightIris.setPosition(irisExpand);
 
         //pitch servo
-        if (liftMotor.getCurrentPosition() > pitchAutoThreshold && !liftMotor.isBusy())
-            pitchServo.setPosition((120 - (tiltMotor.getCurrentPosition() / tiltMotorTicksPerDegree )) / pitchServoTotalDegrees);
+//        if (liftMotor.getCurrentPosition() > pitchAutoThreshold && !liftMotor.isBusy())
+//            pitchServo.setPosition((120 - (tiltMotor.getCurrentPosition() / tiltMotorTicksPerDegree )) / pitchServoTotalDegrees);
 
         //manual lift arm
-        if (-gamepad2.left_stick_y > 0.75)
-            liftArm(liftMotor.getCurrentPosition() + 100);
-        else if (-gamepad2.left_stick_y < -0.75)
-            liftArm(liftMotor.getCurrentPosition() - 100);
+//        if (-gamepad2.left_stick_y > 0.75)
+//            liftArm(liftMotor.getCurrentPosition() + 100);
+//        else if (-gamepad2.left_stick_y < -0.75)
+//            liftArm(liftMotor.getCurrentPosition() - 100);
 
         //manual tilt arm
         if (-gamepad2.right_stick_y > 0.75)
-            tiltTarget += 25;
+            tiltTarget += 75;
         else if (-gamepad2.right_stick_y < -0.75)
-            tiltTarget -= 25;
+            tiltTarget -= 75;
 
         //intake slides
-        if (gamepad1.right_trigger > 0.75)
-            extendIntake(intakeSlides.getCurrentPosition()+50);
-        else if (gamepad1.left_trigger > 0.75)
-            extendIntake(intakeSlides.getCurrentPosition()-50);
-        else if (gamepad1.b)
-            extendIntake(intakeSlidesBase);
-        else if (gamepad1.x)
-            extendIntake(intakeSlidesOut);
+//        if (gamepad1.right_trigger > 0.75)
+//            extendIntake(intakeSlides.getCurrentPosition()+50);
+//        else if (gamepad1.left_trigger > 0.75)
+//            extendIntake(intakeSlides.getCurrentPosition()-50);
+//        else if (gamepad1.b)
+//            extendIntake(intakeSlidesBase);
+//        else if (gamepad1.x)
+//            extendIntake(intakeSlidesOut);
 
         //presets
-        if(gamepad2.dpad_up) {
-            tiltTarget = tiltBoard;
-            timer.schedule(delayedExtendToLow, 500);
-        } else if (gamepad2.dpad_down) {
-            liftArm(liftBase);
-            timer.schedule(delayedTiltToBase, 500);
-        }
+//        if(gamepad2.dpad_up) {
+//            tiltTarget = tiltBoard;
+//            timer.schedule(delayedExtendToLow, 500);
+//        } else if (gamepad2.dpad_down) {
+//            liftArm(liftBase);
+//            timer.schedule(delayedTiltToBase, 500);
+//        }
 
 
 
         //intake motor
-        if (gamepad1.a)
-            intakeMotor.setPower(intakeWheelPower);
-        else
-            intakeMotor.setPower(0);
+//        if (gamepad1.a)
+//            intakeMotor.setPower(intakeWheelPower);
+//        else
+//            intakeMotor.setPower(0);
 
         //pidf loop arm
         tiltPID(tiltTarget);

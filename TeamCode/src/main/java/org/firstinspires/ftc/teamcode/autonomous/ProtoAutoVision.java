@@ -11,13 +11,16 @@ import org.firstinspires.ftc.teamcode.rr.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.rr.trajectorysequence.TrajectorySequence;
 
 @Autonomous
-public class PowerPlayRedRight extends LinearOpMode {
+public class ProtoAutoVision extends LinearOpMode {
+
+    boolean usingVedic = false;
+
     @Override
     public void runOpMode() throws InterruptedException {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         MOEBot robot = new MOEBot(hardwareMap, gamepad1, gamepad2, telemetry);
 
-        Pose2d startPose = new Pose2d(62, 12, Math.toRadians(180));
+        Pose2d startPose = new Pose2d(-62, 12, Math.toRadians(0));
         drive.setPoseEstimate(startPose);
 
         TrajectorySequence pixelCenter = drive.trajectorySequenceBuilder(startPose)
@@ -28,14 +31,14 @@ public class PowerPlayRedRight extends LinearOpMode {
                 .addTemporalMarker(() -> {
                     robot.dispenser.autonLift(DispenserDec17.autonLiftPositions.AUTON_INTAKE);
                 })
-                .forward(32)
+                .forward(31)
                 .waitSeconds(0.5)
                 .addTemporalMarker(() -> {
                     robot.dispenser.autonRightIris(false);
                 })
                 .waitSeconds(0.5)
-                .lineToConstantHeading(new Vector2d(50, 20))
-                .lineToLinearHeading(new Pose2d(34, 48, Math.toRadians(90)))
+                .lineToConstantHeading(new Vector2d(-50, 20))
+                .lineToLinearHeading(new Pose2d(-29, 48, Math.toRadians(90)))
                 //lift
                 .addTemporalMarker(() -> {
                     robot.dispenser.autonLift(DispenserDec17.autonLiftPositions.LOW);
@@ -46,10 +49,7 @@ public class PowerPlayRedRight extends LinearOpMode {
                 })
                 .waitSeconds(0.1)
                 .back(5)
-                .addTemporalMarker(() -> {
-                    robot.dispenser.autonLift(DispenserDec17.autonLiftPositions.PRE_INTAKE);
-                })
-                .strafeRight(26) //park: dont run into board
+                .strafeLeft(26) //park: dont run into board
                 .forward(7) //park
                 .build();
 
@@ -61,15 +61,15 @@ public class PowerPlayRedRight extends LinearOpMode {
                 .addTemporalMarker(() -> {
                     robot.dispenser.autonLift(DispenserDec17.autonLiftPositions.AUTON_INTAKE);
                 })
-                .lineToLinearHeading(new Pose2d(28, 12, Math.toRadians(90)))
+                .lineToLinearHeading(new Pose2d(-29, 10, Math.toRadians(-90)))
                 .waitSeconds(0.5)
                 .addTemporalMarker(() -> {
                     robot.dispenser.autonRightIris(false);
                 })
                 .waitSeconds(0.5)
-                .strafeRight(15)
-                .lineToConstantHeading(new Vector2d(55, 30))
-                .lineToLinearHeading(new Pose2d(40, 48, Math.toRadians(90)))
+                .lineToConstantHeading(new Vector2d(-50, 20))
+                .lineToLinearHeading(new Pose2d(-25, 48, Math.toRadians(90)))
+                //lift
                 .addTemporalMarker(() -> {
                     robot.dispenser.autonLift(DispenserDec17.autonLiftPositions.LOW);
                 })
@@ -79,10 +79,7 @@ public class PowerPlayRedRight extends LinearOpMode {
                 })
                 .waitSeconds(0.1)
                 .back(5)
-                .addTemporalMarker(() -> {
-                    robot.dispenser.autonLift(DispenserDec17.autonLiftPositions.PRE_INTAKE);
-                })
-                .strafeRight(12) //park: dont run into board
+                .strafeLeft(31) //park: dont run into board
                 .forward(7) //park
                 .build();
 
@@ -94,15 +91,15 @@ public class PowerPlayRedRight extends LinearOpMode {
                 .addTemporalMarker(() -> {
                     robot.dispenser.autonLift(DispenserDec17.autonLiftPositions.AUTON_INTAKE);
                 })
-                .lineToLinearHeading(new Pose2d(30, 8, Math.toRadians(-90)))
+                .lineToLinearHeading(new Pose2d(-29, 14, Math.toRadians(90)))
                 .waitSeconds(0.5)
                 .addTemporalMarker(() -> {
                     robot.dispenser.autonRightIris(false);
                 })
                 .waitSeconds(0.5)
-                .lineToConstantHeading(new Vector2d(50, 20))
-                .lineToLinearHeading(new Pose2d(28, 48, Math.toRadians(90)))
-                //lift
+                .strafeLeft(15)
+                .lineToConstantHeading(new Vector2d(-55, 30))
+                .lineToLinearHeading(new Pose2d(-33, 48, Math.toRadians(90)))
                 .addTemporalMarker(() -> {
                     robot.dispenser.autonLift(DispenserDec17.autonLiftPositions.LOW);
                 })
@@ -112,24 +109,33 @@ public class PowerPlayRedRight extends LinearOpMode {
                 })
                 .waitSeconds(0.1)
                 .back(5)
-                .addTemporalMarker(() -> {
-                    robot.dispenser.autonLift(DispenserDec17.autonLiftPositions.PRE_INTAKE);
-                })
-                .strafeRight(30) //park: dont run into board
+                .strafeLeft(22) //park: dont run into board
                 .forward(7) //park
                 .build();
 
 
         while(!isStarted() && !isStopRequested()) {
             robot.dispenser.autonIris(false);
-
-            robot.visionTensorflow.detectProp();
-            telemetry.addData("Prop Pos", robot.visionTensorflow.getPropPos());
+            if(!usingVedic) robot.visionTensorflow.detectProp();
+            if(gamepad2.a && !usingVedic) {
+                usingVedic = true;
+                robot.visionTensorflow.stopDetecting();
+                sleep(1500);
+                robot.visionBlob.initBlob();
+            } else if (gamepad2.a) {
+                usingVedic = false;
+                robot.visionBlob.stopDetecting();
+                robot.visionTensorflow.initTfod();
+            }
+            telemetry.addData("Vision System: ", usingVedic ? "Blob" : "AI");
+            telemetry.addData("Prop Pos", usingVedic? robot.visionBlob.getPropPos() : robot.visionTensorflow.getPropPos());
             telemetry.addData("Status", "READY");
+            telemetry.update();
         }
 
         waitForStart();
-        robot.visionTensorflow.stopDetecting();
+        if(usingVedic) robot.visionBlob.stopDetecting();
+        else robot.visionTensorflow.stopDetecting();
 
         switch(robot.visionTensorflow.getPropPos()){
             case 1:

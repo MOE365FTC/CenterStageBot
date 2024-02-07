@@ -103,15 +103,15 @@ public class PowerPlayRedSpikeOnly extends LinearOpMode {
         while(!isStarted() && !isStopRequested()) {
             robot.dispenser.autonIris(false);
 
-            robot.vision.detectProp();
-            telemetry.addData("Prop Pos", robot.vision.getPropPos());
+            robot.visionTensorflow.detectProp();
+            telemetry.addData("Prop Pos", robot.visionTensorflow.getPropPos());
             telemetry.addData("Status", "READY");
         }
 
         waitForStart();
-        robot.vision.stopDetecting();
+        robot.visionTensorflow.stopDetecting();
 
-        switch(robot.vision.getPropPos()){
+        switch(robot.visionTensorflow.getPropPos()){
             case 1:
                 robot.dispenser.autonIris(true);
                 drive.followTrajectorySequence(pixelLeft);

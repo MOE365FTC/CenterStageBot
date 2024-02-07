@@ -7,7 +7,8 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 public class MOEBot {
     public Chassis chassis;
-    public VisionTensorflow vision;
+    public VisionTensorflow visionTensorflow;
+    public VisionBlob visionBlob;
     public DroneLauncher droneLauncher;
 //    public Intake intake;
     public DispenserDec17 dispenser;
@@ -16,7 +17,8 @@ public class MOEBot {
 
     public MOEBot(HardwareMap hardwareMap, Gamepad gamepad1, Gamepad gamepad2, Telemetry telemetry) {
         chassis = new Chassis(hardwareMap, gamepad1);
-        vision = new VisionTensorflow(telemetry, hardwareMap);
+        visionTensorflow = new VisionTensorflow(telemetry, hardwareMap);
+        visionBlob = new VisionBlob(telemetry, hardwareMap);
         droneLauncher = new DroneLauncher(hardwareMap, gamepad1);
         dispenser = new DispenserDec17(hardwareMap, gamepad2, telemetry);
 //        outtake = new Outtake(hardwareMap, gamepad1, gamepad2, telemetry);

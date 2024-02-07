@@ -66,14 +66,14 @@ public class redLeftRR extends LinearOpMode {
         while(!isStarted() && !isStopRequested()) {
             //init loop
 
-            robot.vision.detectProp();
-            telemetry.addData("Prop Pos", robot.vision.getPropPos());
+            robot.visionTensorflow.detectProp();
+            telemetry.addData("Prop Pos", robot.visionTensorflow.getPropPos());
         }
 
         waitForStart();
-        robot.vision.stopDetecting();
+        robot.visionTensorflow.stopDetecting();
 
-        switch(robot.vision.getPropPos()) {
+        switch(robot.visionTensorflow.getPropPos()) {
             case 1:
                 drive.followTrajectorySequence(pixelLeft);
                 break;
