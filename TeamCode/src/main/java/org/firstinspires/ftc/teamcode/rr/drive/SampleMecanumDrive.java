@@ -58,10 +58,10 @@ public class SampleMecanumDrive extends MecanumDrive {
 
     //***NOTE***: This class is tuned to the PowerPlay robot, reset by copying from github when tuning CenterStage
 
-    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(4, 0, 0); // 23, 9 ,0.5
-    public static PIDCoefficients HEADING_PID = new PIDCoefficients(20, 10, 0); // 16, .1, .1125
+    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(5, 0, 0); // 23, 9 ,0.5
+    public static PIDCoefficients HEADING_PID = new PIDCoefficients(8, 0, 0); // 16, .1, .1125
 
-    public static double LATERAL_MULTIPLIER = 2.22; //.8175 // 1.538
+    public static double LATERAL_MULTIPLIER = 1.62092; //.8175 // 1.538
 
     public static double VX_WEIGHT = 1;
     public static double VY_WEIGHT = 1;
@@ -95,10 +95,10 @@ public class SampleMecanumDrive extends MecanumDrive {
         }
 
         // TODO: adjust the names of the following hardware devices to match your configuration
-        imu = hardwareMap.get(BNO055IMU.class, "imu");
-        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-        parameters.angleUnit = BNO055IMU.AngleUnit.RADIANS;
-        imu.initialize(parameters);
+//        imu = hardwareMap.get(BNO055IMU.class, "imu");
+//        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+//        parameters.angleUnit = BNO055IMU.AngleUnit.RADIANS;
+//        imu.initialize(parameters);
 
         // TODO: If the hub containing the IMU you are using is mounted so that the "REV" logo does
         // not face up, remap the IMU axes so that the z-axis points upward (normal to the floor.)
@@ -121,7 +121,7 @@ public class SampleMecanumDrive extends MecanumDrive {
         //
         // For example, if +Y in this diagram faces downwards, you would use AxisDirection.NEG_Y.
         // BNO055IMUUtil.remapZAxis(imu, AxisDirection.NEG_Y);
-        BNO055IMUUtil.remapZAxis(imu, AxisDirection.NEG_X);
+//        BNO055IMUUtil.remapZAxis(imu, AxisDirection.NEG_X);
 
         leftFront = hardwareMap.get(DcMotorEx.class, "FLM02");
         leftRear = hardwareMap.get(DcMotorEx.class, "BLM00");
@@ -311,7 +311,7 @@ public class SampleMecanumDrive extends MecanumDrive {
 
     @Override
     public double getRawExternalHeading() {
-        return imu.getAngularOrientation().firstAngle;
+        return 0.0;
     }
 
     @Override
@@ -321,7 +321,7 @@ public class SampleMecanumDrive extends MecanumDrive {
         // expected). This bug does NOT affect orientation.
         //
         // See https://github.com/FIRST-Tech-Challenge/FtcRobotController/issues/251 for details.
-        return (double) -imu.getAngularVelocity().zRotationRate;
+        return 0.0;
     }
 
     public static TrajectoryVelocityConstraint getVelocityConstraint(double maxVel, double maxAngularVel, double trackWidth) {

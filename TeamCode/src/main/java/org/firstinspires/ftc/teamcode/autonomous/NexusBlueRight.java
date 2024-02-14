@@ -21,7 +21,7 @@ public class NexusBlueRight extends LinearOpMode {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         MOEBot robot = new MOEBot(hardwareMap, gamepad1, gamepad2, telemetry);
 
-        Pose2d startPose = new Pose2d(-62, 12, Math.toRadians(0));
+        Pose2d startPose = new Pose2d(-62, -35, Math.toRadians(0));
         drive.setPoseEstimate(startPose);
 
         TrajectorySequence pixelLeft = drive.trajectorySequenceBuilder(startPose)
@@ -47,27 +47,27 @@ public class NexusBlueRight extends LinearOpMode {
 //                                            MORE WORK + TESTING NEEDED HERE
                 })
                 .waitSeconds(bufferTime) //buffer time for intake
-                .lineTo(new Vector2d(-12, 17)) //maintain directness of path to score on backdrop
-                .splineToSplineHeading(new Pose2d(-42,48,Math.toRadians(90)), Math.toRadians(90)) //spline to backdrop left position
+                .lineTo(new Vector2d(-12, 25)) //maintain directness of path to score on backdrop
+                .splineToSplineHeading(new Pose2d(-42,48, Math.toRadians(-90)), Math.toRadians(90)) //spline to backdrop left position
                 .addTemporalMarker(() -> { //score on backdrop
 //                                            robot.outtake.tiltPID(autonLiftPositions.AUTON_SCORE); //set auton lift to score; NEEDS CHECKING
 //                                            MORE WORK + TESTING NEEDED HERE
                 })
                 .waitSeconds(bufferTime) //buffer time for outtake
-                .lineToSplineHeading(new Pose2d(-30, 38.5, Math.toRadians(-30))) //make sure not to collide with backdrop
-                .splineToSplineHeading(new Pose2d(-12, 17,Math.toRadians(-90)), Math.toRadians(-90)) //spline into position to prepare to intake
+                .lineToSplineHeading(new Pose2d(-18, 38.5, Math.toRadians(-30))) //make sure not to collide with backdrop
+                .splineToSplineHeading(new Pose2d(-12, 25,Math.toRadians(-90)), Math.toRadians(-90)) //spline into position to prepare to intake
                 //hypothetically can start extending intake slides here
-                .splineToSplineHeading(new Pose2d(-11.5,-45,Math.toRadians(-90)), Math.toRadians(90))//move to intake white pixels
+                .lineToLinearHeading(new Pose2d(-11.5,-45,Math.toRadians(-90))) //move to intake white pixels
                 .addTemporalMarker(() -> { //intake white pixels
 //                                            robot.outtake.autonIntakeSlides(EXTENDED_FULL) //set intake slides to full extension; NEEDS CHECKING
 //                                            robot.outtake.intakeMotor(run) //set intake motor to run to intake white pixels; NEEDS CREATION
 //                                            MORE WORK + TESTING NEEDED HERE
                 })
                 .waitSeconds(bufferTime) //buffer time for intake
-                .lineTo(new Vector2d(-12, 17)) //maintain directness of path to score on backdrop
-                .splineToSplineHeading(new Pose2d(-42,48,Math.toRadians(90)), Math.toRadians(90)) //spline to backdrop left position
+                .lineTo(new Vector2d(-12, 25)) //maintain directness of path to score on backdrop
+                .splineToSplineHeading(new Pose2d(-42,48,Math.toRadians(-90)), Math.toRadians(90)) //spline to backdrop left position
                 .lineTo(new Vector2d(-15,48)) //avoid collision with backdrop
-                .splineTo(new Vector2d(-10,60), Math.toRadians(90)) //park
+                .splineToSplineHeading(new Pose2d(-10,60, Math.toRadians(-90)), Math.toRadians(90))
                 .build();
 
         TrajectorySequence pixelCenter = drive.trajectorySequenceBuilder(startPose)
@@ -93,16 +93,16 @@ public class NexusBlueRight extends LinearOpMode {
                 })
                 .waitSeconds(bufferTime) //buffer time for intake
                 .lineTo(new Vector2d(-12, 17)) //maintain directness of path to score on backdrop
-                .splineToSplineHeading(new Pose2d(-35.5,48,Math.toRadians(90)), Math.toRadians(90)) //spline to backdrop left position
+                .splineToSplineHeading(new Pose2d(-35.5,48,Math.toRadians(-90)), Math.toRadians(90)) //spline to backdrop left position
                 .addTemporalMarker(() -> { //score on backdrop
 //                                            robot.outtake.tiltPID(autonLiftPositions.AUTON_SCORE); //set auton lift to score; NEEDS CHECKING
 //                                            MORE WORK + TESTING NEEDED HERE
                 })
                 .waitSeconds(bufferTime) //buffer time for outtake
-                .lineToSplineHeading(new Pose2d(-30, 38.5, Math.toRadians(-30))) //make sure not to collide with backdrop
+                .lineToSplineHeading(new Pose2d(-18, 38.5, Math.toRadians(-30))) //make sure not to collide with backdrop
                 .splineToSplineHeading(new Pose2d(-12, 17,Math.toRadians(-90)), Math.toRadians(-90)) //spline into position to prepare to intake
                 //hypothetically can start extending intake slides here
-                .splineToSplineHeading(new Pose2d(-11.5,-45,Math.toRadians(-90)), Math.toRadians(90))//move to intake white pixels
+                .lineToLinearHeading(new Pose2d(-11.5,-45,Math.toRadians(-90))) //move to intake white pixels
                 .addTemporalMarker(() -> { //intake white pixels
 //                                            robot.outtake.autonIntakeSlides(EXTENDED_FULL) //set intake slides to full extension; NEEDS CHECKING
 //                                            robot.outtake.intakeMotor(run) //set intake motor to run to intake white pixels; NEEDS CREATION
@@ -110,9 +110,9 @@ public class NexusBlueRight extends LinearOpMode {
                 })
                 .waitSeconds(bufferTime) //buffer time for intake
                 .lineTo(new Vector2d(-12, 17)) //maintain directness of path to score on backdrop
-                .splineToSplineHeading(new Pose2d(-35.5,48,Math.toRadians(90)), Math.toRadians(90)) //spline to backdrop left position
+                .splineToSplineHeading(new Pose2d(-35.5,48,Math.toRadians(-90)), Math.toRadians(90)) //spline to backdrop left position
                 .lineTo(new Vector2d(-15,48)) //avoid collision with backdrop
-                .splineTo(new Vector2d(-10,60), Math.toRadians(90)) //park
+                .splineToSplineHeading(new Pose2d(-10,60, Math.toRadians(-90)), Math.toRadians(90)) //park
                 .build();
 
         TrajectorySequence pixelRight = drive.trajectorySequenceBuilder(startPose)
@@ -124,75 +124,32 @@ public class NexusBlueRight extends LinearOpMode {
                 })
                 .waitSeconds(0.3) //buffer time for outtake; REPLACE VALUE INTO CONST DOUBLE
 
-                //Candidate 1: Full Path; 19.59s, consistent with other tick mark position paths.
-
-                /*
-                .splineToSplineHeading(new Pose2d(-31, -47, Math.toRadians(-90)), Math.toRadians(-90)) //go to tick mark
+                .lineToLinearHeading(new Pose2d(-20, -47, Math.toRadians(0))) //go to tick mark
                 .addTemporalMarker(() -> { //place pixel on tick mark
 //                                            robot.outtake.autonLift(LOW) //set auton lift to low so pixel wont bounce
 //                                            robot.outtake.autonRightIris(false); //shrinks right iris such that the purple pixel will be dropped on tick mark
 //                                            MORE WORK + TESTING NEEDED HERE
                 })
                 .waitSeconds(0.3) //buffer time for tick mark; REPLACE VALUE INTO CONST DOUBLE
-                .lineToSplineHeading(new Pose2d(-24, -35, Math.toRadians(0))) //maintain fluidity and smoothness of path to intake white pixels
-                .splineToSplineHeading(new Pose2d(-11.5,-45,Math.toRadians(-90)), Math.toRadians(-90)) //move to intake white pixels
+                .lineToLinearHeading(new Pose2d(-11.5,-45,Math.toRadians(-90))) //move to intake white pixels
                 .addTemporalMarker(() -> { //intake white pixels
 //                                            robot.outtake.autonIntakeSlides(EXTENDED_FULL) //set intake slides to full extension; NEEDS CHECKING
 //                                            robot.outtake.intakeMotor(run) //set intake motor to run to intake white pixels; NEEDS CREATION
 //                                            MORE WORK + TESTING NEEDED HERE
                 })
                 .waitSeconds(0.3) //buffer time for intake; REPLACE VALUE INTO CONST DOUBLE
-                 */
-
-                //Candidate 2: SEEMS LIKE BEST CANDIDATE, FASTEST AND WITH MARGIN. Full path; 18.54s, optimized first path
-
-
-                .splineToSplineHeading(new Pose2d(-31, -47, Math.toRadians(-90)), Math.toRadians(-90)) //go to tick mark
-                .addTemporalMarker(() -> { //place pixel on tick mark
-//                                            robot.outtake.autonLift(LOW) //set auton lift to low so pixel wont bounce
-//                                            robot.outtake.autonRightIris(false); //shrinks right iris such that the purple pixel will be dropped on tick mark
-//                                            MORE WORK + TESTING NEEDED HERE
-                })
-                .waitSeconds(0.3) //buffer time for tick mark; REPLACE VALUE INTO CONST DOUBLE
-                .lineToSplineHeading(new Pose2d(-11.5,-45,Math.toRadians(-90))) //move to intake white pixels
-                .addTemporalMarker(() -> { //intake white pixels
-//                                            robot.outtake.autonIntakeSlides(EXTENDED_FULL) //set intake slides to full extension; NEEDS CHECKING
-//                                            robot.outtake.intakeMotor(run) //set intake motor to run to intake white pixels; NEEDS CREATION
-//                                            MORE WORK + TESTING NEEDED HERE
-                })
-                .waitSeconds(0.3) //buffer time for intake; REPLACE VALUE INTO CONST DOUBLE
-
-
-
-                //Candidate 3: full path;18.77s, Unique, Least Margin; close to pixel stacks,
-                /*
-                .splineToSplineHeading(new Pose2d(-25, -55, Math.toRadians(-90)), Math.toRadians(-45)) //go to tick mark
-                .addTemporalMarker(() -> { //place pixel on tick mark
-//                                            robot.outtake.autonLift(LOW) //set auton lift to low so pixel wont bounce
-//                                            robot.outtake.autonRightIris(false); //shrinks right iris such that the purple pixel will be dropped on tick mark
-//                                            MORE WORK + TESTING NEEDED HERE
-                })
-                .waitSeconds(0.3) //buffer time for tick mark; REPLACE VALUE INTO CONST DOUBLE
-                .addTemporalMarker(() -> { //intake white pixels
-//                                            robot.outtake.autonIntakeSlides(EXTENDED_FULL) //set intake slides to full extension; NEEDS CHECKING
-//                                            robot.outtake.intakeMotor(run) //set intake motor to run to intake white pixels; NEEDS CREATION
-//                                            MORE WORK + TESTING NEEDED HERE
-                })
-                .waitSeconds(0.3) //buffer time for intake; REPLACE VALUE INTO CONST DOUBLE
-                .lineToSplineHeading(new Pose2d(-11.5,-45,Math.toRadians(90)))
-                 */
 
                 .lineTo(new Vector2d(-12, 17)) //maintain directness of path to score on backdrop
-                .splineToSplineHeading(new Pose2d(-29,48,Math.toRadians(90)), Math.toRadians(90)) //spline to backdrop left position
+                .splineToSplineHeading(new Pose2d(-29,48,Math.toRadians(-90)), Math.toRadians(90)) //spline to backdrop left position
                 .addTemporalMarker(() -> { //score on backdrop
 //                                            robot.outtake.tiltPID(autonLiftPositions.AUTON_SCORE); //set auton lift to score; NEEDS CHECKING
 //                                            MORE WORK + TESTING NEEDED HERE
                 })
                 .waitSeconds(0.3) //buffer time for outtake; REPLACE VALUE INTO CONST DOUBLE
-                .lineToSplineHeading(new Pose2d(-30, 38.5, Math.toRadians(-30))) //make sure not to collide with backdrop
+                .lineToSplineHeading(new Pose2d(-18, 38.5, Math.toRadians(-30))) //make sure not to collide with backdrop
                 .splineToSplineHeading(new Pose2d(-12, 17,Math.toRadians(-90)), Math.toRadians(-90)) //spline into position to prepare to intake
                 //hypothetically can start extending intake slides here
-                .splineToSplineHeading(new Pose2d(-11.5,-45,Math.toRadians(-90)), Math.toRadians(90))//move to intake white pixels
+                .lineToLinearHeading(new Pose2d(-11.5,-45,Math.toRadians(-90))) //move to intake white pixels
                 .addTemporalMarker(() -> { //intake white pixels
 //                                            robot.outtake.autonIntakeSlides(EXTENDED_FULL) //set intake slides to full extension; NEEDS CHECKING
 //                                            robot.outtake.intakeMotor(run) //set intake motor to run to intake white pixels; NEEDS CREATION
@@ -200,12 +157,10 @@ public class NexusBlueRight extends LinearOpMode {
                 })
                 .waitSeconds(0.3) //buffer time for intake; REPLACE VALUE INTO CONST DOUBLE
                 .lineTo(new Vector2d(-12, 17)) //maintain directness of path to score on backdrop
-                .splineToSplineHeading(new Pose2d(-29,48,Math.toRadians(90)), Math.toRadians(90)) //spline to backdrop left position
+                .splineToSplineHeading(new Pose2d(-29,48,Math.toRadians(-90)), Math.toRadians(90)) //spline to backdrop left position
                 .lineTo(new Vector2d(-15,48)) //avoid collision with backdrop
-                .splineTo(new Vector2d(-10,60), Math.toRadians(90)) //park
+                .splineToSplineHeading(new Pose2d(-10,60, Math.toRadians(-90)), Math.toRadians(90)) //park
                 .build();
-
-
 
 
         while(!isStarted() && !isStopRequested()) {
@@ -233,19 +188,19 @@ public class NexusBlueRight extends LinearOpMode {
 
         switch(robot.visionTensorflow.getPropPos()){
             case 1:
-                drive.followTrajectorySequence(pixelLeft);
+                drive.followTrajectorySequenceAsync(pixelLeft);
                 break;
             case 2:
-                drive.followTrajectorySequence(pixelCenter);
+                drive.followTrajectorySequenceAsync(pixelCenter);
                 break;
             case 3:
-                drive.followTrajectorySequence(pixelRight);
+                drive.followTrajectorySequenceAsync(pixelRight);
                 break;
         }
 
         while(!Thread.currentThread().isInterrupted() && drive.isBusy()) {
             drive.update();
-            robot.outtake.tiltPID(tiltTarget);
+//            robot.outtake.tiltPID(tiltTarget);
         }
 
     }
