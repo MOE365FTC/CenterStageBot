@@ -22,8 +22,8 @@ public class DriveConstants {
     /*
      * These are motor constants that should be listed online for your motors.
      */
-    public static final double TICKS_PER_REV = 537.7;
-    public static final double MAX_RPM = 312;
+    public static final double TICKS_PER_REV = 145.1; //537.7 for 345 rpm
+    public static final double MAX_RPM = 1150;
 
     /*
      * Set RUN_USING_ENCODER to true to enable built-in hub velocity control using drive encoders.
@@ -46,7 +46,7 @@ public class DriveConstants {
      * convenience. Make sure to exclude any gear ratio included in MOTOR_CONFIG from GEAR_RATIO.
      */
     public static double WHEEL_RADIUS = 1.89; // in
-    public static double GEAR_RATIO = 1.0; // output (wheel) speed / input (motor) speed
+    public static double GEAR_RATIO = 1.0/2.0; // output (wheel) speed / input (motor) speed, old: 1.0
     public static double TRACK_WIDTH = 9.96; // in
 
     /*
@@ -66,8 +66,8 @@ public class DriveConstants {
      * small and gradually increase them later after everything is working. All distance units are
      * inches.
      */
-    public static double MAX_VEL = 30; //old: 63.345
-    public static double MAX_ACCEL = 30; //old: 90
+    public static double MAX_VEL = 113.804 ; //old: 63.345. 1150: maxrpm/60 * gear ratio * wheel radius * 2pi => 1150/60 * 1/2 * 1.89 * 2pi = 113.80
+    public static double MAX_ACCEL = 113.804; //old: 90
     public static double MAX_ANG_VEL = Math.toRadians(180); //60
     public static double MAX_ANG_ACCEL = Math.toRadians(180); //75
 

@@ -4,9 +4,8 @@ Gamepad 1:
 Drive: L/R Joysticks
 Slow Drive: HOLD Right Bumper
 Drone Launcher: Dpad Right
-Intake Slide: In: Left Trigger, Out: Right Trigger, Full In: B, Full Out: X
-Intake Motor: Run: A
-
+Intake Slide: In: Full In: B, Full Out: X, Transfer: A
+Intake Motor: Run: Right Trigger, Run Backwards: Left Trigger
 
 
 Gamepad 2:
@@ -15,11 +14,9 @@ Right Iris (Hold) --> Close: RightBumper
 
 Extend Arm --> Left Stick Y
 Tilt Arm --> Manual: Right Stick Y
-Presets --> In: Dpad Down, Board: Dpad Up
+Presets --> In: Dpad Down, Backdrop: Dpad Up
 
-Hang Up: Y
-Hang Down: A
-Hang Lock: B
+Run Gates: B
 
 
 

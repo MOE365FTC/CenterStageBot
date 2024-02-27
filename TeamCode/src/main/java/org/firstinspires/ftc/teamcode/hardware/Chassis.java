@@ -24,7 +24,7 @@ public class Chassis {
     public DcMotorEx leftOdo, strafeOdo, rightOdo;
 
     Gamepad gamepad1;
-    static IMU imu; //A static IMU object that shares heading between TeleOp and Auton (since a new object is not created)
+    static IMU imu; //A static IMU object that shares heading between TeleOp and Auton
     double headingOffset = 0; //stores the heading the robot started the opmode with (corrects for error)
     double driveSpeed = 1.0;
 
@@ -32,18 +32,18 @@ public class Chassis {
     public Chassis(HardwareMap hardwareMap, Gamepad gamepad1){
         this.gamepad1 = gamepad1;
 
-        frontLeftMotor = hardwareMap.get(DcMotor.class, "FLM02");
-        backLeftMotor = hardwareMap.get(DcMotor.class, "BLM00");
-        frontRightMotor = hardwareMap.get(DcMotor.class, "FRM03");
-        backRightMotor = hardwareMap.get(DcMotor.class, "BRM01");
+        frontLeftMotor = hardwareMap.get(DcMotor.class, "FLM");
+        backLeftMotor = hardwareMap.get(DcMotor.class, "BLM");
+        frontRightMotor = hardwareMap.get(DcMotor.class, "FRM");
+        backRightMotor = hardwareMap.get(DcMotor.class, "BRM");
 
-        leftOdo = hardwareMap.get(DcMotorEx.class, "hangMotorL"); //odo encoders are on hang motor ports (we finessed)
-        strafeOdo = hardwareMap.get(DcMotorEx.class, "hangMotorR");
-        rightOdo = hardwareMap.get(DcMotorEx.class, "odoRight");
-        rightOdo.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftOdo = hardwareMap.get(DcMotorEx.class, "FLM"); //odo encoders are on hang motor ports (we finessed)
+        rightOdo = hardwareMap.get(DcMotorEx.class, "BRM");
+        strafeOdo = hardwareMap.get(DcMotorEx.class, "BRM");
 
         frontLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         backLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+
         frontLeftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         backLeftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         frontRightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -52,7 +52,7 @@ public class Chassis {
         //IMU initialization
         imu = hardwareMap.get(IMU.class, "imu");
         RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.RIGHT;
-        RevHubOrientationOnRobot.UsbFacingDirection  usbDirection  = RevHubOrientationOnRobot.UsbFacingDirection.UP;
+        RevHubOrientationOnRobot.UsbFacingDirection  usbDirection  = RevHubOrientationOnRobot.UsbFacingDirection.DOWN;
         RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
         imu.initialize(new IMU.Parameters(orientationOnRobot));
     }
@@ -60,7 +60,7 @@ public class Chassis {
     public void fieldCentricDrive(){
         double y = -gamepad1.left_stick_y;
         double x = gamepad1.left_stick_x;
-        double rx = gamepad1.right_stick_x * 0.5;
+        double rx = gamepad1.right_stick_x;
 
         if(gamepad1.right_stick_button) { //resets field-centric drive heading (offset = current heading)
             headingOffset = -imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
@@ -92,6 +92,8 @@ public class Chassis {
         telemetry.addData("leftOdo", leftOdo.getCurrentPosition());
         telemetry.addData("rightOdo", rightOdo.getCurrentPosition());
         telemetry.addData("strafeOdo", strafeOdo.getCurrentPosition());
+
+        telemetry.addData("FRM", frontRightMotor.getPower());
 
     }
 

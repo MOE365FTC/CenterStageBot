@@ -164,7 +164,7 @@ public class NexusBlueRight extends LinearOpMode {
 
 
         while(!isStarted() && !isStopRequested()) {
-            robot.dispenser.autonIris(false);
+            robot.outtake.autonIris(false);
             if(!usingVedic) robot.visionTensorflow.detectProp();
             if(gamepad2.a && !usingVedic) {
                 usingVedic = true;

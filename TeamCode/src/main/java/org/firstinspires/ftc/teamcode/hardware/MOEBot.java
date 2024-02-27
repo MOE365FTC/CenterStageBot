@@ -10,19 +10,18 @@ public class MOEBot {
     public VisionTensorflow visionTensorflow;
     public VisionBlob visionBlob;
     public DroneLauncher droneLauncher;
-//    public Intake intake;
-    public DispenserDec17 dispenser;
+    public Intake intake;
+//    public DispenserDec17 dispenser;
     public Outtake outtake;
     public Hanging hang;
 
     public MOEBot(HardwareMap hardwareMap, Gamepad gamepad1, Gamepad gamepad2, Telemetry telemetry) {
         chassis = new Chassis(hardwareMap, gamepad1);
-        visionTensorflow = new VisionTensorflow(telemetry, hardwareMap);
-        visionBlob = new VisionBlob(telemetry, hardwareMap);
-        droneLauncher = new DroneLauncher(hardwareMap, gamepad1);
-        dispenser = new DispenserDec17(hardwareMap, gamepad2, telemetry);
+//        visionTensorflow = new VisionTensorflow(telemetry, hardwareMap);
+//        visionBlob = new VisionBlob(telemetry, hardwareMap);
+//        droneLauncher = new DroneLauncher(hardwareMap, gamepad1);
+//        intake = new Intake(hardwareMap, gamepad1, gamepad2, telemetry);
 //        outtake = new Outtake(hardwareMap, gamepad1, gamepad2, telemetry);
-        hang = new Hanging(hardwareMap, gamepad2);
     }
 
 }

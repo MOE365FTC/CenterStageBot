@@ -184,7 +184,7 @@ public class NexusBlueLeft extends LinearOpMode {
 
 
         while(!isStarted() && !isStopRequested()) {
-            robot.dispenser.autonIris(false);
+            robot.outtake.autonIris(false);
             if(!usingVedic) robot.visionTensorflow.detectProp();
             if(gamepad2.a && !usingVedic) {
                 usingVedic = true;
@@ -220,7 +220,7 @@ public class NexusBlueLeft extends LinearOpMode {
 
         while(!Thread.currentThread().isInterrupted() && drive.isBusy()) {
             drive.update();
-            robot.outtake.tiltPID(tiltTarget);
+            robot.outtake.autonTilt(tiltTarget);
         }
 
     }
