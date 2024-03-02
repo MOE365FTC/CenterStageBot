@@ -1,22 +1,18 @@
 package org.firstinspires.ftc.teamcode.teleop;
 
-import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
 
+import org.firstinspires.ftc.teamcode.hardware.Intake;
 import org.firstinspires.ftc.teamcode.hardware.MOEBot;
-import org.firstinspires.ftc.teamcode.hardware.PoseStorage;
-import org.firstinspires.ftc.teamcode.rr.drive.SampleMecanumDrive;
-import org.firstinspires.ftc.teamcode.rr.trajectorysequence.TrajectorySequence;
+import org.firstinspires.ftc.teamcode.hardware.Outtake;
 
 @TeleOp
 public class testValues extends OpMode {
     MOEBot robot;
     @Override
     public void init() {
-        robot = new MOEBot(hardwareMap, gamepad1, gamepad2, telemetry);
+        robot = new MOEBot(hardwareMap, gamepad1, gamepad2, telemetry, false);
     }
 
     @Override
@@ -26,19 +22,46 @@ public class testValues extends OpMode {
 
     @Override
     public void loop() {
-        robot.chassis.fieldCentricDrive();
-        robot.chassis.imuTelemetry(telemetry);
-        robot.chassis.odoTelemetry(telemetry);
-//        robot.outtake.telemetryOuttake();
-//
 //        robot.chassis.fieldCentricDrive();
-//        robot.outtake.actuate();
-//        robot.outtake.updateGates();
-//        robot.droneLauncher.actuate();
-//        robot.hang.actuate();
-//
-//        if(gamepad2.b) {
-//            robot.outtake.runGates();
-//        }
+//        robot.chassis.imuTelemetry(telemetry);
+//        robot.chassis.odoTelemetry(telemetry);
+        robot.outtake.telemetryOuttake();
+        robot.intake.telemetryIntake();
+
+        telemetry.addData("grabLeftSwitch", robot.intake.grabLeftSwitch.getState());
+        telemetry.addData("grabRightSwitch", robot.intake.grabRightSwitch.getState());
+        switch(Intake.currExtendPos) {
+            case BASE:
+                telemetry.addData("CurrentExtendPositions", "BASE");
+                break;
+            case TRANSFER:
+                telemetry.addData("CurrentExtendPositions", "TRANSFER");
+                break;
+            case EXTENDED_FULL:
+                telemetry.addData("CurrentExtendPositions", "EXTENDED_FULL");
+        }
+        switch(Intake.currRequestPos) {
+            case BASE:
+                telemetry.addData("RequestedExtendPositions", "BASE");
+                break;
+            case TRANSFER:
+                telemetry.addData("RequestedExtendPositions", "TRANSFER");
+                break;
+            case EXTENDED_FULL:
+                telemetry.addData("RequestedExtendPositions", "EXTENDED_FULL");
+                break;
+        }
+        switch(Outtake.currTiltPos) {
+            case UP:
+                telemetry.addData("CurrentOuttakeState", "UP");
+                break;
+            case DOWN:
+                telemetry.addData("CurrentOuttakeState", "DOWN");
+                break;
+        }
+
+        robot.outtake.actuate();
+        robot.intake.actuate();
+        robot.intake.updateGrabs();
     }
 }

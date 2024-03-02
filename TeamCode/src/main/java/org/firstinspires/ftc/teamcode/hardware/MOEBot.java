@@ -15,13 +15,13 @@ public class MOEBot {
     public Outtake outtake;
     public Hanging hang;
 
-    public MOEBot(HardwareMap hardwareMap, Gamepad gamepad1, Gamepad gamepad2, Telemetry telemetry) {
+    public MOEBot(HardwareMap hardwareMap, Gamepad gamepad1, Gamepad gamepad2, Telemetry telemetry, boolean isAuton) {
         chassis = new Chassis(hardwareMap, gamepad1);
 //        visionTensorflow = new VisionTensorflow(telemetry, hardwareMap);
 //        visionBlob = new VisionBlob(telemetry, hardwareMap);
 //        droneLauncher = new DroneLauncher(hardwareMap, gamepad1);
-//        intake = new Intake(hardwareMap, gamepad1, gamepad2, telemetry);
-//        outtake = new Outtake(hardwareMap, gamepad1, gamepad2, telemetry);
+        intake = new Intake(hardwareMap, gamepad1, gamepad2, telemetry, isAuton);
+        outtake = new Outtake(hardwareMap, gamepad1, gamepad2, telemetry, isAuton);
     }
 
 }

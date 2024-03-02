@@ -58,10 +58,10 @@ public class SampleMecanumDrive extends MecanumDrive {
 
     //***NOTE***: This class is tuned to the PowerPlay robot, reset by copying from github when tuning CenterStage
 
-    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(5, 0, 0); // 23, 9 ,0.5
-    public static PIDCoefficients HEADING_PID = new PIDCoefficients(8, 0, 0); // 16, .1, .1125
+    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(0, 0, 0); // 23, 9 ,0.5
+    public static PIDCoefficients HEADING_PID = new PIDCoefficients(0, 0, 0); // 16, .1, .1125
 
-    public static double LATERAL_MULTIPLIER = 1.62092; //.8175 // 1.538
+    public static double LATERAL_MULTIPLIER = 1; //.8175 // 1.538
 
     public static double VX_WEIGHT = 1;
     public static double VY_WEIGHT = 1;

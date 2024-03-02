@@ -19,7 +19,7 @@ public class NexusBlueRight extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
-        MOEBot robot = new MOEBot(hardwareMap, gamepad1, gamepad2, telemetry);
+        MOEBot robot = new MOEBot(hardwareMap, gamepad1, gamepad2, telemetry, true);
 
         Pose2d startPose = new Pose2d(-62, -35, Math.toRadians(0));
         drive.setPoseEstimate(startPose);

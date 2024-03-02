@@ -31,18 +31,17 @@ import java.util.List;
 @Config
 public class StandardTrackingWheelLocalizer extends ThreeTrackingWheelLocalizer {
 
-    //***NOTE***: This class is tuned to the PowerPlay robot, reset by copying from github when tuning CenterStage
 
     public static double TICKS_PER_REV = 8192;
     public static double WHEEL_RADIUS = .748; // in
     public static double GEAR_RATIO = 1; // output (wheel) speed / input (encoder) speed
 
-    public static double LATERAL_DISTANCE = 8.096; //8.346 in; distance between the left and right wheels
-    public static double FORWARD_OFFSET = -.0472; //.0472 in; offset of the lateral wheel
+    public static double LATERAL_DISTANCE = 11.573;
+    public static double FORWARD_OFFSET = -7.174;
     //center odo 6.5mm to the right
     public Encoder leftEncoder, rightEncoder, frontEncoder;
-    public static double X_MULTIPLIER = 0.97754995583243778;
-    public static double Y_MULTIPLIER = 0.99347950224; //0.9963
+    public static double X_MULTIPLIER = 1;
+    public static double Y_MULTIPLIER = 1; //0.9963
     public StandardTrackingWheelLocalizer(HardwareMap hardwareMap) {
         super(Arrays.asList(
                 new Pose2d(0, LATERAL_DISTANCE / 2, 0), // left
@@ -50,13 +49,13 @@ public class StandardTrackingWheelLocalizer extends ThreeTrackingWheelLocalizer 
                 new Pose2d(FORWARD_OFFSET, -.2559, Math.toRadians(90)) // front
         ));
 
-        leftEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, "leftOdo"));
-        frontEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, "strafeOdo"));
-        rightEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, "rightOdo"));
+        leftEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, "FLM")); //CHECK THIS!!!
+        frontEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, "BLM"));
+        rightEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, "FRM"));
 
         // TODO: reverse any encoders using Encoder.setDirection(Encoder.Direction.REVERSE)
-//        leftEncoder.setDirection(Encoder.Direction.REVERSE);
-//        frontEncoder.setDirection(Encoder.Direction.REVERSE);
+        leftEncoder.setDirection(Encoder.Direction.REVERSE);
+        frontEncoder.setDirection(Encoder.Direction.REVERSE);
         rightEncoder.setDirection(Encoder.Direction.REVERSE);
     }
 

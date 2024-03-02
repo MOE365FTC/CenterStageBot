@@ -37,9 +37,9 @@ public class Chassis {
         frontRightMotor = hardwareMap.get(DcMotor.class, "FRM");
         backRightMotor = hardwareMap.get(DcMotor.class, "BRM");
 
-        leftOdo = hardwareMap.get(DcMotorEx.class, "FLM"); //odo encoders are on hang motor ports (we finessed)
-        rightOdo = hardwareMap.get(DcMotorEx.class, "BRM");
-        strafeOdo = hardwareMap.get(DcMotorEx.class, "BRM");
+        leftOdo = hardwareMap.get(DcMotorEx.class, "FLM"); //odo encoders are on motor ports CHECK
+        rightOdo = hardwareMap.get(DcMotorEx.class, "FRM");
+        strafeOdo = hardwareMap.get(DcMotorEx.class, "BLM");
 
         frontLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         backLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
