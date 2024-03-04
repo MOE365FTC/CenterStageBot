@@ -71,13 +71,13 @@ public class unfoldOpMode extends LinearOpMode {
         while(getRuntime() - currTime < 1) {
             //wait
         }
-        intakeSlides.setTargetPosition(320);
+        intakeSlides.setTargetPosition(330);
         intakeSlides.setPower(0.5);
         while(intakeSlides.isBusy()) {
             //wait
         }
         tiltMotor.setTargetPosition(0);
-        liftMotor.setTargetPosition(310);
+        liftMotor.setTargetPosition(290);
         tiltMotor.setPower(0.5);
         liftMotor.setPower(0.5);
 

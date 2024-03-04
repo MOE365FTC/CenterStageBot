@@ -41,7 +41,6 @@ public class Chassis {
         rightOdo = hardwareMap.get(DcMotorEx.class, "FRM");
         strafeOdo = hardwareMap.get(DcMotorEx.class, "BLM");
 
-        frontLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         backLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
         frontLeftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);

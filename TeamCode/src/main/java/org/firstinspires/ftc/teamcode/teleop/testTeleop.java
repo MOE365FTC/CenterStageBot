@@ -8,9 +8,8 @@ import org.firstinspires.ftc.teamcode.hardware.MOEBot;
 import org.firstinspires.ftc.teamcode.hardware.Outtake;
 
 @TeleOp
-public class testValues extends OpMode {
+public class testTeleop extends OpMode {
     MOEBot robot;
-//    Servo leftIris, rightIris;
     @Override
     public void init() {
         robot = new MOEBot(hardwareMap, gamepad1, gamepad2, telemetry, false);
@@ -23,7 +22,7 @@ public class testValues extends OpMode {
 
     @Override
     public void loop() {
-//        robot.chassis.fieldCentricDrive();
+        robot.chassis.fieldCentricDrive();
         robot.chassis.imuTelemetry(telemetry);
         robot.chassis.odoTelemetry(telemetry);
         robot.outtake.telemetryOuttake();
@@ -54,21 +53,15 @@ public class testValues extends OpMode {
         }
         switch(Outtake.currTiltPos) {
             case READY_TO_OUTTAKE:
-                telemetry.addData("CurrentOuttakeState", "UP");
+                telemetry.addData("CurrentOuttakeState", "READY_TO_OUTTAKE");
                 break;
             case READY_TO_INTAKE:
-                telemetry.addData("CurrentOuttakeState", "DOWN");
+                telemetry.addData("CurrentOuttakeState", "READY_TO_INTAKE");
                 break;
         }
 
-        if(gamepad1.right_trigger > 0.7){
-            robot.outtake.autonIris(true);
-        }else if(gamepad1.left_trigger > 0.7){
-            robot.outtake.autonIris(false);
-        }
-
-//        robot.outtake.actuate();
-//        robot.intake.actuate();
-//        robot.intake.updateGrabs();
+        robot.outtake.actuate();
+        robot.intake.actuate();
+        robot.intake.updateGrabs();
     }
 }

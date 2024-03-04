@@ -1,8 +1,6 @@
 package org.firstinspires.ftc.teamcode.hardware;
 
-import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
-import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.controller.PIDController;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -19,20 +17,20 @@ import java.util.TimerTask;
 public class Outtake {
     private PIDController controller;
     Servo leftIris, rightIris, pitchServo, yawServo;
-    DcMotor liftMotor, tiltMotor; //extensionMotor controls the length of arm, tiltMotor controls rotation/angle of the arm
+    public static DcMotor liftMotor, tiltMotor; //extensionMotor controls the length of arm, tiltMotor controls rotation/angle of the arm
 
 
     //presets
-    public static final double leftIrisExpand = 0.57, leftIrisContract = 0.35, rightIrisExpand = 0.5, rightIrisContract = 0.31;
+    public static final double leftIrisExpand = 0.57, leftIrisContract = 0.35, rightIrisExpand = 0.6, rightIrisContract = 0.31;
     public static final double intakePitch = 0.0, scorePitch = 0.45, autonPitch = 0.93;
     public static final double yawVertical = 0.32, yawHorizontal = 0.66;
     public static final int tiltTransfer = 0, tiltHover = 300, tiltStraight = 1984;
-    public static final int liftBase = 0, liftTransfer = 310; //tuning needed
+    public static int liftBase = 0, liftTransfer = 300; //tuning needed
 
     public static final double liftPower = 0.8;
     public static final double tiltPower = 0.5;
 
-    public static TiltPositions currTiltPos = TiltPositions.DOWN;
+    public static TiltPositions currTiltPos = TiltPositions.READY_TO_INTAKE;
 
     public int liftTarget = liftTransfer;
 
@@ -127,7 +125,7 @@ public class Outtake {
 
     public void actuate() {
         //iris
-        if(currTiltPos == TiltPositions.DOWN) {
+        if(currTiltPos == TiltPositions.READY_TO_INTAKE) {
             leftIris.setPosition(leftIrisContract);
             rightIris.setPosition(rightIrisContract);
         } else {
@@ -169,13 +167,18 @@ public class Outtake {
 
         //tilt+lift presets
         if(gamepad2.dpad_up) {
-            currTiltPos = TiltPositions.UP; //tells irises to expand
-            tiltTarget = tiltStraight;
-            isAutoPitch = true;
-            isAutoTransfer = false;
+            currTiltPos = TiltPositions.READY_TO_OUTTAKE; //tells irises to expand
+            timer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    tiltTarget = tiltStraight;
+                    isAutoPitch = true;
+                    isAutoTransfer = false;
+                }
+            }, 200);
             //yaw will automatically turn once the tilt has cleared the min tilt
         } else if (gamepad2.dpad_down && Intake.currExtendPos == Intake.ExtendPositions.TRANSFER) {
-            currTiltPos = TiltPositions.DOWN; //contracts irises
+            currTiltPos = TiltPositions.READY_TO_INTAKE;
             pitchServo.setPosition(intakePitch);
             isAutoPitch = false;
             isAutoTransfer = true;
@@ -189,6 +192,12 @@ public class Outtake {
                 }, 400);
                 tiltScheduledForPreset = true;
             }
+            timer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    currTiltPos = TiltPositions.READY_TO_OUTTAKE;
+                }
+            }, 2400);
         }
 
         if(tiltMotor.getCurrentPosition() < tiltHover - 100) {
@@ -197,10 +206,10 @@ public class Outtake {
 
         if(isAutoTransfer) {
             if(Intake.currRequestPos == Intake.RequestedExtendPositions.EXTENDED_FULL) { //intake wants to extend
+                currTiltPos = TiltPositions.READY_TO_INTAKE;
                 hoverArm();
                 tiltScheduled = false;
             } else if(Intake.currExtendPos == Intake.ExtendPositions.TRANSFER) { //intake is ready to transfer
-                currTiltPos = TiltPositions.DOWN; //contracts irises
                 pitchServo.setPosition(intakePitch);
                 isAutoPitch = false;
                 liftTarget = liftTransfer;
@@ -213,13 +222,19 @@ public class Outtake {
                     }, 400);
                     tiltScheduled = true;
                 }
+                timer.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        currTiltPos = TiltPositions.READY_TO_OUTTAKE;
+                    }
+                }, 2400);
             }
         }
 
 
-        if(tiltMotor.getCurrentPosition() > tiltHover - 40) {
-            currTiltPos = TiltPositions.UP; //tells intake it *can* extend to full without issues
-        }
+//        if(tiltMotor.getCurrentPosition() > tiltHover + 80) {
+//            currTiltPos = TiltPositions.READY_TO_OUTTAKE; //tells intake it *can* extend to full without issues
+//        }
 
         liftArm(liftTarget);
         tiltArm(tiltTarget);
@@ -304,8 +319,8 @@ public class Outtake {
     }
 
     public enum TiltPositions {
-        DOWN,
-        UP
+        READY_TO_INTAKE,
+        READY_TO_OUTTAKE
     }
 
 }

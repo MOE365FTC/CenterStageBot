@@ -58,8 +58,8 @@ public class SampleMecanumDrive extends MecanumDrive {
 
     //***NOTE***: This class is tuned to the PowerPlay robot, reset by copying from github when tuning CenterStage
 
-    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(0, 0, 0); // 23, 9 ,0.5
-    public static PIDCoefficients HEADING_PID = new PIDCoefficients(0, 0, 0); // 16, .1, .1125
+    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(30, 0, 1); // 23, 9 ,0.5
+    public static PIDCoefficients HEADING_PID = new PIDCoefficients(30, 0, 0); // 16, .1, .1125
 
     public static double LATERAL_MULTIPLIER = 1; //.8175 // 1.538
 
@@ -123,15 +123,14 @@ public class SampleMecanumDrive extends MecanumDrive {
         // BNO055IMUUtil.remapZAxis(imu, AxisDirection.NEG_Y);
 //        BNO055IMUUtil.remapZAxis(imu, AxisDirection.NEG_X);
 
-        leftFront = hardwareMap.get(DcMotorEx.class, "FLM02");
-        leftRear = hardwareMap.get(DcMotorEx.class, "BLM00");
-        rightFront = hardwareMap.get(DcMotorEx.class, "FRM03");
-        rightRear = hardwareMap.get(DcMotorEx.class, "BRM01");
+        leftFront = hardwareMap.get(DcMotorEx.class, "FLM");
+        leftRear = hardwareMap.get(DcMotorEx.class, "BLM");
+        rightFront = hardwareMap.get(DcMotorEx.class, "FRM");
+        rightRear = hardwareMap.get(DcMotorEx.class, "BRM");
 
 //        rightRear.setDirection(DcMotorSimple.Direction.REVERSE);
 //        rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
         leftRear.setDirection(DcMotorSimple.Direction.REVERSE);
-        leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
         motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront);
 
         for (DcMotorEx motor : motors) {

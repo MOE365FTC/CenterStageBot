@@ -42,7 +42,7 @@ import static org.firstinspires.ftc.teamcode.rr.drive.DriveConstants.kV;
 @Config
 @Autonomous(group = "drive")
 public class ManualFeedforwardTuner extends LinearOpMode {
-    public static double DISTANCE = 72; // in
+    public static double DISTANCE = 50; // in
 
     private FtcDashboard dashboard = FtcDashboard.getInstance();
 
@@ -110,7 +110,7 @@ public class ManualFeedforwardTuner extends LinearOpMode {
 
                     MotionState motionState = activeProfile.get(profileTime);
                     double targetPower = Kinematics.calculateMotorFeedforward(motionState.getV(), motionState.getA(), kV, kA, kStatic);
-
+                    telemetry.addData("targetPower", targetPower);
                     drive.setDrivePower(new Pose2d(targetPower, 0, 0));
                     drive.updatePoseEstimate();
 
@@ -139,6 +139,9 @@ public class ManualFeedforwardTuner extends LinearOpMode {
                     );
                     break;
             }
+
+            telemetry.addData("X", drive.getPoseEstimate().getX());
+            telemetry.addData("Y", drive.getPoseEstimate().getY());
 
             telemetry.update();
         }

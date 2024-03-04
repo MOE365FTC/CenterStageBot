@@ -21,7 +21,7 @@ public class Intake {
 
     //presets intake
     public static final double intakeSlidesPower = 0.5, intakeMotorPower = 0.7;
-    public static final int intakeSlidesBase = 0, intakeSlidesTransfer = 320, intakeSlidesOut = 1440; //tuning needed
+    public static final int intakeSlidesBase = 0, intakeSlidesTransfer = 290, intakeSlidesOut = 1440; //tuning needed
     public static ExtendPositions currExtendPos = ExtendPositions.TRANSFER;
     public static RequestedExtendPositions currRequestPos = RequestedExtendPositions.TRANSFER;
 
@@ -85,11 +85,15 @@ public class Intake {
     }
 
     public void actuate() {
+        if(gamepad1.y){
+            runGrabs();
+        }
+
         //intake slides presets
-        if (gamepad1.b && Outtake.currTiltPos != Outtake.TiltPositions.DOWN) { //should only be used right before hang
+        if (gamepad1.b && Outtake.tiltMotor.getCurrentPosition() > Outtake.tiltHover - 30) { //should only be used right before hang
             extendIntake(intakeSlidesBase);
             currRequestPos = RequestedExtendPositions.BASE;
-        } else if(gamepad1.a && Outtake.currTiltPos != Outtake.TiltPositions.DOWN) { //tilt should already be in hover
+        } else if(gamepad1.a && Outtake.tiltMotor.getCurrentPosition() > Outtake.tiltHover - 30) { //tilt should already be in hover
             Outtake.isAutoTransfer = true;
             extendIntake(intakeSlidesTransfer);
             currRequestPos = RequestedExtendPositions.TRANSFER;
@@ -97,7 +101,7 @@ public class Intake {
             currRequestPos = RequestedExtendPositions.EXTENDED_FULL; //this will also notify outtake to hover the arm
         }
 
-        if(currRequestPos == RequestedExtendPositions.EXTENDED_FULL && Outtake.currTiltPos == Outtake.TiltPositions.UP) {
+        if(currRequestPos == RequestedExtendPositions.EXTENDED_FULL && Outtake.tiltMotor.getCurrentPosition() > Outtake.tiltHover - 30) {
             extendIntake(intakeSlidesOut); //only extends to full after arm in hover
             currExtendPos = ExtendPositions.EXTENDED_FULL;
         } else if(currRequestPos == RequestedExtendPositions.TRANSFER && intakeSlides.getCurrentPosition() < intakeSlidesTransfer + 100) {
