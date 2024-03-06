@@ -27,9 +27,5 @@ public class Teleop extends OpMode {
         robot.intake.updateGrabs();
         robot.droneLauncher.actuate();
         robot.hang.actuate();
-
-        if(gamepad2.b) {
-            robot.intake.runGrabs();
-        }
     }
 }

@@ -16,9 +16,10 @@ import java.util.TimerTask;
 @Config
 public class Outtake {
     private PIDController controller;
-    Servo leftIris, rightIris, pitchServo, yawServo;
+    Servo leftIris, rightIris, pitchServo, yawServo, dropLServo, dropRServo;
     public static DcMotor liftMotor, tiltMotor; //extensionMotor controls the length of arm, tiltMotor controls rotation/angle of the arm
 
+    public static double dropPosR = 0.38, dropPosL = 0.62, upPosL = 0.98, upPosR = 0.02;
 
     //presets
     public static final double leftIrisExpand = 0.57, leftIrisContract = 0.35, rightIrisExpand = 0.6, rightIrisContract = 0.31;
@@ -74,6 +75,9 @@ public class Outtake {
         liftMotor = hardwareMap.get(DcMotor.class, "liftMotor");
         tiltMotor = hardwareMap.get(DcMotor.class, "tiltMotor");
         yawServo = hardwareMap.get(Servo.class, "yawServo");
+
+        dropLServo = hardwareMap.get(Servo.class, "DLS");
+        dropRServo = hardwareMap.get(Servo.class, "DRS");
 
         //iris setup
         if(isAuton) {
@@ -154,15 +158,10 @@ public class Outtake {
 
         //manual tilt arm
         if(tiltMotor.getCurrentPosition() > MIN_TILT_TICKS) { //to tilt out use presets and then fine tuning with manual
-
-            yawServo.setPosition(yawHorizontal);
-
             if (-gamepad2.right_stick_y > 0.75 && tiltTarget <= MAX_TILT_TICKS - 75) {
                 tiltTarget += 25;
             } else if (-gamepad2.right_stick_y < -0.75 && tiltTarget >= MIN_TILT_TICKS + 75)
                 tiltTarget -= 25;
-        } else {
-            yawServo.setPosition(yawVertical);
         }
 
         //tilt+lift presets
@@ -176,13 +175,19 @@ public class Outtake {
                     isAutoTransfer = false;
                 }
             }, 200);
-            //yaw will automatically turn once the tilt has cleared the min tilt
+            timer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    yawServo.setPosition(yawHorizontal);
+                }
+            }, 900);
         } else if (gamepad2.dpad_down && Intake.currExtendPos == Intake.ExtendPositions.TRANSFER) {
             currTiltPos = TiltPositions.READY_TO_INTAKE;
             pitchServo.setPosition(intakePitch);
             isAutoPitch = false;
             isAutoTransfer = true;
             liftTarget = liftTransfer;
+            yawServo.setPosition(yawVertical);
             if(!tiltScheduledForPreset) {
                 timer.schedule(new TimerTask() {
                     @Override
@@ -240,9 +245,23 @@ public class Outtake {
         tiltArm(tiltTarget);
     }
 
+    public void autonDropLeftServo(boolean drop){
+        if(drop) dropLServo.setPosition(dropPosL);
+        else dropLServo.setPosition(upPosL);
+    }
+
+    public void autonDropRightServo(boolean drop){
+        if(drop) dropRServo.setPosition(dropPosR);
+        else dropRServo.setPosition(upPosR);
+    }
+
     public void hoverArm() {
         liftTarget = liftTransfer;
         tiltTarget = tiltHover;
+    }
+
+    public void setPitchServo(double pos) {
+        pitchServo.setPosition(pos);
     }
 
     private void tiltArm(int targetPos) {
@@ -255,23 +274,6 @@ public class Outtake {
         liftMotor.setPower(liftPower);
     }
 
-    public void autonTilt(int target) { //use in teleop and auto by changing the tiltTarget variable (this will be automatically called at the end of loops)
-
-
-//        controller.setPID(p, i, d);
-//        int armPos = tiltMotor.getCurrentPosition();
-//        double pid = controller.calculate(armPos,target);
-//        double ff = Math.cos(Math.toRadians(target/tiltMotorTicksPerDegree)) * f;
-//
-//        tiltPower = pid + ff;
-//        tiltMotor.setPower(tiltPower);
-//
-//        telemetry.addData("pos", armPos);
-//        telemetry.addData("target", target);
-//        telemetry.addData("tilt power", tiltPower);
-//        telemetry.addData("pid", pid);
-//        telemetry.update();
-    }
 
     public void autonIris(boolean expand) { //auton method for iris control
         leftIris.setPosition(expand ? leftIrisExpand : leftIrisContract);
@@ -286,10 +288,29 @@ public class Outtake {
         rightIris.setPosition(open ? rightIrisExpand : rightIrisContract);
     }
 
+    public void autonTilt(autonTiltPositions pos) { //use in teleop and auto by changing the tiltTarget variable (this will be automatically called at the end of loops)
+       switch(pos) {
+           case BASE:
+               tiltArm(liftBase);
+               break;
+           case HOVER:
+               tiltArm(tiltHover);
+               break;
+           case STRAIGHT:
+               tiltArm(tiltStraight);
+       }
+    }
+
     public void autonLift(autonLiftPositions pos) {
         switch(pos) {
             case BASE:
                 liftArm(liftBase);
+                break;
+            case TRANSFER:
+                liftArm(liftTransfer);
+                break;
+            case EXTEND:
+                liftArm(MAX_LIFT_TICKS - 100);
             default:
                 liftArm(liftBase);
         }
@@ -315,7 +336,15 @@ public class Outtake {
     }
 
     public enum autonLiftPositions {
-        BASE
+        BASE,
+        TRANSFER,
+        EXTEND,
+    }
+
+    public enum autonTiltPositions {
+        BASE,
+        HOVER,
+        STRAIGHT
     }
 
     public enum TiltPositions {

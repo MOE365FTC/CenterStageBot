@@ -11,7 +11,6 @@ public class MOEBot {
     public VisionBlob visionBlob;
     public DroneLauncher droneLauncher;
     public Intake intake;
-//    public DispenserDec17 dispenser;
     public Outtake outtake;
     public Hanging hang;
 

@@ -11,23 +11,26 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 @Config
 public class Intake {
-    CRServo grabLeft, grabRight;
+    Servo grabLeft, grabRight;
     DcMotor intakeMotor, intakeSlides; //extensionMotor controls the length of arm, tiltMotor controls rotation/angle of the arm
     public DigitalChannel grabLeftSwitch, grabRightSwitch;
     Servo transferBeltServo;
 
 
     //presets intake
-    public static final double intakeSlidesPower = 0.5, intakeMotorPower = 0.7;
+    public static final double intakeSlidesPower = 0.8, intakeMotorPower = 0.7;
     public static final int intakeSlidesBase = 0, intakeSlidesTransfer = 290, intakeSlidesOut = 1440; //tuning needed
     public static ExtendPositions currExtendPos = ExtendPositions.TRANSFER;
     public static RequestedExtendPositions currRequestPos = RequestedExtendPositions.TRANSFER;
 
     public static final double transferBeltUp = 0.52, transferBeltDown = 0.02;
 
-    double grabServoPower = 0.7;
+    public static double grabLeftIn = 0, grabLeftOut = 1, grabRightIn = 1, grabRightOut = 0;
     boolean oldGrabLeftClicked = true, oldGrabRightClicked = true;
     boolean runGrabL = false, runGrabR = false;
 
@@ -36,6 +39,8 @@ public class Intake {
     Gamepad gamepad2;
     Telemetry telemetry;
 
+    Timer timer;
+
     //NEVER RUN THIS IN TELEOP WITHOUT FIRST RUNNING UNFOLD OPMODE OR AUTON
     public Intake(HardwareMap hardwareMap, Gamepad gamepad1, Gamepad gamepad2, Telemetry telemetry, boolean isAuton){
         this.gamepad1 = gamepad1;
@@ -43,9 +48,8 @@ public class Intake {
         this.telemetry = telemetry;
 
         //hardware setup
-        grabLeft = hardwareMap.get(CRServo.class, "grabLeft");
-        grabRight = hardwareMap.get(CRServo.class, "grabRight");
-        grabLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+        grabLeft = hardwareMap.get(Servo.class, "grabLeft");
+        grabRight = hardwareMap.get(Servo.class, "grabRight");
         intakeMotor = hardwareMap.get(DcMotor.class, "intakeMotor");
         intakeSlides = hardwareMap.get(DcMotor.class, "intakeSlides");
         grabLeftSwitch = hardwareMap.get(DigitalChannel.class, "grabLeftSwitch");
@@ -55,10 +59,6 @@ public class Intake {
         //transfer belt setup
         if(isAuton) transferBeltServo.setPosition(transferBeltDown);
         else transferBeltServo.setPosition(transferBeltUp);
-
-        //grab setup
-        grabLeftSwitch.setMode(DigitalChannel.Mode.INPUT);
-        grabRightSwitch.setMode(DigitalChannel.Mode.INPUT);
 
         //extend
         if(isAuton) {
@@ -78,15 +78,23 @@ public class Intake {
         intakeSlides.setPower(intakeSlidesPower);
 
         //grab servos
-        if(!isAuton) {
-            runGrabs();
+        if(isAuton) {
+            grabRight.setPosition(grabRightIn);
+            grabLeft.setPosition(grabLeftIn);
+        } else {
+            grabRight.setPosition(grabRightOut);
+            grabLeft.setPosition(grabLeftOut);
         }
+
+        timer = new Timer("intakeTimer");
 
     }
 
     public void actuate() {
         if(gamepad1.y){
-            runGrabs();
+            runGrabs(true);
+        } else {
+            runGrabs(false);
         }
 
         //intake slides presets
@@ -137,33 +145,49 @@ public class Intake {
                 break;
             case EXTENDED_FULL:
                 extendIntake(intakeSlidesOut);
+                break;
         }
     }
 
-    public void runGrabs() { //called once in auton to update runGate variables so that on the next loop of updateGates() the gates will spin once
-        runGrabL = true;
-        runGrabR = true;
-        //could also replace this code by just turning it on and then turning it off with a TimerTask if we cant get limit switches
+    public void autonRunIntake(boolean start) {
+        if(start) intakeMotor.setPower(intakeMotorPower);
+        else intakeMotor.setPower(0);
+    }
+
+//    public void runGrabs() { //called once in auton to update runGate variables so that on the next loop of updateGates() the gates will spin once
+//        runGrabL = true;
+//        runGrabR = true;
+//        //could also replace this code by just turning it on and then turning it off with a TimerTask if we cant get limit switches
+//    }
+
+    public void runGrabs(boolean in) {
+        if(in) {
+            grabLeft.setPosition(grabLeftIn);
+            grabRight.setPosition(grabRightIn);
+        } else {
+            grabLeft.setPosition(grabLeftOut);
+            grabRight.setPosition(grabRightOut);
+        }
     }
 
     public void updateGrabs(){ //needs to be looped in auton
-        if(runGrabL) {
-            grabLeft.setPower(grabServoPower);
-            if(grabLeftSwitch.getState() && !oldGrabLeftClicked) {
-                grabLeft.setPower(0);
-                runGrabL = false;
-            }
-            oldGrabLeftClicked = grabLeftSwitch.getState();
-
-        }
-        if(runGrabR) {
-            grabRight.setPower(grabServoPower);
-            if (grabRightSwitch.getState() && !oldGrabRightClicked) {
-                grabRight.setPower(0);
-                runGrabR = false;
-            }
-            oldGrabRightClicked = grabRightSwitch.getState();
-        }
+//        if(runGrabL) {
+//            grabLeft.setPower(grabServoPower);
+//            if(grabLeftSwitch.getState() && !oldGrabLeftClicked) {
+//                grabLeft.setPower(0);
+//                runGrabL = false;
+//            }
+//            oldGrabLeftClicked = grabLeftSwitch.getState();
+//
+//        }
+//        if(runGrabR) {
+//            grabRight.setPower(grabServoPower);
+//            if (grabRightSwitch.getState() && !oldGrabRightClicked) {
+//                grabRight.setPower(0);
+//                runGrabR = false;
+//            }
+//            oldGrabRightClicked = grabRightSwitch.getState();
+//        }
     }
 
     public void zero() {

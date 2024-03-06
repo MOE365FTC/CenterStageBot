@@ -62,6 +62,5 @@ public class testTeleop extends OpMode {
 
         robot.outtake.actuate();
         robot.intake.actuate();
-        robot.intake.updateGrabs();
     }
 }

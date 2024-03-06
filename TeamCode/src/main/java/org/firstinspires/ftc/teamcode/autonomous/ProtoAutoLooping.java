@@ -57,7 +57,7 @@ public class ProtoAutoLooping extends LinearOpMode {
         drive.followTrajectorySequenceAsync(pixelCenter);
         while(!Thread.currentThread().isInterrupted() && drive.isBusy()) {
             drive.update();
-            robot.outtake.autonTilt(tiltTarget);
+//            robot.outtake.autonTilt(tiltTarget);
         }
     }
 }

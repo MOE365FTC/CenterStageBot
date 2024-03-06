@@ -273,7 +273,6 @@ public class NexusBlueLeft extends LinearOpMode {
 //
 //        while(!Thread.currentThread().isInterrupted() && drive.isBusy()) {
 //            drive.update();
-//            robot.outtake.autonTilt(tiltTarget);
 //        }
 
     }

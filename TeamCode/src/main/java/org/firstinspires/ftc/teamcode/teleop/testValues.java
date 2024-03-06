@@ -29,8 +29,6 @@ public class testValues extends OpMode {
         robot.outtake.telemetryOuttake();
         robot.intake.telemetryIntake();
 
-        telemetry.addData("grabLeftSwitch", robot.intake.grabLeftSwitch.getState());
-        telemetry.addData("grabRightSwitch", robot.intake.grabRightSwitch.getState());
         switch(Intake.currExtendPos) {
             case BASE:
                 telemetry.addData("CurrentExtendPositions", "BASE");
@@ -54,17 +52,11 @@ public class testValues extends OpMode {
         }
         switch(Outtake.currTiltPos) {
             case READY_TO_OUTTAKE:
-                telemetry.addData("CurrentOuttakeState", "UP");
+                telemetry.addData("CurrentOuttakeState", "READY_TO_OUTTAKE");
                 break;
             case READY_TO_INTAKE:
-                telemetry.addData("CurrentOuttakeState", "DOWN");
+                telemetry.addData("CurrentOuttakeState", "READY_TO_INTAKE");
                 break;
-        }
-
-        if(gamepad1.right_trigger > 0.7){
-            robot.outtake.autonIris(true);
-        }else if(gamepad1.left_trigger > 0.7){
-            robot.outtake.autonIris(false);
         }
 
 //        robot.outtake.actuate();
