@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.teleop;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -13,10 +14,12 @@ import java.time.LocalTime;
 import java.util.Timer;
 
 @Autonomous
+@Config
 public class unfoldOpMode extends LinearOpMode {
 
     DcMotor intakeSlides, liftMotor, tiltMotor;
     Servo transferBeltServo, pitchServo, yawServo;
+    public static int transferTicks = 338;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -77,7 +80,7 @@ public class unfoldOpMode extends LinearOpMode {
             //wait
         }
         tiltMotor.setTargetPosition(0);
-        liftMotor.setTargetPosition(290);
+        liftMotor.setTargetPosition(transferTicks);
         tiltMotor.setPower(0.5);
         liftMotor.setPower(0.5);
 

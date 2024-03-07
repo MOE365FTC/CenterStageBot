@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.hardware;
 import static org.opencv.features2d.Features2d.DrawMatchesFlags_DRAW_RICH_KEYPOINTS;
 import static org.opencv.features2d.Features2d.drawKeypoints;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -23,11 +24,15 @@ import org.openftc.easyopencv.OpenCvWebcam;
 import java.util.ArrayList;
 import java.util.List;
 
+@Config
 public class VisionBlob {
     Telemetry telemetry;
     HardwareMap hardwareMap;
     OpenCvWebcam webcam;
-    public int propPos;
+    public int propPos = 1;
+
+    public static int leftBoundary = 600;
+    public static int rightBoundary = 1400;
 
 
     public VisionBlob(Telemetry telemetry, HardwareMap hardwareMap) {
@@ -114,12 +119,15 @@ public class VisionBlob {
                 yPoints.add(convPoints.get(i).pt.y);
             }
 
+            if(keyPoints.empty()) propPos=1;
             for(int i = 0; i < keyPoints.size(0); i++){
-                if (xPoints.get(i) < 600) propPos = 1;
-                else if (xPoints.get(i) > 1400) propPos = 3;
-                else propPos = 2;
+//                telemetry.addData("xpos", xPoints.get(i));
+                if (xPoints.get(i) > rightBoundary) propPos = 3;
+                else if (xPoints.get(i) > leftBoundary) propPos = 2;
+                else propPos = 1;
                 drawKeypoints(input, keyPoints, input, new Scalar(0, 255, 0), DrawMatchesFlags_DRAW_RICH_KEYPOINTS);
             }
+            telemetry.update();
 
             return input;
         }

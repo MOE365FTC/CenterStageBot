@@ -16,7 +16,7 @@ import java.util.TimerTask;
 @Config
 public class Outtake {
     private PIDController controller;
-    Servo leftIris, rightIris, pitchServo, yawServo, dropLServo, dropRServo;
+    Servo leftIris, rightIris, pitchServo, yawServo;
     public static DcMotor liftMotor, tiltMotor; //extensionMotor controls the length of arm, tiltMotor controls rotation/angle of the arm
 
     public static double dropPosR = 0.38, dropPosL = 0.62, upPosL = 0.98, upPosR = 0.02;
@@ -25,7 +25,7 @@ public class Outtake {
     public static final double leftIrisExpand = 0.57, leftIrisContract = 0.35, rightIrisExpand = 0.6, rightIrisContract = 0.31;
     public static final double intakePitch = 0.0, scorePitch = 0.45, autonPitch = 0.93;
     public static final double yawVertical = 0.32, yawHorizontal = 0.66;
-    public static final int tiltTransfer = 0, tiltHover = 300, tiltStraight = 1984;
+    public static final int tiltTransfer = 0, tiltHover = 450, tiltStraight = 1984;
     public static int liftBase = 0, liftTransfer = 300; //tuning needed
 
     public static final double liftPower = 0.8;
@@ -75,9 +75,6 @@ public class Outtake {
         liftMotor = hardwareMap.get(DcMotor.class, "liftMotor");
         tiltMotor = hardwareMap.get(DcMotor.class, "tiltMotor");
         yawServo = hardwareMap.get(Servo.class, "yawServo");
-
-        dropLServo = hardwareMap.get(Servo.class, "DLS");
-        dropRServo = hardwareMap.get(Servo.class, "DRS");
 
         //iris setup
         if(isAuton) {
@@ -245,15 +242,6 @@ public class Outtake {
         tiltArm(tiltTarget);
     }
 
-    public void autonDropLeftServo(boolean drop){
-        if(drop) dropLServo.setPosition(dropPosL);
-        else dropLServo.setPosition(upPosL);
-    }
-
-    public void autonDropRightServo(boolean drop){
-        if(drop) dropRServo.setPosition(dropPosR);
-        else dropRServo.setPosition(upPosR);
-    }
 
     public void hoverArm() {
         liftTarget = liftTransfer;
@@ -262,6 +250,10 @@ public class Outtake {
 
     public void setPitchServo(double pos) {
         pitchServo.setPosition(pos);
+    }
+
+    public void setYawServo(double pos) {
+        yawServo.setPosition(pos);
     }
 
     private void tiltArm(int targetPos) {
@@ -291,13 +283,13 @@ public class Outtake {
     public void autonTilt(autonTiltPositions pos) { //use in teleop and auto by changing the tiltTarget variable (this will be automatically called at the end of loops)
        switch(pos) {
            case BASE:
-               tiltArm(liftBase);
+               tiltArm(tiltTransfer);
                break;
            case HOVER:
                tiltArm(tiltHover);
                break;
            case STRAIGHT:
-               tiltArm(tiltStraight);
+               tiltArm(tiltStraight + 150);
        }
     }
 

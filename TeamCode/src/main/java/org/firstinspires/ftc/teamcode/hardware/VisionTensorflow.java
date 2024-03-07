@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.hardware;
 
 import android.util.Size;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -13,6 +14,7 @@ import org.firstinspires.ftc.vision.tfod.TfodProcessor;
 
 import java.util.List;
 
+@Config
 public class VisionTensorflow {
 
     Telemetry telemetry;
@@ -20,7 +22,10 @@ public class VisionTensorflow {
     private TfodProcessor tfod;
     private VisionPortal visionPortal;
     private static final boolean USE_WEBCAM = true;  //true for webcam, false for phone camera
-    private int propPos = -1;
+    private int propPos = 1;
+
+    public static int leftBoundary = 200;
+    public static int rightBoundary = 500;
 
     String[] LABELS = {"blueProp", "redProp"}; //categories for object detection
 
@@ -36,6 +41,7 @@ public class VisionTensorflow {
 //        telemetry.addData("# Objects Detected", currentRecognitions.size());
 
         // Step through the list of recognitions and display info for each one.
+        if(currentRecognitions.isEmpty()) propPos = 1;
         for (Recognition recognition : currentRecognitions) {
             double x = (recognition.getLeft() + recognition.getRight()) / 2 ;
             double y = (recognition.getTop()  + recognition.getBottom()) / 2 ;
@@ -45,9 +51,9 @@ public class VisionTensorflow {
 //            telemetry.addData("- Position", "%.0f / %.0f", x, y);
 
             //classifies spike mark position based on x-coords of detected bounding box
-            if(x < 300) propPos = 1;
-            else if(x > 650) propPos = 3;
-            else propPos = 2;
+            if(x > rightBoundary) propPos = 3;
+            else if(x > leftBoundary) propPos = 2;
+            else propPos = 1;
         }
         telemetry.update();
     }

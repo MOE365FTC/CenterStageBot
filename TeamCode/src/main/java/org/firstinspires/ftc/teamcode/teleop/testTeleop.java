@@ -28,8 +28,6 @@ public class testTeleop extends OpMode {
         robot.outtake.telemetryOuttake();
         robot.intake.telemetryIntake();
 
-        telemetry.addData("grabLeftSwitch", robot.intake.grabLeftSwitch.getState());
-        telemetry.addData("grabRightSwitch", robot.intake.grabRightSwitch.getState());
         switch(Intake.currExtendPos) {
             case BASE:
                 telemetry.addData("CurrentExtendPositions", "BASE");

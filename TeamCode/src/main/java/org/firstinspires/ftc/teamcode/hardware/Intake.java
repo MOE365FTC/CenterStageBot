@@ -23,16 +23,14 @@ public class Intake {
 
 
     //presets intake
-    public static final double intakeSlidesPower = 0.8, intakeMotorPower = 0.7;
-    public static final int intakeSlidesBase = 0, intakeSlidesTransfer = 290, intakeSlidesOut = 1440; //tuning needed
+    public static final double intakeSlidesPower = 1, intakeMotorPower = 0.7;
+    public static final int intakeSlidesBase = 0, intakeSlidesTransfer = 338, intakeSlidesOut = 1440; //tuning needed
     public static ExtendPositions currExtendPos = ExtendPositions.TRANSFER;
     public static RequestedExtendPositions currRequestPos = RequestedExtendPositions.TRANSFER;
 
     public static final double transferBeltUp = 0.52, transferBeltDown = 0.02;
 
     public static double grabLeftIn = 0, grabLeftOut = 1, grabRightIn = 1, grabRightOut = 0;
-    boolean oldGrabLeftClicked = true, oldGrabRightClicked = true;
-    boolean runGrabL = false, runGrabR = false;
 
 
     Gamepad gamepad1;
@@ -52,8 +50,6 @@ public class Intake {
         grabRight = hardwareMap.get(Servo.class, "grabRight");
         intakeMotor = hardwareMap.get(DcMotor.class, "intakeMotor");
         intakeSlides = hardwareMap.get(DcMotor.class, "intakeSlides");
-        grabLeftSwitch = hardwareMap.get(DigitalChannel.class, "grabLeftSwitch");
-        grabRightSwitch = hardwareMap.get(DigitalChannel.class, "grabRightSwitch");
         transferBeltServo = hardwareMap.get(Servo.class, "transferBeltServo");
 
         //transfer belt setup
@@ -154,6 +150,12 @@ public class Intake {
         else intakeMotor.setPower(0);
     }
 
+    public void autonRunIntake(boolean start, boolean reverse) {
+        double mult = reverse ? -1 : 1;
+        if(start) intakeMotor.setPower(mult * intakeMotorPower);
+        else intakeMotor.setPower(0);
+    }
+
 //    public void runGrabs() { //called once in auton to update runGate variables so that on the next loop of updateGates() the gates will spin once
 //        runGrabL = true;
 //        runGrabR = true;
@@ -168,6 +170,11 @@ public class Intake {
             grabLeft.setPosition(grabLeftOut);
             grabRight.setPosition(grabRightOut);
         }
+    }
+
+    public void setTransferBeltServo(boolean up){
+        if(up) transferBeltServo.setPosition(transferBeltUp);
+        else transferBeltServo.setPosition(transferBeltDown);
     }
 
     public void updateGrabs(){ //needs to be looped in auton
