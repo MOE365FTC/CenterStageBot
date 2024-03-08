@@ -16,13 +16,14 @@ import java.util.TimerTask;
 @Config
 public class Outtake {
     private PIDController controller;
-    Servo leftIris, rightIris, pitchServo, yawServo;
+    Servo leftIris, rightIris, yawServo;
+    public static Servo pitchServo;
     public static DcMotor liftMotor, tiltMotor; //extensionMotor controls the length of arm, tiltMotor controls rotation/angle of the arm
 
     public static double dropPosR = 0.38, dropPosL = 0.62, upPosL = 0.98, upPosR = 0.02;
 
     //presets
-    public static final double leftIrisExpand = 0.57, leftIrisContract = 0.35, rightIrisExpand = 0.6, rightIrisContract = 0.31;
+    public static final double leftIrisExpand = 0.57, leftIrisContract = 0.35, rightIrisExpand = 0.6, rightIrisContract = 0.4;
     public static final double intakePitch = 0.0, scorePitch = 0.45, autonPitch = 0.93;
     public static final double yawVertical = 0.32, yawHorizontal = 0.66;
     public static final int tiltTransfer = 0, tiltHover = 450, tiltStraight = 1984;
@@ -231,6 +232,10 @@ public class Outtake {
                     }
                 }, 2400);
             }
+        }
+
+        if(Intake.currExtendPos == Intake.ExtendPositions.BASE) {
+            //TODO
         }
 
 

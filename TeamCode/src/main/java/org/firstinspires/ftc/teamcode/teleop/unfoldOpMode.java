@@ -18,7 +18,7 @@ import java.util.Timer;
 public class unfoldOpMode extends LinearOpMode {
 
     DcMotor intakeSlides, liftMotor, tiltMotor;
-    Servo transferBeltServo, pitchServo, yawServo;
+    Servo transferBeltServo, pitchServo, yawServo, PTO, irisLeft, irisRight;
     public static int transferTicks = 338;
 
     @Override
@@ -29,6 +29,11 @@ public class unfoldOpMode extends LinearOpMode {
         transferBeltServo = hardwareMap.get(Servo.class, "transferBeltServo");
         pitchServo = hardwareMap.get(Servo.class, "pitchServo");
         yawServo = hardwareMap.get(Servo.class, "yawServo");
+        PTO = hardwareMap.get(Servo.class, "PTO");
+        irisLeft = hardwareMap.get(Servo.class, "leftIris");
+        irisRight = hardwareMap.get(Servo.class, "rightIris");
+        irisLeft.setPosition(0.35);
+        irisRight.setPosition(0.4);
         yawServo.setPosition(0.66); //horizontal
         pitchServo.setPosition(0.93);
 
@@ -48,6 +53,8 @@ public class unfoldOpMode extends LinearOpMode {
         intakeSlides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         tiltMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        PTO.setPosition(0.95);
 
         waitForStart();
 

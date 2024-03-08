@@ -20,6 +20,12 @@ public class Intake {
     DcMotor intakeMotor, intakeSlides; //extensionMotor controls the length of arm, tiltMotor controls rotation/angle of the arm
     public DigitalChannel grabLeftSwitch, grabRightSwitch;
     Servo transferBeltServo;
+    Servo PTO;
+
+    //PTO
+    boolean readyToHang = false;
+    double lockedPos = 0.95, releasedPos = 0.45;
+    double hangPower = 1.0;
 
 
     //presets intake
@@ -51,6 +57,9 @@ public class Intake {
         intakeMotor = hardwareMap.get(DcMotor.class, "intakeMotor");
         intakeSlides = hardwareMap.get(DcMotor.class, "intakeSlides");
         transferBeltServo = hardwareMap.get(Servo.class, "transferBeltServo");
+        PTO = hardwareMap.get(Servo.class, "PTO");
+
+        PTO.setPosition(lockedPos);
 
         //transfer belt setup
         if(isAuton) transferBeltServo.setPosition(transferBeltDown);
@@ -93,10 +102,19 @@ public class Intake {
             runGrabs(false);
         }
 
+        actuatePTO();
+
         //intake slides presets
         if (gamepad1.b && Outtake.tiltMotor.getCurrentPosition() > Outtake.tiltHover - 30) { //should only be used right before hang
-            extendIntake(intakeSlidesBase);
-            currRequestPos = RequestedExtendPositions.BASE;
+            Outtake.pitchServo.setPosition(0.93);
+            transferBeltServo.setPosition(transferBeltDown);
+            timer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    extendIntake(intakeSlidesBase);
+                    currRequestPos = RequestedExtendPositions.BASE;
+                }
+            }, 180);
         } else if(gamepad1.a && Outtake.tiltMotor.getCurrentPosition() > Outtake.tiltHover - 30) { //tilt should already be in hover
             Outtake.isAutoTransfer = true;
             extendIntake(intakeSlidesTransfer);
@@ -115,19 +133,44 @@ public class Intake {
         }
 
         //intake motor
-        if (gamepad1.right_trigger > 0.3) {
-            transferBeltServo.setPosition(transferBeltDown);
-            intakeMotor.setPower(intakeMotorPower);
-        } else {
-            transferBeltServo.setPosition(transferBeltUp);
-            intakeMotor.setPower(0);
+        if(!readyToHang) {
+            if (gamepad1.right_trigger > 0.3) {
+                transferBeltServo.setPosition(transferBeltDown);
+                intakeMotor.setPower(intakeMotorPower);
+            } else if (gamepad1.left_trigger > 0.3) {
+                transferBeltServo.setPosition(transferBeltDown);
+                intakeMotor.setPower(-intakeMotorPower);
+            } else {
+                transferBeltServo.setPosition(transferBeltUp);
+                intakeMotor.setPower(0);
+            }
         }
 
     }
 
+    public void actuatePTO() {
+        if(readyToHang) {
+            intakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            if (gamepad2.right_trigger > 0.3) {
+                intakeMotor.setPower(hangPower);
+            } else if (gamepad2.left_trigger > 0.3) {
+                intakeMotor.setPower(-hangPower);
+            } else {
+                intakeMotor.setPower(0);
+            }
+        }
+
+        if(gamepad2.b && gamepad2.x) {
+            readyToHang = true;
+            PTO.setPosition(releasedPos);
+        }
+    }
+
     private void extendIntake(int targetPos) {
-        intakeSlides.setTargetPosition(targetPos);
-        intakeSlides.setPower(intakeSlidesPower);
+        if(!readyToHang) {
+            intakeSlides.setTargetPosition(targetPos);
+            intakeSlides.setPower(intakeSlidesPower);
+        }
     }
 
 

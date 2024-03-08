@@ -65,7 +65,8 @@ public class Chassis {
             headingOffset = -imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
         }
 
-        double botHeading = Math.toRadians(-imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES) - headingOffset);
+//        double botHeading = Math.toRadians(-imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES) - headingOffset);
+        double botHeading = 0;
 
         double rotX = x * Math.cos(botHeading) - y * Math.sin(botHeading);
         double rotY = x * Math.sin(botHeading) + y * Math.cos(botHeading);
@@ -97,6 +98,6 @@ public class Chassis {
     }
 
     public void imuTelemetry(Telemetry telemetry) {
-        telemetry.addData("imuHeading", -imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES) - headingOffset);
+//        telemetry.addData("imuHeading", -imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES) - headingOffset);
     }
 }

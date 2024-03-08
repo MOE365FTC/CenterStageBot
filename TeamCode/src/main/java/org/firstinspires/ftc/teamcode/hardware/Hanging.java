@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 @Config
+@Deprecated
 public class Hanging {
     DcMotorEx leftHangMotor, rightHangMotor;
     Servo PTO;

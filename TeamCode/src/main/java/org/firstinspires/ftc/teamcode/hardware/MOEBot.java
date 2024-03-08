@@ -12,7 +12,6 @@ public class MOEBot {
     public DroneLauncher droneLauncher;
     public Intake intake;
     public Outtake outtake;
-    public Hanging hang;
 
     public MOEBot(HardwareMap hardwareMap, Gamepad gamepad1, Gamepad gamepad2, Telemetry telemetry, boolean isAuton) {
         chassis = new Chassis(hardwareMap, gamepad1);

@@ -24,8 +24,7 @@ public class Teleop extends OpMode {
         robot.chassis.odoTelemetry(telemetry);
         robot.chassis.fieldCentricDrive();
         robot.outtake.actuate();
-        robot.intake.updateGrabs();
+        robot.intake.actuate();
         robot.droneLauncher.actuate();
-        robot.hang.actuate();
     }
 }

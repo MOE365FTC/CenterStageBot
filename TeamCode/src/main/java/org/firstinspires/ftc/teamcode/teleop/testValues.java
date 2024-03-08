@@ -62,5 +62,10 @@ public class testValues extends OpMode {
 //        robot.outtake.actuate();
 //        robot.intake.actuate();
 //        robot.intake.updateGrabs();
+        if(gamepad1.a) {
+            robot.outtake.autonIris(false);
+        } else {
+            robot.outtake.autonIris(true);
+        }
     }
 }
