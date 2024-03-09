@@ -13,9 +13,9 @@ public class MOEBot {
     public Intake intake;
     public Outtake outtake;
 
-    public MOEBot(HardwareMap hardwareMap, Gamepad gamepad1, Gamepad gamepad2, Telemetry telemetry, boolean isAuton) {
+    public MOEBot(HardwareMap hardwareMap, Gamepad gamepad1, Gamepad gamepad2, Telemetry telemetry, boolean isAuton, boolean onRightSide) {
         chassis = new Chassis(hardwareMap, gamepad1);
-        visionTensorflow = new VisionTensorflow(telemetry, hardwareMap);
+        visionTensorflow = new VisionTensorflow(telemetry, hardwareMap, onRightSide);
         visionBlob = new VisionBlob(telemetry, hardwareMap);
         droneLauncher = new DroneLauncher(hardwareMap, gamepad1);
         intake = new Intake(hardwareMap, gamepad1, gamepad2, telemetry, isAuton);

@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.teleop;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.hardware.Intake;
 import org.firstinspires.ftc.teamcode.hardware.MOEBot;
@@ -10,24 +11,26 @@ import org.firstinspires.ftc.teamcode.hardware.Outtake;
 @TeleOp
 public class testValues extends OpMode {
     MOEBot robot;
-//    Servo leftIris, rightIris;
+    Servo leftIris, rightIris;
     @Override
     public void init() {
-        robot = new MOEBot(hardwareMap, gamepad1, gamepad2, telemetry, false);
+//        robot = new MOEBot(hardwareMap, gamepad1, gamepad2, telemetry, false);
+        leftIris = hardwareMap.get(Servo.class, "leftIris");
+        rightIris = hardwareMap.get(Servo.class, "rightIris");
     }
 
     @Override
     public void init_loop(){
-        robot.chassis.imuTelemetry(telemetry);
+//        robot.chassis.imuTelemetry(telemetry);
     }
 
     @Override
     public void loop() {
 //        robot.chassis.fieldCentricDrive();
-        robot.chassis.imuTelemetry(telemetry);
-        robot.chassis.odoTelemetry(telemetry);
-        robot.outtake.telemetryOuttake();
-        robot.intake.telemetryIntake();
+//        robot.chassis.imuTelemetry(telemetry);
+//        robot.chassis.odoTelemetry(telemetry);
+//        robot.outtake.telemetryOuttake();
+//        robot.intake.telemetryIntake();
 
         switch(Intake.currExtendPos) {
             case BASE:
@@ -62,10 +65,12 @@ public class testValues extends OpMode {
 //        robot.outtake.actuate();
 //        robot.intake.actuate();
 //        robot.intake.updateGrabs();
+
         if(gamepad1.a) {
-            robot.outtake.autonIris(false);
+            leftIris.setPosition(0.57);
+            rightIris.setPosition(0.6);
         } else {
-            robot.outtake.autonIris(true);
-        }
+            leftIris.setPosition(0.35);
+            rightIris.setPosition(0.4);        }
     }
 }

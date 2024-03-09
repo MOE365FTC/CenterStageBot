@@ -17,7 +17,7 @@ public class ProtoAutoLooping extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
-        MOEBot robot = new MOEBot(hardwareMap, gamepad1, gamepad2, telemetry, true);
+        MOEBot robot = new MOEBot(hardwareMap, gamepad1, gamepad2, telemetry, true, false);
 
         Pose2d startPose = new Pose2d(-62, 12, Math.toRadians(0));
         drive.setPoseEstimate(startPose);

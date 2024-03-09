@@ -27,10 +27,12 @@ public class VisionTensorflow {
     public static int leftBoundary = 200;
     public static int rightBoundary = 500;
 
+    public boolean onRightSide = true;
+
     String[] LABELS = {"blueProp", "redProp"}; //categories for object detection
 
     //Vision Constructor (runs on init)
-    public VisionTensorflow(Telemetry telemetry, HardwareMap hardwareMap) {
+    public VisionTensorflow(Telemetry telemetry, HardwareMap hardwareMap, boolean onRightSide) {
         this.telemetry = telemetry;
         this.hardwareMap = hardwareMap;
         initTfod();
@@ -41,7 +43,13 @@ public class VisionTensorflow {
 //        telemetry.addData("# Objects Detected", currentRecognitions.size());
 
         // Step through the list of recognitions and display info for each one.
-        if(currentRecognitions.isEmpty()) propPos = 1;
+        if(currentRecognitions.isEmpty()) {
+            if(onRightSide) {
+                propPos = 1;
+            } else {
+                propPos = 3;
+            }
+        }
         for (Recognition recognition : currentRecognitions) {
             double x = (recognition.getLeft() + recognition.getRight()) / 2 ;
             double y = (recognition.getTop()  + recognition.getBottom()) / 2 ;
@@ -51,9 +59,15 @@ public class VisionTensorflow {
 //            telemetry.addData("- Position", "%.0f / %.0f", x, y);
 
             //classifies spike mark position based on x-coords of detected bounding box
-            if(x > rightBoundary) propPos = 3;
-            else if(x > leftBoundary) propPos = 2;
-            else propPos = 1;
+            if(onRightSide) {
+                if (x > rightBoundary) propPos = 3;
+                else if (x > leftBoundary) propPos = 2;
+                else propPos = 1;
+            } else {
+                if (x < leftBoundary) propPos = 1;
+                else if (x >= leftBoundary) propPos = 2;
+                else propPos = 3;
+            }
         }
         telemetry.update();
     }

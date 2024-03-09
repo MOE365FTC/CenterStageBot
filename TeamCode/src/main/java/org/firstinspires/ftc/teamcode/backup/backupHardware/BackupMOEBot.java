@@ -28,7 +28,7 @@ public class BackupMOEBot {
         backupChassis = new org.firstinspires.ftc.teamcode.backup.backupHardware.BackupChassis(hardwareMap, backupimu, gamepad1);
         backupClaw = new BackupClaw(hardwareMap, gamepad1, gamepad2);
         backuplift = new BackupLift(hardwareMap, gamepad1, gamepad2);
-        vision = new VisionTensorflow(telemetry, hardwareMap);
+        vision = new VisionTensorflow(telemetry, hardwareMap, false);
     }
 
     //Autonomous Constructor

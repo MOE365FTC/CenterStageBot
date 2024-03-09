@@ -16,7 +16,7 @@ public class redLeftRR extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
-        robot = new MOEBot(hardwareMap, gamepad1, gamepad2, telemetry, true);
+        robot = new MOEBot(hardwareMap, gamepad1, gamepad2, telemetry, true, false);
 
         Pose2d startPose = new Pose2d(62,-35, Math.toRadians(-180));
         drive.setPoseEstimate(startPose);

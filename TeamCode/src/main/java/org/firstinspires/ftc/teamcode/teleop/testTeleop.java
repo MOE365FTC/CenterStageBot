@@ -12,7 +12,7 @@ public class testTeleop extends OpMode {
     MOEBot robot;
     @Override
     public void init() {
-        robot = new MOEBot(hardwareMap, gamepad1, gamepad2, telemetry, false);
+        robot = new MOEBot(hardwareMap, gamepad1, gamepad2, telemetry, false, false);
     }
 
     @Override

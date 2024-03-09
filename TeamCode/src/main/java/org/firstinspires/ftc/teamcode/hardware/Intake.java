@@ -30,7 +30,7 @@ public class Intake {
 
     //presets intake
     public static final double intakeSlidesPower = 1, intakeMotorPower = 0.7;
-    public static final int intakeSlidesBase = 0, intakeSlidesTransfer = 338, intakeSlidesOut = 1440; //tuning needed
+    public static final int intakeSlidesBase = 0, intakeSlidesTransfer = 330, intakeSlidesOut = 1440; //tuning needed
     public static ExtendPositions currExtendPos = ExtendPositions.TRANSFER;
     public static RequestedExtendPositions currRequestPos = RequestedExtendPositions.TRANSFER;
 

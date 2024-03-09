@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode.autonomous;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
+import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityConstraint;
+import com.acmerobotics.roadrunner.trajectory.constraints.TranslationalVelocityConstraint;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
@@ -12,7 +14,7 @@ import org.firstinspires.ftc.teamcode.rr.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.rr.trajectorysequence.TrajectorySequence;
 
 @Autonomous
-public class NexusBlueLeft extends LinearOpMode {
+public class NexusRedRight extends LinearOpMode {
     MOEBot robot;
     public static int tiltTarget;
     public static double bufferTime = 0.3;
@@ -23,12 +25,12 @@ public class NexusBlueLeft extends LinearOpMode {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         MOEBot robot = new MOEBot(hardwareMap, gamepad1, gamepad2, telemetry, true, false);
 
-        Pose2d startPose = new Pose2d(-62, 12, Math.toRadians(180));
+        Pose2d startPose = new Pose2d(62, 12, Math.toRadians(0));
         drive.setPoseEstimate(startPose);
 
-        TrajectorySequence pixelLeft = drive.trajectorySequenceBuilder(startPose)
-                .lineToLinearHeading(new Pose2d(-23, 12, Math.toRadians(180)))
-                .lineToLinearHeading(new Pose2d(-23, 24, Math.toRadians(180)))
+        TrajectorySequence pixelRight = drive.trajectorySequenceBuilder(startPose)
+                .lineToLinearHeading(new Pose2d(23, 12, Math.toRadians(0)))
+                .lineToLinearHeading(new Pose2d(23, 24, Math.toRadians(0)))
                 .addTemporalMarker(() -> {
                     robot.intake.runGrabs(false);
                     robot.intake.autonRunIntake(true, true);
@@ -37,8 +39,8 @@ public class NexusBlueLeft extends LinearOpMode {
                 .addTemporalMarker(() -> {
                     robot.intake.autonRunIntake(false);
                 })
-                .lineToLinearHeading(new Pose2d(-16, 38, Math.toRadians(-90)))
-                .lineToSplineHeading(new Pose2d(-37.5,38,Math.toRadians(-90))) //spline to backdrop left position
+                .lineToLinearHeading(new Pose2d(16, 38, Math.toRadians(-90)))
+                .lineToSplineHeading(new Pose2d(37.5,38,Math.toRadians(-90))) //spline to backdrop left position
                 .addTemporalMarker(() -> {
                     robot.outtake.autonTilt(Outtake.autonTiltPositions.SCORE);
                 })
@@ -63,8 +65,8 @@ public class NexusBlueLeft extends LinearOpMode {
                     robot.outtake.autonTilt(Outtake.autonTiltPositions.HOVER);
                 })
                 .waitSeconds(2.0) //buffer time for outtake
-                .lineToConstantHeading(new Vector2d(-66, 54))
-                .lineToLinearHeading(new Pose2d(-70,60, Math.toRadians(-90))) //park
+                .lineToConstantHeading(new Vector2d(66, 54))
+                .lineToLinearHeading(new Pose2d(70,60, Math.toRadians(-90))) //park
                 .addTemporalMarker(() -> {
                     robot.intake.autonIntakeSlides(Intake.ExtendPositions.EXTENDED_FULL);
                 })
@@ -84,8 +86,8 @@ public class NexusBlueLeft extends LinearOpMode {
                 .build();
 
         TrajectorySequence pixelCenter = drive.trajectorySequenceBuilder(startPose)
-                .lineToLinearHeading(new Pose2d(-15, 40, Math.toRadians(180)))
-                .lineToLinearHeading(new Pose2d(-16, 7, Math.toRadians(180)))
+                .lineToLinearHeading(new Pose2d(15, 40, Math.toRadians(0)))
+                .lineToLinearHeading(new Pose2d(16, 7, Math.toRadians(0)))
                 .addTemporalMarker(() -> {
                     robot.intake.runGrabs(false);
                     robot.intake.autonRunIntake(true, true);
@@ -95,7 +97,7 @@ public class NexusBlueLeft extends LinearOpMode {
                     robot.intake.autonRunIntake(false);
                 })
                 .back(4)
-                .lineToSplineHeading(new Pose2d(-37,38,Math.toRadians(-90))) //spline to backdrop left position
+                .lineToSplineHeading(new Pose2d(37,38,Math.toRadians(-90))) //spline to backdrop left position
                 .addTemporalMarker(() -> {
                     robot.outtake.autonTilt(Outtake.autonTiltPositions.SCORE);
                 })
@@ -122,13 +124,13 @@ public class NexusBlueLeft extends LinearOpMode {
                     robot.outtake.autonTilt(Outtake.autonTiltPositions.BASE);
                 })
                 .waitSeconds(2.0) //buffer time for outtake
-                .lineToConstantHeading(new Vector2d(-66, 54))
-                .lineToLinearHeading(new Pose2d(-70,60, Math.toRadians(-90))) //park
+                .lineToConstantHeading(new Vector2d(66, 54))
+                .lineToLinearHeading(new Pose2d(70,60, Math.toRadians(-90))) //park
                 .build();
 
-        TrajectorySequence pixelRight = drive.trajectorySequenceBuilder(startPose)
-                .lineToLinearHeading(new Pose2d(-33, 20, Math.toRadians(-90)))
-                .lineToLinearHeading(new Pose2d(-33, 6.5, Math.toRadians(-90))) //go to tick mark
+        TrajectorySequence pixelLeft = drive.trajectorySequenceBuilder(startPose)
+                .lineToLinearHeading(new Pose2d(33, 20, Math.toRadians(-90)))
+                .lineToLinearHeading(new Pose2d(33, 6.5, Math.toRadians(-90))) //go to tick mark
                 .addTemporalMarker(() -> {
                     robot.intake.runGrabs(false);
                     robot.intake.autonRunIntake(true, true);
@@ -138,7 +140,7 @@ public class NexusBlueLeft extends LinearOpMode {
                     robot.intake.autonRunIntake(false);
                 })
                 .back(4)
-                .lineToSplineHeading(new Pose2d(-23.5,38,Math.toRadians(-90))) //spline to backdrop left position
+                .lineToSplineHeading(new Pose2d(24.5,38,Math.toRadians(-90))) //spline to backdrop left position
                 .addTemporalMarker(() -> {
                     robot.outtake.autonTilt(Outtake.autonTiltPositions.SCORE);
                 })
@@ -165,8 +167,8 @@ public class NexusBlueLeft extends LinearOpMode {
                     robot.outtake.autonTilt(Outtake.autonTiltPositions.BASE);
                 })
                 .waitSeconds(2.0) //buffer time for outtake
-                .forward(6)
-                .splineToConstantHeading(new Vector2d(-66,60), Math.toRadians(90)) //park
+                .lineToConstantHeading(new Vector2d(66, 54))
+                .lineToLinearHeading(new Pose2d(70,60, Math.toRadians(-90))) //park
                 .build();
 
 //        TrajectorySequence test = drive.trajectorySequenceBuilder(startPose)
@@ -221,15 +223,15 @@ public class NexusBlueLeft extends LinearOpMode {
 
                 switch(usingVedic ? robot.visionBlob.getPropPos() : robot.visionTensorflow.getPropPos()){
                     case 1:
-                        drive.followTrajectorySequence(pixelLeft);
+                         drive.followTrajectorySequence(pixelLeft);
                         break;
                     case 2:
                         drive.followTrajectorySequence(pixelCenter);
                         break;
                     case 3:
                         drive.followTrajectorySequence(pixelRight);
-                        break;
-        }
+                          break;
+                }
 //
 //        while(!Thread.currentThread().isInterrupted() && drive.isBusy()) {
 //            drive.update();
