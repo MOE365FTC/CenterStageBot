@@ -4,8 +4,6 @@ package org.firstinspires.ftc.teamcode;
 import static org.opencv.features2d.Features2d.DrawMatchesFlags_DRAW_RICH_KEYPOINTS;
 import static org.opencv.features2d.Features2d.drawKeypoints;
 
-import static java.lang.Math.abs;
-
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -13,7 +11,6 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.opencv.core.KeyPoint;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfKeyPoint;
-import org.opencv.core.Point;
 import org.opencv.core.Scalar;
 import org.opencv.features2d.SimpleBlobDetector;
 import org.opencv.features2d.SimpleBlobDetector_Params;

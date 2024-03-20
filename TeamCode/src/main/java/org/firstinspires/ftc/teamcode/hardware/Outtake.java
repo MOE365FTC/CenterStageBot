@@ -12,6 +12,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 import java.util.Timer;
 import java.util.TimerTask;
+@Deprecated
 
 @Config
 public class Outtake {
@@ -291,16 +292,16 @@ public class Outtake {
     }
 
     public void autonTilt(autonTiltPositions pos) { //use in teleop and auto by changing the tiltTarget variable (this will be automatically called at the end of loops)
-       switch(pos) {
-           case BASE:
-               tiltArm(tiltTransfer);
-               break;
-           case HOVER:
-               tiltArm(tiltHover);
-               break;
-           case SCORE:
-               tiltArm(tiltStraight + 150);
-       }
+        switch(pos) {
+            case BASE:
+                tiltArm(tiltTransfer);
+                break;
+            case HOVER:
+                tiltArm(tiltHover);
+                break;
+            case SCORE:
+                tiltArm(tiltStraight + 150);
+        }
     }
 
     public void autonLift(autonLiftPositions pos) {

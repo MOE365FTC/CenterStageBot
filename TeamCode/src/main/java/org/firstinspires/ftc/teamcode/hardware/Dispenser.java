@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-
+@Deprecated
 public class Dispenser {
     //DEVICES
     Servo leftIris, rightIris, pitchServo;

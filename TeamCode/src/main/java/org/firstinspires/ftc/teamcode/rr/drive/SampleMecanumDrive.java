@@ -42,8 +42,6 @@ import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigu
 import org.firstinspires.ftc.teamcode.rr.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.rr.trajectorysequence.TrajectorySequenceBuilder;
 import org.firstinspires.ftc.teamcode.rr.trajectorysequence.TrajectorySequenceRunner;
-import org.firstinspires.ftc.teamcode.rr.util.AxisDirection;
-import org.firstinspires.ftc.teamcode.rr.util.BNO055IMUUtil;
 import org.firstinspires.ftc.teamcode.rr.util.LynxModuleUtil;
 
 import java.util.ArrayList;

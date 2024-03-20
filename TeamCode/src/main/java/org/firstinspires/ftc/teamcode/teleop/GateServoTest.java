@@ -4,8 +4,6 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 
-import java.net.CacheRequest;
-
 @TeleOp
 public class GateServoTest extends OpMode {
     boolean oldGateClicked = false;

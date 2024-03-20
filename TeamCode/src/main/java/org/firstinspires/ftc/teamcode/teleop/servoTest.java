@@ -6,8 +6,6 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.ServoControllerEx;
 import com.qualcomm.robotcore.hardware.ServoImplEx;
 
-import org.firstinspires.ftc.teamcode.rr.trajectorysequence.sequencesegment.SequenceSegment;
-
 @TeleOp
 public class servoTest extends OpMode {
     ServoImplEx servo;

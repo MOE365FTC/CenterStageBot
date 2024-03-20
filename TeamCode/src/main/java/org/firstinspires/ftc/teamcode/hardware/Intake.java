@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.hardware;
 
 import com.acmerobotics.dashboard.config.Config;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
@@ -13,6 +12,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 import java.util.Timer;
 import java.util.TimerTask;
+@Deprecated
 
 @Config
 public class Intake {
