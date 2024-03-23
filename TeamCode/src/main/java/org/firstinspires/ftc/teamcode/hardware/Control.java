@@ -40,9 +40,9 @@ public class Control {
     public static final int MAX_LIFT_TICKS = 1115;
 
 
+    public static final double pitchTicksPerDegree = 0.0042; //1/270
     //pitch servo parameters
-    private final double tiltMotorTicksPerDegree = 1984.0 / 180.0;
-    public static double pitchTicksPerDegree = 0.0042; //1/270
+    private static final double tiltMotorTicksPerDegree = 1984.0 / 180.0;
 
     public static final double boxOpen = 1;//needs tuning
     public static final double boxClose = 0;//needs tuning
@@ -52,7 +52,7 @@ public class Control {
     Gamepad gamepad2;
     Telemetry telemetry;
 
-    public Control(final HardwareMap hardwareMap, final Gamepad gamepad1, final Gamepad gamepad2, final Telemetry telemetry, final boolean isAuton) {
+    public Control(HardwareMap hardwareMap, Gamepad gamepad1, Gamepad gamepad2, Telemetry telemetry, boolean isAuton) {
         this.gamepad1 = gamepad1;
         this.gamepad2 = gamepad2;
         this.telemetry = telemetry;
@@ -162,19 +162,19 @@ public class Control {
         tiltArm(tiltTarget);
     }
 
-    private void tiltArm(final int targetPos) {
+    private void tiltArm(int targetPos) {
         tiltMotorA.setTargetPosition(targetPos);
         tiltMotorB.setTargetPosition(targetPos);
         tiltMotorA.setPower(tiltPower);
         tiltMotorB.setPower(tiltPower);
     }
 
-    private void liftArm(final int targetPos) {
+    private void liftArm(int targetPos) {
         liftMotor.setTargetPosition(targetPos);
         liftMotor.setPower(liftPower);
     }
 
-    public void autonTilt(final autonTiltPositions pos) { //use in teleop and auto by changing the tiltTarget variable (this will be automatically called at the end of loops)
+    public void autonTilt(autonTiltPositions pos) { //use in teleop and auto by changing the tiltTarget variable (this will be automatically called at the end of loops)
         switch (pos) {
             case BASE:
                 tiltArm(tiltBase);
@@ -184,7 +184,7 @@ public class Control {
         }
     }
 
-    public void autonLift(final autonLiftPositions pos) {
+    public void autonLift(autonLiftPositions pos) {
         switch (pos) {
             case BASE:
                 liftArm(liftBase);
@@ -196,18 +196,18 @@ public class Control {
         }
     }
 
-    public void autonRunIntake(final boolean start) {
+    public void autonRunIntake(boolean start) {
         if (start) intakeMotor.setPower(intakeMotorPower);
         else intakeMotor.setPower(0);
     }
 
-    public void autonRunIntake(final boolean start, final boolean reverse) {
+    public void autonRunIntake(boolean start, boolean reverse) {
         final double mult = reverse ? -1 : 1;
         if (start) intakeMotor.setPower(mult * intakeMotorPower);
         else intakeMotor.setPower(0);
     }
 
-    public void runGrabs(final boolean in) {
+    public void runGrabs(boolean in) {
         if (in) {
             grabLeft.setPosition(grabLeftIn);
             grabRight.setPosition(grabRightIn);
@@ -217,11 +217,11 @@ public class Control {
         }
     }
 
-    public void setPitchServo(final double pos) {
+    public void setPitchServo(double pos) {
         pitchServo.setPosition(pos);
     }
 
-    public void setBoxGate(final double pos) {
+    public void setBoxGate(double pos) {
         boxGate.setPosition(pos);
     }
 
