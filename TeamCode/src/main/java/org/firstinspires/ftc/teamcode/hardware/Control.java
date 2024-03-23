@@ -16,7 +16,7 @@ public class Control {
     private PIDController controller; //pidf
     public static Servo grabLeft, grabRight; //intake servos
     public static Servo pitchServo, boxGate; //outtake servos
-    DcMotor intakeMotor; //intake motors
+    public static DcMotor intakeMotor; //intake motors
 
     public static DcMotor liftMotor, tiltMotorA, tiltMotorB;//outtake motors //extensionMotor controls the length of arm, tiltMotor controls rotation/angle of the arm
 
@@ -42,7 +42,7 @@ public class Control {
 
     //pitch servo parameters
     private final double tiltMotorTicksPerDegree = 1984.0 / 180.0;
-    public static double pitchTicksPerDegree = .0042; //1/270
+    public static double pitchTicksPerDegree = 0.0042; //1/270
 
     public static final double boxOpen = 1;//needs tuning
     public static final double boxClose = 0;//needs tuning
@@ -52,20 +52,22 @@ public class Control {
     Gamepad gamepad2;
     Telemetry telemetry;
 
-    public Control(HardwareMap hardwareMap, Gamepad gamepad1, Gamepad gamepad2, Telemetry telemetry, boolean isAuton) {
+    public Control(final HardwareMap hardwareMap, final Gamepad gamepad1, final Gamepad gamepad2, final Telemetry telemetry, final boolean isAuton) {
         this.gamepad1 = gamepad1;
         this.gamepad2 = gamepad2;
         this.telemetry = telemetry;
 
         //hardware setup
+
         liftMotor = hardwareMap.get(DcMotor.class, "liftMotor");
         tiltMotorA = hardwareMap.get(DcMotor.class, "tiltMotorA");
         tiltMotorB = hardwareMap.get(DcMotor.class, "tiltMotorB");
+        intakeMotor = hardwareMap.get(DcMotor.class, "intakeMotor");
+
         pitchServo = hardwareMap.get(Servo.class, "pitchServo");
         boxGate = hardwareMap.get(Servo.class, "boxGate");
         grabLeft = hardwareMap.get(Servo.class, "grabLeft");
         grabRight = hardwareMap.get(Servo.class, "grabRight");
-        intakeMotor = hardwareMap.get(DcMotor.class, "intakeMotor");
 
         //tilt setup
         tiltMotorA.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -110,26 +112,26 @@ public class Control {
         runGrabs(gamepad1.y);
 
         //intake motor
-        if (gamepad1.right_trigger > 0.3) {
+        if (0.3 < gamepad1.right_trigger) {
             intakeMotor.setPower(intakeMotorPower);
-        } else if (gamepad1.left_trigger > 0.3) {
+        } else if (0.3 < gamepad1.left_trigger) {
             intakeMotor.setPower(-intakeMotorPower);
         } else {
             intakeMotor.setPower(0);
         }
 
         //manual lift
-        if (tiltMotorA.getCurrentPosition() + tiltMotorB.getCurrentPosition() > MIN_TILT_TICKS) {
-            if (-gamepad2.left_stick_y > 0.75 && liftMotor.getCurrentPosition() <= MAX_LIFT_TICKS - 100)
+        if (MIN_TILT_TICKS < tiltMotorA.getCurrentPosition() + tiltMotorB.getCurrentPosition()) {
+            if (0.75 < -gamepad2.left_stick_y && MAX_LIFT_TICKS - 100 >= liftMotor.getCurrentPosition())
                 liftTarget += 40;
-            else if (-gamepad2.left_stick_y < -0.75 && liftMotor.getCurrentPosition() >= 100)
+            else if (-0.75 > -gamepad2.left_stick_y && 100 <= liftMotor.getCurrentPosition())
                 liftTarget -= 40;
         }
         //manual tilt arm
-        if (tiltMotorA.getCurrentPosition() + tiltMotorB.getCurrentPosition() > MIN_TILT_TICKS) { //to tilt out use presets and then fine tuning with manual
-            if (-gamepad2.right_stick_y > 0.75 && tiltTarget <= MAX_TILT_TICKS - 75) {
+        if (MIN_TILT_TICKS < tiltMotorA.getCurrentPosition() + tiltMotorB.getCurrentPosition()) { //to tilt out use presets and then fine tuning with manual
+            if (0.75 < -gamepad2.right_stick_y && MAX_TILT_TICKS - 75 >= tiltTarget) {
                 tiltTarget += 25;
-            } else if (-gamepad2.right_stick_y < -0.75 && tiltTarget >= MIN_TILT_TICKS + 75)
+            } else if (-0.75 > -gamepad2.right_stick_y && MIN_TILT_TICKS + 75 <= tiltTarget)
                 tiltTarget -= 25;
         }
 
@@ -145,12 +147,12 @@ public class Control {
         }
 
         //auto pitch servo
-        if (tiltMotorA.getCurrentPosition() + tiltMotorB.getCurrentPosition() > MIN_TILT_TICKS && isAutoPitch) {
+        if (MIN_TILT_TICKS < tiltMotorA.getCurrentPosition() + tiltMotorB.getCurrentPosition() && isAutoPitch) {
             pitchServo.setPosition(scorePitch - ((((tiltMotorA.getCurrentPosition() + tiltMotorB.getCurrentPosition()) - tiltStraight) / tiltMotorTicksPerDegree) * pitchTicksPerDegree));
         }
 
         //box gate
-        if (gamepad2.right_bumper && tiltMotorA.getCurrentPosition() + tiltMotorB.getCurrentPosition() > MIN_TILT_TICKS) {
+        if (gamepad2.right_bumper && MIN_TILT_TICKS < tiltMotorA.getCurrentPosition() + tiltMotorB.getCurrentPosition()) {
             setBoxGate(boxOpen);
         } else if (gamepad2.left_bumper) {
             setBoxGate(boxClose);
@@ -160,19 +162,19 @@ public class Control {
         tiltArm(tiltTarget);
     }
 
-    private void tiltArm(int targetPos) {
+    private void tiltArm(final int targetPos) {
         tiltMotorA.setTargetPosition(targetPos);
         tiltMotorB.setTargetPosition(targetPos);
         tiltMotorA.setPower(tiltPower);
         tiltMotorB.setPower(tiltPower);
     }
 
-    private void liftArm(int targetPos) {
+    private void liftArm(final int targetPos) {
         liftMotor.setTargetPosition(targetPos);
         liftMotor.setPower(liftPower);
     }
 
-    public void autonTilt(Outtake.autonTiltPositions pos) { //use in teleop and auto by changing the tiltTarget variable (this will be automatically called at the end of loops)
+    public void autonTilt(final autonTiltPositions pos) { //use in teleop and auto by changing the tiltTarget variable (this will be automatically called at the end of loops)
         switch (pos) {
             case BASE:
                 tiltArm(tiltBase);
@@ -182,7 +184,7 @@ public class Control {
         }
     }
 
-    public void autonLift(Outtake.autonLiftPositions pos) {
+    public void autonLift(final autonLiftPositions pos) {
         switch (pos) {
             case BASE:
                 liftArm(liftBase);
@@ -194,18 +196,18 @@ public class Control {
         }
     }
 
-    public void autonRunIntake(boolean start) {
+    public void autonRunIntake(final boolean start) {
         if (start) intakeMotor.setPower(intakeMotorPower);
         else intakeMotor.setPower(0);
     }
 
-    public void autonRunIntake(boolean start, boolean reverse) {
-        double mult = reverse ? -1 : 1;
+    public void autonRunIntake(final boolean start, final boolean reverse) {
+        final double mult = reverse ? -1 : 1;
         if (start) intakeMotor.setPower(mult * intakeMotorPower);
         else intakeMotor.setPower(0);
     }
 
-    public void runGrabs(boolean in) {
+    public void runGrabs(final boolean in) {
         if (in) {
             grabLeft.setPosition(grabLeftIn);
             grabRight.setPosition(grabRightIn);
@@ -215,11 +217,11 @@ public class Control {
         }
     }
 
-    public void setPitchServo(double pos) {
+    public void setPitchServo(final double pos) {
         pitchServo.setPosition(pos);
     }
 
-    public void setBoxGate(double pos) {
+    public void setBoxGate(final double pos) {
         boxGate.setPosition(pos);
     }
 
@@ -241,4 +243,20 @@ public class Control {
         telemetry.addData("tilt T", tiltTarget);
         telemetry.addData("tilt A", tiltMotorA.getCurrentPosition() + tiltMotorB.getCurrentPosition());
     }
+
+    public enum autonLiftPositions {
+        BASE,
+        EXTEND,
+    }
+
+    public enum autonTiltPositions {
+        BASE,
+        SCORE
+    }
+
+    public enum TiltPositions {
+        READY_TO_INTAKE,
+        READY_TO_OUTTAKE
+    }
+
 }
