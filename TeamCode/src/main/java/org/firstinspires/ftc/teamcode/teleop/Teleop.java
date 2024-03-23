@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.hardware.MOEBot;
 
-@TeleOp
+@TeleOp(group = "Match Tele-Op")
 public class Teleop extends OpMode {
     MOEBot robot;
     @Override

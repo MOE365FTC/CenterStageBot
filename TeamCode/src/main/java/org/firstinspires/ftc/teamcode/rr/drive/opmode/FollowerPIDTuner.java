@@ -22,7 +22,7 @@ import org.firstinspires.ftc.teamcode.rr.trajectorysequence.TrajectorySequence;
  * These coefficients can be tuned live in dashboard.
  */
 @Config
-@Autonomous(group = "drive")
+@Autonomous(group = "Tuning")
 public class FollowerPIDTuner extends LinearOpMode {
     public static double DISTANCE = 24; // in
 

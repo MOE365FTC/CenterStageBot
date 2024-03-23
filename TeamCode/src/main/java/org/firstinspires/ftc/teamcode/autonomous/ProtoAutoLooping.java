@@ -9,7 +9,8 @@ import org.firstinspires.ftc.teamcode.hardware.MOEBot;
 import org.firstinspires.ftc.teamcode.rr.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.rr.trajectorysequence.TrajectorySequence;
 
-@Autonomous
+@Deprecated
+@Autonomous(group = "Testing")
 public class ProtoAutoLooping extends LinearOpMode {
     MOEBot robot;
     public static int tiltTarget;

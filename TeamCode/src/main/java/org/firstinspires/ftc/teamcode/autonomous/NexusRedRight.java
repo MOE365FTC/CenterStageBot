@@ -11,7 +11,7 @@ import org.firstinspires.ftc.teamcode.hardware.Outtake;
 import org.firstinspires.ftc.teamcode.rr.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.rr.trajectorysequence.TrajectorySequence;
 
-@Autonomous
+@Autonomous(group = "Match Autons")
 public class NexusRedRight extends LinearOpMode {
     MOEBot robot;
     public static int tiltTarget;

@@ -11,6 +11,7 @@
 //import org.firstinspires.ftc.teamcode.rr.drive.SampleMecanumDrive;
 //import org.firstinspires.ftc.teamcode.rr.trajectorysequence.TrajectorySequence;
 //
+//@Deprecated
 //@Autonomous
 //public class ProtoAutoVision extends LinearOpMode {
 //

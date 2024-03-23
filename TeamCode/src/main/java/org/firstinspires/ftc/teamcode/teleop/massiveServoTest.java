@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.Servo;
 
-@TeleOp
+@TeleOp(group = "test")
 @Config
 public class massiveServoTest extends OpMode {
     Servo transferBeltServo, leftIris, rightIris, PTO, pitch, yaw, drone;

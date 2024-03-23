@@ -7,7 +7,7 @@ import org.firstinspires.ftc.teamcode.hardware.Intake;
 import org.firstinspires.ftc.teamcode.hardware.MOEBot;
 import org.firstinspires.ftc.teamcode.hardware.Outtake;
 
-@TeleOp
+@TeleOp(group = "test")
 public class testTeleop extends OpMode {
     MOEBot robot;
     @Override
