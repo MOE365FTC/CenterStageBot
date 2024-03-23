@@ -15,7 +15,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 public class Control {
     private PIDController controller; //pidf
     public static Servo grabLeft, grabRight; //intake servos
-    public static Servo pitchServo; //outtake servos
+    public static Servo pitchServo, boxGate; //outtake servos
     DcMotor intakeMotor; //intake motors
 
     public static DcMotor liftMotor, tiltMotorA, tiltMotorB;//outtake motors //extensionMotor controls the length of arm, tiltMotor controls rotation/angle of the arm
@@ -44,6 +44,9 @@ public class Control {
     private final double tiltMotorTicksPerDegree = 1984.0 / 180.0;
     public static double pitchTicksPerDegree = .0042; //1/270
 
+    public static final double boxOpen = 1;//needs tuning
+    public static final double boxClose = 0;//needs tuning
+
     //intake state
     Gamepad gamepad1;
     Gamepad gamepad2;
@@ -58,6 +61,8 @@ public class Control {
         liftMotor = hardwareMap.get(DcMotor.class, "liftMotor");
         tiltMotorA = hardwareMap.get(DcMotor.class, "tiltMotorA");
         tiltMotorB = hardwareMap.get(DcMotor.class, "tiltMotorB");
+        pitchServo = hardwareMap.get(Servo.class, "pitchServo");
+        boxGate = hardwareMap.get(Servo.class, "boxGate");
         grabLeft = hardwareMap.get(Servo.class, "grabLeft");
         grabRight = hardwareMap.get(Servo.class, "grabRight");
         intakeMotor = hardwareMap.get(DcMotor.class, "intakeMotor");
@@ -136,14 +141,23 @@ public class Control {
         if (gamepad2.dpad_up) {
             tiltTarget = tiltStraight;
             isAutoPitch = true;
+            setBoxGate(boxClose);
         } else if (gamepad2.dpad_down) {
             tiltTarget = tiltBase;
             isAutoPitch = false;
+            setBoxGate(boxClose);
         }
 
-        //
+        //auto pitch servo
         if (tiltMotorA.getCurrentPosition() + tiltMotorB.getCurrentPosition() > MIN_TILT_TICKS && isAutoPitch) {
             pitchServo.setPosition(scorePitch - ((((tiltMotorA.getCurrentPosition() + tiltMotorB.getCurrentPosition()) - tiltStraight) / tiltMotorTicksPerDegree) * pitchTicksPerDegree));
+        }
+
+        //box gate
+        if (gamepad2.right_bumper && tiltMotorA.getCurrentPosition() + tiltMotorB.getCurrentPosition() > MIN_TILT_TICKS) {
+            setBoxGate(boxOpen);
+        } else if (gamepad2.left_bumper) {
+            setBoxGate(boxClose);
         }
     }
 
@@ -172,6 +186,9 @@ public class Control {
         pitchServo.setPosition(pos);
     }
 
+    public void setBoxGate(double pos) {
+        boxGate.setPosition(pos);
+    }
 
     public enum ExtendPositions {
         EXTENDED_FULL,

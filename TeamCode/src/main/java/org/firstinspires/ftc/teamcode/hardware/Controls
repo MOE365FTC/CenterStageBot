@@ -1,3 +1,38 @@
+Worlds Bot:
+
+Legend:
+    [STICK]: Joystick control; push up: forward/up, etc.
+    [HOLD]: Runs while held down
+    [CLICK]: Runs after clicked once
+
+Gamepad 1:
+
+Drive:
+    [STICK] L/R Joysticks: Field Centric with Mechanum
+
+Intake:
+    Intake Motor:
+        [HOLD] Right Trigger: Run intake motors
+        [HOLD] Left Trigger: Reverse run intake motors
+    Grabbers:
+        [HOLD(Runs while held for one rotation)] Y: Run grabbers
+
+
+Gamepad 2:
+
+Outtake:
+    Box Gate:
+        [CLICK] Right Bumper: Open box gate, allows pixels to fall through
+        [CLICK] Left bumper: Close box gate, stores pixels
+    Manual Lift(Arm Extension):
+        [STICK] Left Joystick: Controls lift(arm extension)
+    Manual Tilt(Arm Rotation):
+        [STICK] Right Joystick: Control tilt(arm rotation)
+    Presets:
+        [CLICK] DPad Up: Moves arm to scoring preset, straight arm
+        [CLICK] DPad Down: Moves arm to intake preset, lowest arm
+
+
 Future Bot:
 
 Gamepad 1:
