@@ -186,23 +186,23 @@ public class Outtake {
             pitchServo.setPosition(intakePitch);
             isAutoPitch = false;
             isAutoTransfer = true;
-//            liftTarget = liftTransfer;
-//            yawServo.setPosition(yawVertical);
-//            if(!tiltScheduledForPreset) {
-//                timer.schedule(new TimerTask() {
-//                    @Override
-//                    public void run() {
-//                        tiltTarget = tiltTransfer;
-//                    }
-//                }, 400);
-//                tiltScheduledForPreset = true;
-//            }
-//            timer.schedule(new TimerTask() {
-//                @Override
-//                public void run() {
-//                    currTiltPos = TiltPositions.READY_TO_OUTTAKE;
-//                }
-//            }, 2400);
+            liftTarget = liftTransfer;
+            yawServo.setPosition(yawVertical);
+            if (!tiltScheduledForPreset) {
+                timer.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        tiltTarget = tiltTransfer;
+                    }
+                }, 400);
+                tiltScheduledForPreset = true;
+            }
+            timer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    currTiltPos = TiltPositions.READY_TO_OUTTAKE;
+                }
+            }, 2400);
         }
 
         if(tiltMotor.getCurrentPosition() < tiltHover - 100) {

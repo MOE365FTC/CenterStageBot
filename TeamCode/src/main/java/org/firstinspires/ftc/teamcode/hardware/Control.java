@@ -27,7 +27,7 @@ public class Control {
     public static final double intakePitch = 0.0, scorePitch = 0.45, autonPitch = 0.93;
     public static final int tiltStraight = 1984;
     public static final int liftBase = 0; //tuning needed
-    public static final int tiltBase = 0;
+    public static final int tiltBase = 0; //tuning needed
 
     public static final double liftPower = 0.8;
     public static final double tiltPower = 0.5;
@@ -107,11 +107,7 @@ public class Control {
 
     public void actuate() {
         //grabbers
-        if (gamepad1.y) {
-            runGrabs(true);
-        } else {
-            runGrabs(false);
-        }
+        runGrabs(gamepad1.y);
 
         //intake motor
         if (gamepad1.right_trigger > 0.3) {
@@ -159,6 +155,43 @@ public class Control {
         } else if (gamepad2.left_bumper) {
             setBoxGate(boxClose);
         }
+
+        liftArm(liftTarget);
+        tiltArm(tiltTarget);
+    }
+
+    private void tiltArm(int targetPos) {
+        tiltMotorA.setTargetPosition(targetPos);
+        tiltMotorB.setTargetPosition(targetPos);
+        tiltMotorA.setPower(tiltPower);
+        tiltMotorB.setPower(tiltPower);
+    }
+
+    private void liftArm(int targetPos) {
+        liftMotor.setTargetPosition(targetPos);
+        liftMotor.setPower(liftPower);
+    }
+
+    public void autonTilt(Outtake.autonTiltPositions pos) { //use in teleop and auto by changing the tiltTarget variable (this will be automatically called at the end of loops)
+        switch (pos) {
+            case BASE:
+                tiltArm(tiltBase);
+                break;
+            case SCORE:
+                tiltArm(tiltStraight + 150);
+        }
+    }
+
+    public void autonLift(Outtake.autonLiftPositions pos) {
+        switch (pos) {
+            case BASE:
+                liftArm(liftBase);
+                break;
+            case EXTEND:
+                liftArm(MAX_LIFT_TICKS - 100);
+            default:
+                liftArm(liftBase);
+        }
     }
 
     public void autonRunIntake(boolean start) {
@@ -198,5 +231,14 @@ public class Control {
     public enum RequestedExtendPositions {
         EXTENDED_FULL,
         BASE
+    }
+
+    public void telemetryOuttake() {
+//        String liftString = "T: " + liftTarget + " | A: " + liftMotor.getCurrentPosition();
+//        String tiltString = "T: " + tiltTarget + " | A: " + tiltMotor.getCurrentPosition();
+        telemetry.addData("lift T", liftTarget);
+        telemetry.addData("lift A", liftMotor.getCurrentPosition());
+        telemetry.addData("tilt T", tiltTarget);
+        telemetry.addData("tilt A", tiltMotorA.getCurrentPosition() + tiltMotorB.getCurrentPosition());
     }
 }
