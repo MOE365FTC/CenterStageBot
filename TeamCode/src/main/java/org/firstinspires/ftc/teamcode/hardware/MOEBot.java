@@ -26,11 +26,11 @@ public class MOEBot {
         }
 
         chassis = new Chassis(hardwareMap, gamepad1);
-        visionTensorflow = new VisionTensorflow(telemetry, hardwareMap, onRightSide);
-        visionBlob = new VisionBlob(telemetry, hardwareMap);
-        droneLauncher = new DroneLauncher(hardwareMap, gamepad1);
-        intake = new Intake(hardwareMap, gamepad1, gamepad2, telemetry, isAuton);
-        outtake = new Outtake(hardwareMap, gamepad1, gamepad2, telemetry, isAuton);
+//        visionTensorflow = new VisionTensorflow(telemetry, hardwareMap, onRightSide);
+//        visionBlob = new VisionBlob(telemetry, hardwareMap);
+//        droneLauncher = new DroneLauncher(hardwareMap, gamepad1);
+//        intake = new Intake(hardwareMap, gamepad1, gamepad2, telemetry, isAuton);
+//        outtake = new Outtake(hardwareMap, gamepad1, gamepad2, telemetry, isAuton);
     }
 
 }

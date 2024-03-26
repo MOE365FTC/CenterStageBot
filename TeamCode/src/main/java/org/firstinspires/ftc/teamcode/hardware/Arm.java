@@ -1,8 +1,11 @@
 package org.firstinspires.ftc.teamcode.hardware;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.controller.PIDController;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -12,13 +15,15 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 
 @Config
-public class Control {
+public class Arm {
     private PIDController controller; //pidf
+    public static double p, i, d, f;
     public static Servo grabLeft, grabRight; //intake servos
     public static Servo pitchServo, boxGate; //outtake servos
     public static DcMotor intakeMotor; //intake motors
 
-    public static DcMotor liftMotor, tiltMotorA, tiltMotorB;//outtake motors //extensionMotor controls the length of arm, tiltMotor controls rotation/angle of the arm
+    public static DcMotorEx tiltMotorA;
+    public static DcMotor liftMotor, tiltMotorB;//outtake motors //extensionMotor controls the length of arm, tiltMotor controls rotation/angle of the arm
 
     //presets
     public static boolean isAutoPitch = false;
@@ -52,15 +57,19 @@ public class Control {
     Gamepad gamepad2;
     Telemetry telemetry;
 
-    public Control(HardwareMap hardwareMap, Gamepad gamepad1, Gamepad gamepad2, Telemetry telemetry, boolean isAuton) {
+    public Arm(HardwareMap hardwareMap, Gamepad gamepad1, Gamepad gamepad2, Telemetry telemetry, boolean isAuton) {
         this.gamepad1 = gamepad1;
         this.gamepad2 = gamepad2;
         this.telemetry = telemetry;
 
+        //pidf setup
+        controller = new PIDController(p, i ,d);
+        this.telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+
         //hardware setup
 
         liftMotor = hardwareMap.get(DcMotor.class, "liftMotor");
-        tiltMotorA = hardwareMap.get(DcMotor.class, "tiltMotorA");
+        tiltMotorA = hardwareMap.get(DcMotorEx.class, "tiltMotorA");
         tiltMotorB = hardwareMap.get(DcMotor.class, "tiltMotorB");
         intakeMotor = hardwareMap.get(DcMotor.class, "intakeMotor");
 
@@ -148,11 +157,11 @@ public class Control {
 
         //auto pitch servo
         if (MIN_TILT_TICKS < tiltMotorA.getCurrentPosition() + tiltMotorB.getCurrentPosition() && isAutoPitch) {
-            pitchServo.setPosition(scorePitch - ((((tiltMotorA.getCurrentPosition() + tiltMotorB.getCurrentPosition()) - tiltStraight) / tiltMotorTicksPerDegree) * pitchTicksPerDegree));
+            pitchServo.setPosition(scorePitch - ((((tiltMotorA.getCurrentPosition()) - tiltStraight) / tiltMotorTicksPerDegree) * pitchTicksPerDegree));
         }
 
         //box gate
-        if (gamepad2.right_bumper && MIN_TILT_TICKS < tiltMotorA.getCurrentPosition() + tiltMotorB.getCurrentPosition()) {
+        if (gamepad2.right_bumper && MIN_TILT_TICKS < tiltMotorA.getCurrentPosition()) {
             setBoxGate(boxOpen);
         } else if (gamepad2.left_bumper) {
             setBoxGate(boxClose);
@@ -162,11 +171,16 @@ public class Control {
         tiltArm(tiltTarget);
     }
 
-    private void tiltArm(int targetPos) {
-        tiltMotorA.setTargetPosition(targetPos);
-        tiltMotorB.setTargetPosition(targetPos);
-        tiltMotorA.setPower(tiltPower);
-        tiltMotorB.setPower(tiltPower);
+    public void tiltArm(int targetPos) { //loop this function in auton
+        controller.setPID(p, i, d);
+        int armPos = tiltMotorA.getCurrentPosition();
+        double pid = controller.calculate(armPos, targetPos);
+        double ff = Math.cos(Math.toRadians(targetPos/tiltMotorTicksPerDegree)) * f;
+
+        double power = pid + ff;
+
+        tiltMotorA.setPower(power);
+        tiltMotorB.setPower(power);
     }
 
     private void liftArm(int targetPos) {
@@ -225,17 +239,8 @@ public class Control {
         boxGate.setPosition(pos);
     }
 
-    public enum ExtendPositions {
-        EXTENDED_FULL,
-        BASE
-    }
 
-    public enum RequestedExtendPositions {
-        EXTENDED_FULL,
-        BASE
-    }
-
-    public void telemetryOuttake() {
+    public void telemetryArm() {
 //        String liftString = "T: " + liftTarget + " | A: " + liftMotor.getCurrentPosition();
 //        String tiltString = "T: " + tiltTarget + " | A: " + tiltMotor.getCurrentPosition();
         telemetry.addData("lift T", liftTarget);
@@ -252,11 +257,6 @@ public class Control {
     public enum autonTiltPositions {
         BASE,
         SCORE
-    }
-
-    public enum TiltPositions {
-        READY_TO_INTAKE,
-        READY_TO_OUTTAKE
     }
 
 }
