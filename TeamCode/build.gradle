@@ -34,9 +34,6 @@ android {
 dependencies {
     implementation project(':FtcRobotController')
     annotationProcessor files('lib/OpModeAnnotationProcessor.jar')
-
-    implementation "com.amarcolini.joos:command:0.4.9"
-    annotationProcessor "com.amarcolini.joos:annotation:0.4.9"
 }
 
 // Include common definitions from above.
@@ -57,8 +54,6 @@ dependencies {
 
 //    implementation "com.amarcolini.joos:navigation:0.4.9" //joos core
 
-    implementation "com.amarcolini.joos:command:0.4.9"//joos full
-    annotationProcessor "com.amarcolini.joos:annotation:0.4.9" //joos full
 }
 
 // Include common definitions from above.
@@ -79,7 +74,5 @@ dependencies {
     implementation 'org.apache.commons:commons-math3:3.6.1'
     implementation 'com.acmerobotics.roadrunner:core:0.5.5'
     implementation 'org.ftclib.ftclib:core:2.0.1'
-
-    implementation 'com.github.Eeshwar-Krishnan:PhotonFTC:v3.0.1-ALPHA' //proton
 }
 

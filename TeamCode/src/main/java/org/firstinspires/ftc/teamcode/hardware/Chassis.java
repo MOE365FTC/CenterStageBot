@@ -31,10 +31,11 @@ public class Chassis {
         frontRightMotor = hardwareMap.get(DcMotor.class, "FRM");
         backRightMotor = hardwareMap.get(DcMotor.class, "BRM");
 
-        leftOdo = hardwareMap.get(DcMotorEx.class, "FLM"); //odo encoders are on motor ports CHECK
-        rightOdo = hardwareMap.get(DcMotorEx.class, "FRM");
-        strafeOdo = hardwareMap.get(DcMotorEx.class, "BLM");
+        leftOdo = hardwareMap.get(DcMotorEx.class, "BLM"); //odo encoders are on motor ports CHECK
+        rightOdo = hardwareMap.get(DcMotorEx.class, "BRM");
+        strafeOdo = hardwareMap.get(DcMotorEx.class, "FRM");
 
+        frontLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         backLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
         frontLeftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -44,7 +45,7 @@ public class Chassis {
 
         //IMU initialization
         imu = hardwareMap.get(IMU.class, "imu");
-        RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.RIGHT;
+        RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.LEFT;
         RevHubOrientationOnRobot.UsbFacingDirection  usbDirection  = RevHubOrientationOnRobot.UsbFacingDirection.DOWN;
         RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
         imu.initialize(new IMU.Parameters(orientationOnRobot));
