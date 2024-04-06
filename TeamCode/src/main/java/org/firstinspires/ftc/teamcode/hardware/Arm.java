@@ -13,54 +13,66 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 
 @Config
 public class Arm {
     private PIDController controller; //pidf
-    public static double p, i, d, f;
-    public static Servo grabLeft, grabRight; //intake servos
-    public static Servo pitchServo, boxGate; //outtake servos
-    public static DcMotor intakeMotor; //intake motors
+    public static double p = 0.0024, i = 0.135, d = 0.0001, f = 0.2;
+    Servo grabLeft, grabRight; //intake servos
+    Servo pitchServo, boxGateMain, boxGateAux; //outtake servos
+    DcMotor intakeMotor; //intake motors //control 2
 
-    public static DcMotorEx tiltMotorA;
-    public static DcMotor liftMotor, tiltMotorB;//outtake motors //extensionMotor controls the length of arm, tiltMotor controls rotation/angle of the arm
+    DcMotorEx tiltMotorA; //expansion 1 and 2, control 2 for extend
+    DcMotor extensionMotor, tiltMotorB;//outtake motors //extensionMotor controls the length of arm, tiltMotor controls rotation/angle of the arm
 
     //presets
     public static boolean isAutoPitch = false;
-    public static final double intakeMotorPower = 0.7;
-    public static final double grabLeftIn = 0, grabLeftOut = 1, grabRightIn = 1, grabRightOut = 0;
-    public static final double intakePitch = 0.0, scorePitch = 0.45, autonPitch = 0.93;
-    public static final int tiltStraight = 1984;
-    public static final int liftBase = 0; //tuning needed
-    public static final int tiltBase = 0; //tuning needed
+    public static final double intakeMotorPower = 1.0;
+    public static final double grabLeftIn = 0.0, grabLeftOut = 1.0, grabRightIn = 1.0, grabRightOut = 0.2;
+    public static final double basePitch = 0.0, intakePitch = 0.0, scorePitch = 0.8;
+    public static final int tiltStraight = 1987, tiltScore = 1400, tiltHang = 900, tiltBase = 0;
+    public static final int extendBase = 0; //tuning needed
 
-    public static final double liftPower = 0.8;
+    public static final double extendPower = 0.8;
     public static final double tiltPower = 0.5;
 
-    public static int liftTarget = liftBase; //can make these static to pass target pos between auto and teleop if needed to fix run to position error, make sure to update this variable in auto functions
+    public static boolean isHang = false;
+    public static double hangTiltPower = 0.2;
+
+    public static int extendTarget = extendBase; //can make these static to pass target pos between auto and teleop if needed to fix run to position error, make sure to update this variable in auto functions
     public static int tiltTarget = tiltBase;
 
-    public static final int MIN_TILT_TICKS = 1322; //120deg
+    public static final int MIN_TILT_TICKS = 1200; //temp
     public static final int MAX_TILT_TICKS = 2140;
-    public static final int MAX_LIFT_TICKS = 1115;
+    public static final int MAX_EXTEND_TICKS = 1115;
 
 
-    public static final double pitchTicksPerDegree = 0.0042; //1/270
+    public static final double pitchTicksPerDegree = 1.0 / 180.0; //1/270 <-- check range of motion (servo angle/255 * 355 --> real operating range in degrees)
     //pitch servo parameters
-    private static final double tiltMotorTicksPerDegree = 1984.0 / 180.0;
+    private static final double tiltMotorTicksPerDegree = 1987.0 / 180.0;
 
-    public static final double boxOpen = 1;//needs tuning
-    public static final double boxClose = 0;//needs tuning
+    public static final double boxOpenMain = 0.9;//needs tuning
+    public static final double boxCloseMain = 1.0;//needs tuning
+
+    public static final double boxOpenAux = 0.12;//needs tuning
+    public static final double boxCloseAux = 0.02;//needs tuning
 
     //intake state
     Gamepad gamepad1;
     Gamepad gamepad2;
     Telemetry telemetry;
 
+    Timer timer;
+
     public Arm(HardwareMap hardwareMap, Gamepad gamepad1, Gamepad gamepad2, Telemetry telemetry, boolean isAuton) {
         this.gamepad1 = gamepad1;
         this.gamepad2 = gamepad2;
         this.telemetry = telemetry;
+
+        timer = new Timer();
 
         //pidf setup
         controller = new PIDController(p, i ,d);
@@ -68,43 +80,41 @@ public class Arm {
 
         //hardware setup
 
-        liftMotor = hardwareMap.get(DcMotor.class, "liftMotor");
+        extensionMotor = hardwareMap.get(DcMotor.class, "extendMotor");
         tiltMotorA = hardwareMap.get(DcMotorEx.class, "tiltMotorA");
         tiltMotorB = hardwareMap.get(DcMotor.class, "tiltMotorB");
         intakeMotor = hardwareMap.get(DcMotor.class, "intakeMotor");
 
         pitchServo = hardwareMap.get(Servo.class, "pitchServo");
-        boxGate = hardwareMap.get(Servo.class, "boxGate");
+        boxGateMain = hardwareMap.get(Servo.class, "boxGateMain");
+        boxGateAux = hardwareMap.get(Servo.class, "boxGateAux");
         grabLeft = hardwareMap.get(Servo.class, "grabLeft");
         grabRight = hardwareMap.get(Servo.class, "grabRight");
 
         //tilt setup
-        tiltMotorA.setDirection(DcMotorSimple.Direction.REVERSE);
-        tiltMotorA.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        if (isAuton) {
+//        tiltMotorA.setDirection(DcMotorSimple.Direction.REVERSE);
+        tiltMotorB.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        if(isAuton) {
             tiltMotorA.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             tiltMotorA.setTargetPosition(0);
         }
-        tiltMotorA.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        tiltMotorB.setDirection(DcMotorSimple.Direction.REVERSE);
-        tiltMotorB.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        if (isAuton) {
-            tiltMotorB.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            tiltMotorB.setTargetPosition(0);
-        }
-        tiltMotorB.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//        tiltMotorA.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//
+//        tiltMotorB.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        tiltMotorB.setTargetPosition(0);
+//        tiltMotorB.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        //lift
-        liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        if (isAuton) { //don't want to zero in teleop since its already extended to transfer
-            liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            liftMotor.setTargetPosition(0);
+        //extension
+        extensionMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        if(isAuton) {
+            extensionMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            extensionMotor.setTargetPosition(0);
+            extensionMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         }
-        liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         //intake motor
         intakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        intakeMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
         //grab servos
         if (isAuton) {
@@ -114,6 +124,15 @@ public class Arm {
             grabRight.setPosition(grabRightOut);
             grabLeft.setPosition(grabLeftOut);
         }
+
+        //box gate
+        pitchServo.setPosition(intakePitch);
+        boxGateMain.setPosition(boxOpenMain);
+        boxGateAux.setPosition(boxCloseAux);
+
+        isHang = false;
+        isAutoPitch = false;
+
     }
 
     public void actuate() {
@@ -123,52 +142,88 @@ public class Arm {
         //intake motor
         if (0.3 < gamepad1.right_trigger) {
             intakeMotor.setPower(intakeMotorPower);
+//            boxGateMain.setPosition(boxOpenMain);
+//            if(tiltMotorA.getCurrentPosition() < tiltBase + 200) pitchServo.setPosition(intakePitch);
         } else if (0.3 < gamepad1.left_trigger) {
             intakeMotor.setPower(-intakeMotorPower);
+//            boxGateMain.setPosition(boxOpenMain);
+//            if(tiltMotorA.getCurrentPosition() < tiltBase + 200) pitchServo.setPosition(intakePitch);
         } else {
+            if(!isAutoPitch) {
+//                boxGateMain.setPosition(boxCloseMain);
+            }
             intakeMotor.setPower(0);
         }
 
         //manual lift
-        if (MIN_TILT_TICKS < tiltMotorA.getCurrentPosition() + tiltMotorB.getCurrentPosition()) {
-            if (0.75 < -gamepad2.left_stick_y && MAX_LIFT_TICKS - 100 >= liftMotor.getCurrentPosition())
-                liftTarget += 40;
-            else if (-0.75 > -gamepad2.left_stick_y && 100 <= liftMotor.getCurrentPosition())
-                liftTarget -= 40;
+        if (tiltMotorA.getCurrentPosition() >= MIN_TILT_TICKS) {
+            if (-gamepad2.left_stick_y >= 0.75 && extensionMotor.getCurrentPosition() < MAX_EXTEND_TICKS-40)
+                extendTarget += 40;
+            else if (-gamepad2.left_stick_y <= -0.75 && extensionMotor.getCurrentPosition() >= 40)
+                extendTarget -= 40;
         }
         //manual tilt arm
-        if (MIN_TILT_TICKS < tiltMotorA.getCurrentPosition() + tiltMotorB.getCurrentPosition()) { //to tilt out use presets and then fine tuning with manual
-            if (0.75 < -gamepad2.right_stick_y && MAX_TILT_TICKS - 75 >= tiltTarget) {
+        if (tiltMotorA.getCurrentPosition() >= MIN_TILT_TICKS) { //to tilt out use presets and then fine tuning with manual
+            if (-gamepad2.right_stick_y >= 0.75 && tiltMotorA.getCurrentPosition() < MAX_TILT_TICKS - 25) {
                 tiltTarget += 25;
-            } else if (-0.75 > -gamepad2.right_stick_y && MIN_TILT_TICKS + 75 <= tiltTarget)
+            } else if (-gamepad2.right_stick_y <= -0.75 && tiltMotorA.getCurrentPosition() >= 25)
                 tiltTarget -= 25;
         }
 
-        //tilt+lift presets
+        //presets
         if (gamepad2.dpad_up) {
-            tiltTarget = tiltStraight;
+            timer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    tiltTarget = tiltStraight;
+                }
+            }, 75);
             isAutoPitch = true;
-            setBoxGate(boxClose);
+            pitchServo.setPosition(basePitch);
+            boxGateMain.setPosition(boxCloseMain); //???
         } else if (gamepad2.dpad_down) {
-            tiltTarget = tiltBase;
+            extendTarget = extendBase;
             isAutoPitch = false;
-            setBoxGate(boxClose);
+            pitchServo.setPosition(intakePitch);
+            boxGateMain.setPosition(boxOpenMain); //???
+            timer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    tiltTarget = tiltBase;
+                }
+            }, 500);
+        } else if (gamepad2.y) {
+            extendTarget = extendBase;
+            isAutoPitch = false;
+            tiltTarget = tiltHang;
+        } else if (gamepad2.b) {
+            isHang = true;
         }
 
         //auto pitch servo
-        if (MIN_TILT_TICKS < tiltMotorA.getCurrentPosition() + tiltMotorB.getCurrentPosition() && isAutoPitch) {
-            pitchServo.setPosition(scorePitch - ((((tiltMotorA.getCurrentPosition()) - tiltStraight) / tiltMotorTicksPerDegree) * pitchTicksPerDegree));
+        if (tiltMotorA.getCurrentPosition() > MIN_TILT_TICKS && isAutoPitch) {
+            double servoCalcPos = (scorePitch - ((((tiltMotorA.getCurrentPosition()) - tiltStraight) / tiltMotorTicksPerDegree) * pitchTicksPerDegree));
+            pitchServo.setPosition(Math.min(servoCalcPos, 0.93));
         }
 
         //box gate
-        if (gamepad2.right_bumper && MIN_TILT_TICKS < tiltMotorA.getCurrentPosition()) {
-            setBoxGate(boxOpen);
-        } else if (gamepad2.left_bumper) {
-            setBoxGate(boxClose);
+        if(isAutoPitch) { //prevents conflicting commands when retracting (box set to open but this code would set it to closed before arm is past min tilt)
+            if (gamepad2.right_bumper && tiltMotorA.getCurrentPosition() >= MIN_TILT_TICKS) {
+                boxGateMain.setPosition(boxOpenMain);
+            } else if (tiltMotorA.getCurrentPosition() >= MIN_TILT_TICKS) {
+                boxGateMain.setPosition(boxCloseMain);
+            }
         }
 
-        liftArm(liftTarget);
-        tiltArm(tiltTarget);
+        extendArm(extendTarget);
+        if(!isHang) {
+            tiltArm(tiltTarget);
+        } else {
+            tiltMotorA.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            tiltMotorB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            tiltMotorA.setPower(gamepad2.right_trigger > 0.3 ? -1: -hangTiltPower);
+            tiltMotorB.setPower(gamepad2.right_trigger > 0.3 ? -1: -hangTiltPower);
+        }
     }
 
     public void tiltArm(int targetPos) { //loop this function in auton
@@ -178,35 +233,27 @@ public class Arm {
         double ff = Math.cos(Math.toRadians(targetPos/tiltMotorTicksPerDegree)) * f;
 
         double power = pid + ff;
-
+        telemetry.addData("ff", ff);
+        telemetry.addData("power", power);
         tiltMotorA.setPower(power);
         tiltMotorB.setPower(power);
     }
 
-    private void liftArm(int targetPos) {
-        liftMotor.setTargetPosition(targetPos);
-        liftMotor.setPower(liftPower);
+    private void extendArm(int targetPos) {
+        extensionMotor.setTargetPosition(targetPos);
+        extensionMotor.setPower(extendPower);
     }
 
-    public void autonTilt(autonTiltPositions pos) { //use in teleop and auto by changing the tiltTarget variable (this will be automatically called at the end of loops)
-        switch (pos) {
-            case BASE:
-                tiltArm(tiltBase);
-                break;
-            case SCORE:
-                tiltArm(tiltStraight + 150);
-        }
-    }
 
-    public void autonLift(autonLiftPositions pos) {
+    public void autonExtend(autonExtendPositions pos) {
         switch (pos) {
             case BASE:
-                liftArm(liftBase);
+                extendArm(extendBase);
                 break;
             case EXTEND:
-                liftArm(MAX_LIFT_TICKS - 100);
+                extendArm(MAX_EXTEND_TICKS - 100);
             default:
-                liftArm(liftBase);
+                extendArm(extendBase);
         }
     }
 
@@ -231,25 +278,33 @@ public class Arm {
         }
     }
 
-    public void setPitchServo(double pos) {
+    public void autonSetPitchServo(double pos) {
         pitchServo.setPosition(pos);
     }
 
-    public void setBoxGate(double pos) {
-        boxGate.setPosition(pos);
+    public void autonSetBoxGate(boolean open) {
+        if(open) boxGateMain.setPosition(boxOpenMain);
+        else boxGateMain.setPosition(boxCloseMain);
+    }
+
+    public void resetEncoders() {
+        tiltMotorA.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        tiltMotorA.setTargetPosition(0);
+        extensionMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        extensionMotor.setTargetPosition(0);
+        extensionMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
 
 
     public void telemetryArm() {
-//        String liftString = "T: " + liftTarget + " | A: " + liftMotor.getCurrentPosition();
-//        String tiltString = "T: " + tiltTarget + " | A: " + tiltMotor.getCurrentPosition();
-        telemetry.addData("lift T", liftTarget);
-        telemetry.addData("lift A", liftMotor.getCurrentPosition());
+        telemetry.addData("ext T", extendTarget);
+        telemetry.addData("ext A", extensionMotor.getCurrentPosition());
         telemetry.addData("tilt T", tiltTarget);
-        telemetry.addData("tilt A", tiltMotorA.getCurrentPosition() + tiltMotorB.getCurrentPosition());
+        telemetry.addData("tilt A", tiltMotorA.getCurrentPosition());
+        telemetry.update();
     }
 
-    public enum autonLiftPositions {
+    public enum autonExtendPositions {
         BASE,
         EXTEND,
     }

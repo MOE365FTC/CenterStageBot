@@ -18,6 +18,9 @@ public class testTeleop extends OpMode {
     @Override
     public void init_loop(){
         robot.chassis.imuTelemetry(telemetry);
+        if(gamepad2.right_stick_button) {
+            robot.arm.resetEncoders();
+        }
     }
 
     @Override
@@ -25,5 +28,10 @@ public class testTeleop extends OpMode {
         robot.chassis.fieldCentricDrive();
         robot.chassis.imuTelemetry(telemetry);
         robot.chassis.odoTelemetry(telemetry);
+        robot.arm.actuate();
+
+//        if(gamepad2.right_stick_button) {
+//            robot.arm.resetEncoders();
+//        }
     }
 }

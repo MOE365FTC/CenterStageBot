@@ -10,7 +10,7 @@ public class DroneLauncher {
     Servo launchServo;
     Gamepad gamepad1;
 
-    double holdPosition = 0.0, launchPosition = 0.3;
+    double holdPosition = 0.0, launchPosition = 0.4;
 
     public DroneLauncher(HardwareMap hardwareMap, Gamepad gamepad1){
         this.gamepad1 = gamepad1;

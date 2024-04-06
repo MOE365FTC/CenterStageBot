@@ -169,32 +169,6 @@ public class NexusBlueLeft extends LinearOpMode {
                 .splineToConstantHeading(new Vector2d(-66,60), Math.toRadians(90)) //park
                 .build();
 
-//        TrajectorySequence test = drive.trajectorySequenceBuilder(startPose)
-//
-//                .lineToLinearHeading(new Pose2d(-12,-40,Math.toRadians(-90)))
-//                .lineTo(new Vector2d(-12, 17)) //maintain directness of path to score on backdrop
-//                .splineToSplineHeading(new Pose2d(-35.5,36,Math.toRadians(-90)), Math.toRadians(90)) //spline to backdrop left position
-//                .addTemporalMarker(() -> { //score on backdrop
-////                                            robot.outtake.tiltPID(autonLiftPositions.AUTON_SCORE); //set auton lift to score; NEEDS CHECKING
-////                                            MORE WORK + TESTING NEEDED HERE
-//                })
-//                .waitSeconds(bufferTime) //buffer time for outtake
-//                .lineToSplineHeading(new Pose2d(-18, 38.5, Math.toRadians(-30))) //make sure not to collide with backdrop
-////                                .splineToSplineHeading(new Pose2d(-12, 17,Math.toRadians(-90)), Math.toRadians(-90)) //spline into position to prepare to intake
-//                //hypothetically can start extending intake slides here
-////                                .lineToLinearHeading(new Pose2d(-11.5,-45,Math.toRadians(-90))) //move to intake white pixels
-////                                .addTemporalMarker(() -> { //intake white pixels
-//////                                            robot.outtake.autonIntakeSlides(EXTENDED_FULL) //set intake slides to full extension; NEEDS CHECKING
-//////                                            robot.outtake.intakeMotor(run) //set intake motor to run to intake white pixels; NEEDS CREATION
-//////                                            MORE WORK + TESTING NEEDED HERE
-////                                })
-////                                .waitSeconds(bufferTime) //buffer time for intake
-////                                .lineTo(new Vector2d(-12, 17)) //maintain directness of path to score on backdrop
-////                                .splineToSplineHeading(new Pose2d(-35.5,36,Math.toRadians(-90)), Math.toRadians(90)) //spline to backdrop left position
-////                                .lineTo(new Vector2d(-15,48)) //avoid collision with backdrop
-//                .splineToSplineHeading(new Pose2d(-10,60, Math.toRadians(-90)), Math.toRadians(90)) //park
-//                .build();
-
 
         while(!isStarted() && !isStopRequested()) {
             if(!usingVedic) robot.visionTensorflow.detectProp();
@@ -214,26 +188,27 @@ public class NexusBlueLeft extends LinearOpMode {
             telemetry.update();
         }
 //
-                robot.outtake.autonIris(true);
-                waitForStart();
-                if(usingVedic) robot.visionBlob.stopDetecting();
-                else robot.visionTensorflow.stopDetecting();
+        robot.outtake.autonIris(true);
+        waitForStart();
+        if(usingVedic) robot.visionBlob.stopDetecting();
+        else robot.visionTensorflow.stopDetecting();
 
-                switch(usingVedic ? robot.visionBlob.getPropPos() : robot.visionTensorflow.getPropPos()){
-                    case 1:
-                        drive.followTrajectorySequence(pixelLeft);
-                        break;
-                    case 2:
-                        drive.followTrajectorySequence(pixelCenter);
-                        break;
-                    case 3:
-                        drive.followTrajectorySequence(pixelRight);
-                        break;
+        switch(usingVedic ? robot.visionBlob.getPropPos() : robot.visionTensorflow.getPropPos()){
+            case 1:
+                drive.followTrajectorySequenceAsync(pixelLeft);
+                break;
+            case 2:
+                drive.followTrajectorySequenceAsync(pixelCenter);
+                break;
+            case 3:
+                drive.followTrajectorySequenceAsync(pixelRight);
+                break;
         }
 //
-//        while(!Thread.currentThread().isInterrupted() && drive.isBusy()) {
-//            drive.update();
-//        }
+        while(!Thread.currentThread().isInterrupted() && drive.isBusy()) {
+            drive.update();
+            robot.arm.tiltArm(tiltTarget);
+        }
 
     }
 }

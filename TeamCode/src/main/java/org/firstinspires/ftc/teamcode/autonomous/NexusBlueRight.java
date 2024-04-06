@@ -5,17 +5,17 @@ import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.hardware.Intake;
+import org.firstinspires.ftc.teamcode.hardware.Arm;
 import org.firstinspires.ftc.teamcode.hardware.MOEBot;
-import org.firstinspires.ftc.teamcode.hardware.Outtake;
+import org.firstinspires.ftc.teamcode.rr.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.rr.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.rr.trajectorysequence.TrajectorySequence;
 
 @Autonomous(group = "Match Autons")
 public class NexusBlueRight extends LinearOpMode {
     MOEBot robot;
-    public static int tiltTarget;
-    public static double bufferTime = 0.3;
+    public static int tiltTarget = 0;
+    public static int slowerStartingVelocity = 15;
     boolean usingVedic = false;
 
     @Override
@@ -27,276 +27,86 @@ public class NexusBlueRight extends LinearOpMode {
         drive.setPoseEstimate(startPose);
 
         TrajectorySequence pixelLeft = drive.trajectorySequenceBuilder(startPose)
-                .lineToLinearHeading(new Pose2d(-36,-39.5, Math.toRadians(90)))
-                .lineToLinearHeading(new Pose2d(-36,-32, Math.toRadians(90)))
-                .addTemporalMarker(() -> {
-                    robot.outtake.autonIris(false);
-                    robot.intake.runGrabs(false);
-                    robot.intake.autonRunIntake(true, true);
-                })
-                .waitSeconds(0.5) // TODO: TUNE THIS!
-                .addTemporalMarker(() -> {
-                    robot.intake.autonRunIntake(false);
-                })
-                .back(4)
-                .lineTo(new Vector2d(-9.5, -35))
-                .turn(Math.toRadians(182))
-                .addTemporalMarker(() -> {
-                    robot.outtake.autonTilt(Outtake.autonTiltPositions.HOVER);
-                })
-                .waitSeconds(1.0)
-                .addTemporalMarker(() -> {
-                    robot.intake.autonRunIntake(true); //start running in intake direction
-                    robot.outtake.autonLift(Outtake.autonLiftPositions.TRANSFER);
-                    robot.intake.autonIntakeSlides(Intake.ExtendPositions.EXTENDED_FULL);
-                })
+                .lineToLinearHeading(new Pose2d(-32,-39.5, Math.toRadians(90)))
+                .lineToConstantHeading(new Vector2d(-32, -33))
+                .waitSeconds(0.25)
+                .lineToConstantHeading(new Vector2d(-32,-35))
+                .lineToLinearHeading(new Pose2d(-11.5, -54, Math.toRadians(-90)))
+                //spike deposit incomplete; mechanical
                 .waitSeconds(0.5)
-                .addTemporalMarker(() -> {
-                    robot.outtake.setYawServo(0.32);
-                    robot.intake.autonRunIntake(true);
-                })
-                .addTemporalMarker(() -> {
-                    robot.outtake.setPitchServo(0.0);
-                    robot.intake.runGrabs(true);
-                })
-                .waitSeconds(2)
-                .addTemporalMarker(() -> {
-                    robot.intake.setTransferBeltServo(true);
-                })
-                .waitSeconds(0.5)
-                .addTemporalMarker(() -> {
-                    robot.intake.autonIntakeSlides(Intake.ExtendPositions.TRANSFER);
-                    robot.intake.autonRunIntake(false);
-                })
-                .waitSeconds(1.0)
-                .addTemporalMarker(() -> {
-                    robot.outtake.autonLift(Outtake.autonLiftPositions.TRANSFER);
-                    robot.outtake.autonTilt(Outtake.autonTiltPositions.BASE);
-                })
-                .waitSeconds(0.8)
-                .addTemporalMarker(() -> {
-                    robot.outtake.autonIris(true);
-                })
-                .lineTo(new Vector2d(-12, 34)) //maintain directness of path to score on backdrop
-                .lineToLinearHeading(new Pose2d(-42,39, Math.toRadians(-90))) //spline to backdrop right position
-                .turn(Math.toRadians(-5))
-                .waitSeconds(0.2)
-                .addTemporalMarker(() -> {
-                    robot.outtake.autonTilt(Outtake.autonTiltPositions.SCORE);
-                })
-                .waitSeconds(1.5)
-                .addTemporalMarker(() -> {
-                    robot.outtake.setPitchServo(0.45);
-                    robot.outtake.setYawServo(0.66);
-                })
-                .waitSeconds(1.0)
-                .addTemporalMarker(() -> {
-                    robot.outtake.autonIris(false);
-                })
-                .waitSeconds(0.5)
-                .addTemporalMarker(() -> {
-                    robot.outtake.setPitchServo(0.0);
-                    robot.outtake.setYawServo(0.32);
-                })
-                .waitSeconds(1.0)
-                .addTemporalMarker(() -> {
-                    robot.outtake.autonLift(Outtake.autonLiftPositions.TRANSFER);
-                    robot.outtake.autonTilt(Outtake.autonTiltPositions.BASE);
-                })
-                .waitSeconds(2.0) //buffer time for outtake
-                .forward(6)
-                .lineToLinearHeading(new Pose2d(-4, 56, Math.toRadians(-90)))
+                .lineToConstantHeading(new Vector2d(-11.5, 36))
+                .waitSeconds(0.25)
+                .lineToConstantHeading(new Vector2d(-41, 42))
+                .waitSeconds(0.25)
+                .lineToConstantHeading(new Vector2d(-11.5, 42))
+                .lineToConstantHeading(new Vector2d(-11.5, 60))
                 .build();
 
         TrajectorySequence pixelCenter = drive.trajectorySequenceBuilder(startPose)
-                .lineToConstantHeading(new Vector2d(-18,-60))
-                .lineToConstantHeading(new Vector2d(-18,-38))
+                .lineToConstantHeading(new Vector2d(-15,-35), SampleMecanumDrive.getVelocityConstraint(slowerStartingVelocity, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .addTemporalMarker(() -> {
-                    robot.outtake.autonIris(false);
-                    robot.intake.runGrabs(false);
-                    robot.intake.autonRunIntake(true, true);
+                    robot.arm.runGrabs(false);
+                    robot.arm.autonRunIntake(true, true); //run intake backwards
                 })
-                .waitSeconds(0.5) // TODO: TUNE THIS!
+                .waitSeconds(0.25)
                 .addTemporalMarker(() -> {
-                    robot.intake.autonRunIntake(false);
+                    robot.arm.autonRunIntake(false); //stop running intake
                 })
-                .back(2)
-                .lineTo(new Vector2d(-12, -36.5))
+                .lineToConstantHeading(new Vector2d(-11,-35))
                 .turn(Math.toRadians(90))
                 .addTemporalMarker(() -> {
-                    robot.outtake.autonTilt(Outtake.autonTiltPositions.HOVER);
+                    robot.arm.autonRunIntake(true); //run intake inwards
+                })
+                .lineTo(new Vector2d(-11.5,-54))
+                .addTemporalMarker(() -> {
+                    robot.arm.runGrabs(true); //run grabbers inward
                 })
                 .waitSeconds(1.0)
                 .addTemporalMarker(() -> {
-                    robot.intake.autonRunIntake(true); //start running in intake direction
-                    robot.outtake.autonLift(Outtake.autonLiftPositions.TRANSFER);
-                    robot.intake.autonIntakeSlides(Intake.ExtendPositions.EXTENDED_FULL);
+                    robot.arm.autonRunIntake(false); //stop intake
+                    robot.arm.autonSetBoxGate(false); //close intake box
+                })
+                .lineToConstantHeading(new Vector2d(-11.5, 36))
+                .addTemporalMarker(() -> {
+                    tiltTarget = Arm.tiltScore; //tilt arm to scoring position
+                })
+                .waitSeconds(0.25)
+                .addTemporalMarker(() -> {
+                    robot.arm.autonSetPitchServo(Arm.scorePitch); //set pitch servo to scoring position
+                })
+                .lineToConstantHeading(new Vector2d(-36, 42))
+                //might have to move into backdrop
+                .addTemporalMarker(() -> {
+                    robot.arm.autonSetBoxGate(true); //open scoring box
+                })
+                .waitSeconds(1.0)
+                .addTemporalMarker(() -> {
+                    robot.arm.autonSetPitchServo(Arm.basePitch); //set pitch servo to intake position
                 })
                 .waitSeconds(0.5)
                 .addTemporalMarker(() -> {
-                    robot.outtake.setYawServo(0.32);
-                    robot.intake.autonRunIntake(true);
+                    tiltTarget = Arm.tiltBase; //tilt arm to intake position
                 })
-                .addTemporalMarker(() -> {
-                    robot.outtake.setPitchServo(0.0);
-                    robot.intake.runGrabs(true);
-                })
-                .waitSeconds(2)
-                .addTemporalMarker(() -> {
-                    robot.intake.setTransferBeltServo(true);
-                })
-                .waitSeconds(0.5)
-                .addTemporalMarker(() -> {
-                    robot.intake.autonIntakeSlides(Intake.ExtendPositions.TRANSFER);
-                    robot.intake.autonRunIntake(false);
-                })
-                .waitSeconds(1.0)
-                .addTemporalMarker(() -> {
-                    robot.outtake.autonLift(Outtake.autonLiftPositions.TRANSFER);
-                    robot.outtake.autonTilt(Outtake.autonTiltPositions.BASE);
-                })
-                .waitSeconds(0.8)
-                .addTemporalMarker(() -> {
-                    robot.outtake.autonIris(true);
-                })
-                .lineTo(new Vector2d(-12, 34)) //maintain directness of path to score on backdrop
-                .lineToLinearHeading(new Pose2d(-26.5,34, Math.toRadians(-90))) //spline to backdrop right position
-                .turn(Math.toRadians(-5))
-                .waitSeconds(0.2)
-                .addTemporalMarker(() -> {
-                    robot.outtake.autonTilt(Outtake.autonTiltPositions.SCORE);
-                })
-                .waitSeconds(1.5)
-                .addTemporalMarker(() -> {
-                    robot.outtake.setPitchServo(0.45);
-                    robot.outtake.setYawServo(0.66);
-                })
-                .waitSeconds(1.0)
-                .addTemporalMarker(() -> {
-                    robot.outtake.autonIris(false);
-                })
-                .waitSeconds(0.5)
-                .addTemporalMarker(() -> {
-                    robot.outtake.setPitchServo(0.0);
-                    robot.outtake.setYawServo(0.32);
-                })
-                .waitSeconds(1.0)
-                .addTemporalMarker(() -> {
-                    robot.outtake.autonLift(Outtake.autonLiftPositions.TRANSFER);
-                    robot.outtake.autonTilt(Outtake.autonTiltPositions.BASE);
-                })
-                .waitSeconds(2.0) //buffer time for outtake
-                .forward(6)
-                .lineToLinearHeading(new Pose2d(-4, 56, Math.toRadians(-90)))
+                .lineToConstantHeading(new Vector2d(-11.5, 42))
+                .lineToConstantHeading(new Vector2d(-11.5, 60))
                 .build();
 
         TrajectorySequence pixelRight = drive.trajectorySequenceBuilder(startPose)
-                .lineToConstantHeading(new Vector2d(-22,-39.5))
-                .lineToConstantHeading(new Vector2d(-22,-48))
-                .addTemporalMarker(() -> {
-                    robot.outtake.autonIris(false);
-                    robot.intake.runGrabs(false);
-                    robot.intake.autonRunIntake(true, true);
-                })
-                .waitSeconds(0.5) // TODO: TUNE THIS!
-                .addTemporalMarker(() -> {
-                    robot.intake.autonRunIntake(false);
-                })
-                .back(2)
-                .lineTo(new Vector2d(-12, -35.5))
+                .lineToConstantHeading(new Vector2d(-15,-46))
+                .waitSeconds(0.25)
+                .lineToConstantHeading(new Vector2d(-11,-46))
                 .turn(Math.toRadians(90))
-                .addTemporalMarker(() -> {
-                    robot.outtake.autonTilt(Outtake.autonTiltPositions.HOVER);
-                })
-                .waitSeconds(1.0)
-                .addTemporalMarker(() -> {
-                    robot.intake.autonRunIntake(true); //start running in intake direction
-                    robot.outtake.autonLift(Outtake.autonLiftPositions.TRANSFER);
-                    robot.intake.autonIntakeSlides(Intake.ExtendPositions.EXTENDED_FULL);
-                })
+                .waitSeconds(0.25)
+                //spike deposit incomplete; mechanical
+                .lineTo(new Vector2d(-11.5,-54))
                 .waitSeconds(0.5)
-                .addTemporalMarker(() -> {
-                    robot.outtake.setYawServo(0.32);
-                    robot.intake.autonRunIntake(true);
-                })
-                .addTemporalMarker(() -> {
-                    robot.outtake.setPitchServo(0.0);
-                    robot.intake.runGrabs(true);
-                })
-                .waitSeconds(2)
-                .addTemporalMarker(() -> {
-                    robot.intake.setTransferBeltServo(true);
-                })
-                .waitSeconds(0.5)
-                .addTemporalMarker(() -> {
-                    robot.intake.autonIntakeSlides(Intake.ExtendPositions.TRANSFER);
-                    robot.intake.autonRunIntake(false);
-                })
-                .waitSeconds(1.0)
-                .addTemporalMarker(() -> {
-                    robot.outtake.autonLift(Outtake.autonLiftPositions.TRANSFER);
-                    robot.outtake.autonTilt(Outtake.autonTiltPositions.BASE);
-                })
-                .waitSeconds(0.8)
-                .addTemporalMarker(() -> {
-                    robot.outtake.autonIris(true);
-                })
-                .lineTo(new Vector2d(-12, 34)) //maintain directness of path to score on backdrop
-                .lineToLinearHeading(new Pose2d(-23.5,34, Math.toRadians(-90))) //spline to backdrop right position
-                .turn(Math.toRadians(-5))
-                .waitSeconds(0.2)
-                .addTemporalMarker(() -> {
-                    robot.outtake.autonTilt(Outtake.autonTiltPositions.SCORE);
-                })
-                .waitSeconds(1.5)
-                .addTemporalMarker(() -> {
-                    robot.outtake.setPitchServo(0.45);
-                    robot.outtake.setYawServo(0.66);
-                })
-                .waitSeconds(1.0)
-                .addTemporalMarker(() -> {
-                    robot.outtake.autonIris(false);
-                })
-                .waitSeconds(0.5)
-                .addTemporalMarker(() -> {
-                    robot.outtake.setPitchServo(0.0);
-                    robot.outtake.setYawServo(0.32);
-                })
-                .waitSeconds(1.0)
-                .addTemporalMarker(() -> {
-                    robot.outtake.autonLift(Outtake.autonLiftPositions.TRANSFER);
-                    robot.outtake.autonTilt(Outtake.autonTiltPositions.BASE);
-                })
-                .waitSeconds(2.0) //buffer time for outtake
-                .forward(6)
-                .lineToLinearHeading(new Pose2d(-4, 56, Math.toRadians(-90)))
+                .lineToConstantHeading(new Vector2d(-11.5, 36))
+                .waitSeconds(0.25)
+                .lineToConstantHeading(new Vector2d(-27, 42))
+                .waitSeconds(0.25)
+                .lineToConstantHeading(new Vector2d(-11.5, 42))
+                .lineToConstantHeading(new Vector2d(-11.5, 60))
                 .build();
-
-//        TrajectorySequence test = drive.trajectorySequenceBuilder(startPose)
-//
-//                .lineToLinearHeading(new Pose2d(-12,-40,Math.toRadians(-90)))
-//                .lineTo(new Vector2d(-12, 17)) //maintain directness of path to score on backdrop
-//                .splineToSplineHeading(new Pose2d(-35.5,36,Math.toRadians(-90)), Math.toRadians(90)) //spline to backdrop left position
-//                .addTemporalMarker(() -> { //score on backdrop
-////                                            robot.outtake.tiltPID(autonLiftPositions.AUTON_SCORE); //set auton lift to score; NEEDS CHECKING
-////                                            MORE WORK + TESTING NEEDED HERE
-//                })
-//                .waitSeconds(bufferTime) //buffer time for outtake
-//                .lineToSplineHeading(new Pose2d(-18, 38.5, Math.toRadians(-30))) //make sure not to collide with backdrop
-////                                .splineToSplineHeading(new Pose2d(-12, 17,Math.toRadians(-90)), Math.toRadians(-90)) //spline into position to prepare to intake
-//                //hypothetically can start extending intake slides here
-////                                .lineToLinearHeading(new Pose2d(-11.5,-45,Math.toRadians(-90))) //move to intake white pixels
-////                                .addTemporalMarker(() -> { //intake white pixels
-//////                                            robot.outtake.autonIntakeSlides(EXTENDED_FULL) //set intake slides to full extension; NEEDS CHECKING
-//////                                            robot.outtake.intakeMotor(run) //set intake motor to run to intake white pixels; NEEDS CREATION
-//////                                            MORE WORK + TESTING NEEDED HERE
-////                                })
-////                                .waitSeconds(bufferTime) //buffer time for intake
-////                                .lineTo(new Vector2d(-12, 17)) //maintain directness of path to score on backdrop
-////                                .splineToSplineHeading(new Pose2d(-35.5,36,Math.toRadians(-90)), Math.toRadians(90)) //spline to backdrop left position
-////                                .lineTo(new Vector2d(-15,48)) //avoid collision with backdrop
-//                .splineToSplineHeading(new Pose2d(-10,60, Math.toRadians(-90)), Math.toRadians(90)) //park
-//                .build();
 
 
         while(!isStarted() && !isStopRequested()) {
@@ -316,6 +126,7 @@ public class NexusBlueRight extends LinearOpMode {
             telemetry.addData("Status", "READY");
             telemetry.update();
         }
+
 //
         waitForStart();
         if(usingVedic) robot.visionBlob.stopDetecting();
@@ -323,19 +134,20 @@ public class NexusBlueRight extends LinearOpMode {
 
         switch(usingVedic ? robot.visionBlob.getPropPos() : robot.visionTensorflow.getPropPos()){
             case 1:
-                drive.followTrajectorySequence(pixelLeft);
+                drive.followTrajectorySequenceAsync(pixelLeft);
                 break;
             case 2:
-                drive.followTrajectorySequence(pixelCenter);
+                drive.followTrajectorySequenceAsync(pixelCenter);
                 break;
             case 3:
-                drive.followTrajectorySequence(pixelRight);
+                drive.followTrajectorySequenceAsync(pixelRight);
                 break;
         }
 //
-//        while(!Thread.currentThread().isInterrupted() && drive.isBusy()) {
-//            drive.update();
-//        }
+        while(!Thread.currentThread().isInterrupted() && drive.isBusy()) {
+            drive.update();
+            robot.arm.tiltArm(tiltTarget);
+        }
 
     }
 }

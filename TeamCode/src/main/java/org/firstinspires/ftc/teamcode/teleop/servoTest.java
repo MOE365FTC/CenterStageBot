@@ -1,47 +1,44 @@
 package org.firstinspires.ftc.teamcode.teleop;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.ServoControllerEx;
 import com.qualcomm.robotcore.hardware.ServoImplEx;
 
+@Config
 @TeleOp(group = "test")
 public class servoTest extends OpMode {
-    ServoImplEx servo;
-    Servo servo1;
-    ServoControllerEx controller;
-    boolean disableServo = false;
+    Servo grabLeft, grabRight;
+    Servo pitchServo, boxGateMain, boxGateAux;
+    Servo droneLauncher;
+
+    public static double pos = 0.0;
+
     @Override
     public void init() {
-        servo = hardwareMap.get(ServoImplEx.class, "SR001");
-        servo1 = hardwareMap.get(Servo.class, "SR002");
+       grabLeft = hardwareMap.get(Servo.class, "grabLeft");
+       grabRight = hardwareMap.get(Servo.class, "grabRight");
+
+       pitchServo = hardwareMap.get(Servo.class, "pitchServo");
+       boxGateMain = hardwareMap.get(Servo.class, "boxGateMain");
+       boxGateAux = hardwareMap.get(Servo.class, "boxGateAux");
+
+       droneLauncher = hardwareMap.get(Servo.class, "droneServo");
     }
 
 
 
     @Override
     public void loop() {
-        if (gamepad1.a){
-            disableServo = true;
-        }
-        else if (gamepad1.b){
-            if(!disableServo){
-                servo.setPosition(0.0);
-            }else{
-                servo.setPwmDisable();
-            }
-            servo1.setPosition(0.0);
-        } else if (gamepad1.x) {
-            disableServo = false;
-            servo.setPwmEnable();
-        } else if (gamepad1.y) {
-            if(!disableServo)
-                servo.setPosition(0.7);
-            else
-                servo.setPwmDisable();
-        } else if (gamepad1.right_trigger > 0.3){
-            servo1.setPosition(0.7);
+        if(gamepad1.a) {
+            grabLeft.setPosition(pos);
+            grabRight.setPosition(pos);
+            pitchServo.setPosition(pos);
+            boxGateMain.setPosition(pos);
+            boxGateAux.setPosition(pos);
+            droneLauncher.setPosition(pos);
         }
     }
 }

@@ -73,7 +73,7 @@ public class Chassis {
         double backRightPower = (rotY + rotX - rx) / denominator;
 
         if(gamepad1.right_bumper) //slow down button for fine-control
-            driveSpeed = 0.5;
+            driveSpeed = 0.3;
         else
             driveSpeed = 1;
         
