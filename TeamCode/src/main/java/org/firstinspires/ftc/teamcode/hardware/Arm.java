@@ -32,8 +32,8 @@ public class Arm {
     public static boolean isAutoPitch = false;
     public static final double intakeMotorPower = 1.0;
     public static final double grabLeftIn = 0.0, grabLeftOut = 1.0, grabRightIn = 1.0, grabRightOut = 0.2;
-    public static final double basePitch = 0.0, intakePitch = 0.0, scorePitch = 0.8;
-    public static final int tiltStraight = 1987, tiltScore = 1400, tiltHang = 900, tiltBase = 0;
+    public static final double basePitch = 0.02, intakePitch = 0.14, scorePitch = 0.84;
+    public static final int tiltStraight = 1987, tiltHang = 900, tiltBase = 0;
     public static final int extendBase = 0; //tuning needed
 
     public static final double extendPower = 0.8;
@@ -45,7 +45,7 @@ public class Arm {
     public static int extendTarget = extendBase; //can make these static to pass target pos between auto and teleop if needed to fix run to position error, make sure to update this variable in auto functions
     public static int tiltTarget = tiltBase;
 
-    public static final int MIN_TILT_TICKS = 1200; //temp
+    public static final int MIN_TILT_TICKS = 850; //temp
     public static final int MAX_TILT_TICKS = 2140;
     public static final int MAX_EXTEND_TICKS = 1115;
 
@@ -54,11 +54,11 @@ public class Arm {
     //pitch servo parameters
     private static final double tiltMotorTicksPerDegree = 1987.0 / 180.0;
 
-    public static final double boxOpenMain = 0.9;//needs tuning
-    public static final double boxCloseMain = 1.0;//needs tuning
+    public static final double boxOpenMain = 0.11;//needs tuning
+    public static final double boxCloseMain = 0.03;//needs tuning
 
-    public static final double boxOpenAux = 0.12;//needs tuning
-    public static final double boxCloseAux = 0.02;//needs tuning
+    public static final double boxOpenAux = 0.9;//needs tuning
+    public static final double boxCloseAux = 1.0;//needs tuning
 
     //intake state
     Gamepad gamepad1;
@@ -198,10 +198,12 @@ public class Arm {
             tiltTarget = tiltHang;
         } else if (gamepad2.b) {
             isHang = true;
+        } else if (gamepad2.x){
+            isHang = false;
         }
 
         //auto pitch servo
-        if (tiltMotorA.getCurrentPosition() > MIN_TILT_TICKS && isAutoPitch) {
+        if (tiltMotorA.getCurrentPosition() > MIN_TILT_TICKS + 350 && isAutoPitch) {
             double servoCalcPos = (scorePitch - ((((tiltMotorA.getCurrentPosition()) - tiltStraight) / tiltMotorTicksPerDegree) * pitchTicksPerDegree));
             pitchServo.setPosition(Math.min(servoCalcPos, 0.93));
         }

@@ -18,13 +18,13 @@ public class MOEBot {
     public Outtake outtake;
     public Intake intake;
 
-    List<LynxModule> allHubs;
+//    List<LynxModule> allHubs;
     public MOEBot(HardwareMap hardwareMap, Gamepad gamepad1, Gamepad gamepad2, Telemetry telemetry, boolean isAuton, boolean onRightSide) {
         // configure hubs
-        allHubs = hardwareMap.getAll(LynxModule.class);
-        for (LynxModule hub : allHubs) {
-            hub.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
-        }
+//        allHubs = hardwareMap.getAll(LynxModule.class);
+//        for (LynxModule hub : allHubs) {
+//            hub.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
+//        }
 
         chassis = new Chassis(hardwareMap, gamepad1);
         arm = new Arm(hardwareMap, gamepad1, gamepad2, telemetry, isAuton);

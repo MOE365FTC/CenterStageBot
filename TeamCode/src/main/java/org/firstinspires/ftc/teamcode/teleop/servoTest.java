@@ -26,6 +26,9 @@ public class servoTest extends OpMode {
        boxGateAux = hardwareMap.get(Servo.class, "boxGateAux");
 
        droneLauncher = hardwareMap.get(Servo.class, "droneServo");
+
+       grabLeft.setPosition(0);
+       grabRight.setPosition(1);
     }
 
 
@@ -33,12 +36,8 @@ public class servoTest extends OpMode {
     @Override
     public void loop() {
         if(gamepad1.a) {
-            grabLeft.setPosition(pos);
-            grabRight.setPosition(pos);
-            pitchServo.setPosition(pos);
-            boxGateMain.setPosition(pos);
             boxGateAux.setPosition(pos);
-            droneLauncher.setPosition(pos);
+            boxGateMain.setPosition(pos);
         }
     }
 }
