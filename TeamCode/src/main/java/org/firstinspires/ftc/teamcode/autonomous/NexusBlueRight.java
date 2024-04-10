@@ -13,6 +13,7 @@ import org.firstinspires.ftc.teamcode.rr.trajectorysequence.TrajectorySequence;
 
 @Autonomous(group = "Match Autons")
 public class NexusBlueRight extends LinearOpMode {
+    //UPDATED FOR WORLDS : PIXEL LEFT UNTESTED
     MOEBot robot;
     public static int tiltTarget = 0;
     public static final int slowerStartingVelocity = 30;
@@ -103,11 +104,11 @@ public class NexusBlueRight extends LinearOpMode {
                     robot.arm.autonRunIntake(true); //run intake inwards
                 })
                 .lineToLinearHeading(new Pose2d(-11.5,-57.5, Math.toRadians(-90)))
-                .forward(5.5, SampleMecanumDrive.getVelocityConstraint(slowerStartingVelocity -15, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
+                .forward(4.5, SampleMecanumDrive.getVelocityConstraint(slowerStartingVelocity -15, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .addTemporalMarker(() -> {
                     robot.arm.runGrabs(true); //run grabbers inward
                 })
-                .waitSeconds(1.0)
+                .waitSeconds(2.0)
                 .addTemporalMarker(() -> {
                     robot.arm.autonRunIntake(false); //stop intake
                     robot.arm.autonSetBoxGate(false); //close intake box
@@ -121,7 +122,7 @@ public class NexusBlueRight extends LinearOpMode {
                 .addTemporalMarker(() -> {
                     robot.arm.autonSetPitchServo(Arm.scorePitch); //set pitch servo to scoring position
                 })
-                .lineToConstantHeading(new Vector2d(-19, 39))  //original y before making arm steeper: 42
+                .lineToConstantHeading(new Vector2d(-24, 39.5))  //original y before making arm steeper: 42
                 .waitSeconds(0.4) //inertia
                 //might have to move into backdrop
                 .addTemporalMarker(() -> {
@@ -133,7 +134,7 @@ public class NexusBlueRight extends LinearOpMode {
                 })
                 .waitSeconds(0.12)
                 .waitSeconds(0.5)
-                .lineToConstantHeading(new Vector2d(-28, 39))  //original y before making arm steeper: 42
+                .lineToConstantHeading(new Vector2d(-31, 39.5))  //original y before making arm steeper: 42
                 .waitSeconds(0.2) //inertia
                 .addTemporalMarker(() -> {
                     robot.arm.autonSetBoxGate(true); //open scoring box
@@ -246,7 +247,7 @@ public class NexusBlueRight extends LinearOpMode {
 //                drive.followTrajectorySequenceAsync(pixelRight);
 //                break;
 //        }
-        drive.followTrajectorySequenceAsync(pixelLeft);
+        drive.followTrajectorySequenceAsync(pixelCenter);
 //
         while(!Thread.currentThread().isInterrupted() && drive.isBusy()) {
             drive.update();

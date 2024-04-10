@@ -54,8 +54,8 @@ public class Arm {
     //pitch servo parameters
     private static final double tiltMotorTicksPerDegree = 1987.0 / 180.0;
 
-    public static final double boxOpenMain = 0.11;//needs tuning
-    public static final double boxCloseMain = 0.03;//needs tuning
+    public static final double boxOpenMain = 0.08;//needs tuning
+    public static final double boxCloseMain = 0.01;//needs tuning
 
     public static final double boxOpenAux = 0.9;//needs tuning
     public static final double boxCloseAux = 1.0;//needs tuning
@@ -290,6 +290,8 @@ public class Arm {
     }
 
     public void resetEncoders() {
+        extendTarget = extendBase;
+        tiltTarget = tiltBase;
         tiltMotorA.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         tiltMotorA.setTargetPosition(0);
         extensionMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
