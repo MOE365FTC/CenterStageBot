@@ -29,6 +29,8 @@ public class testTeleop extends OpMode {
         robot.chassis.imuTelemetry(telemetry);
         robot.chassis.odoTelemetry(telemetry);
         robot.arm.actuate();
+        robot.arm.telemetryArm();
+        robot.droneLauncher.actuate();
 
 //        if(gamepad2.right_stick_button) {
 //            robot.arm.resetEncoders();

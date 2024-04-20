@@ -1,0 +1,26 @@
+CH:
+Motors:
+0 - BLM
+1 - extendMotor
+2 - intakeMotor
+3 - FLM
+Servos:
+3 - blinkBack
+4 - blinkFront
+5 - grabLeft
+I2C Bus 0: imu
+I2C Bus 2: CSB
+I2C Bus 3: CSF
+EH:
+Motors:
+0 - BRM
+1 - tiltMotorB
+2 - tiltMotorA
+3 - FRM
+Servos:
+0 - boxGateAux
+1 - boxGateMain
+2 - empty
+3 - grabRight
+4 - droneServo
+5 - pitchServo

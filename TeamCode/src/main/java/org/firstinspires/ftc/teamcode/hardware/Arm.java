@@ -32,7 +32,7 @@ public class Arm {
     public static boolean isAutoPitch = false;
     public static final double intakeMotorPower = 1.0;
     public static final double grabLeftIn = 0.0, grabLeftOut = 1.0, grabRightIn = 1.0, grabRightOut = 0.2;
-    public static final double basePitch = 0.02, intakePitch = 0.14, scorePitch = 0.84;
+    public static final double basePitch = 0.02, intakePitch = 0.155, scorePitch = 0.84, autonScorePitch = 0.768;
     public static final int tiltStraight = 1987, tiltHang = 900, tiltBase = 0;
     public static final int extendBase = 0; //tuning needed
 
@@ -54,11 +54,11 @@ public class Arm {
     //pitch servo parameters
     private static final double tiltMotorTicksPerDegree = 1987.0 / 180.0;
 
-    public static final double boxOpenMain = 0.08;//needs tuning
+    public static final double boxOpenMain = 0.1;//needs tuning
     public static final double boxCloseMain = 0.01;//needs tuning
 
     public static final double boxOpenAux = 0.9;//needs tuning
-    public static final double boxCloseAux = 1.0;//needs tuning
+    public static final double boxCloseAux = 0.97;//needs tuning
 
     //intake state
     Gamepad gamepad1;
@@ -133,6 +133,13 @@ public class Arm {
         isHang = false;
         isAutoPitch = false;
 
+        if(!isAuton) {
+            extendTarget = 0;
+            tiltTarget = tiltMotorA.getCurrentPosition();
+        }
+
+        resetEncoders(); //both in auton and teleop i guess
+
     }
 
     public void actuate() {
@@ -156,18 +163,36 @@ public class Arm {
         }
 
         //manual lift
-        if (tiltMotorA.getCurrentPosition() >= MIN_TILT_TICKS) {
-            if (-gamepad2.left_stick_y >= 0.75 && extensionMotor.getCurrentPosition() < MAX_EXTEND_TICKS-40)
+        if(!gamepad2.dpad_left) {
+            if (tiltMotorA.getCurrentPosition() >= MIN_TILT_TICKS) {
+                if (-gamepad2.left_stick_y >= 0.75 && extensionMotor.getCurrentPosition() < MAX_EXTEND_TICKS - 40)
+                    extendTarget += 40;
+                else if (-gamepad2.left_stick_y <= -0.75 && extensionMotor.getCurrentPosition() >= 40)
+                    extendTarget -= 40;
+            }
+        } else {
+            if (-gamepad2.left_stick_y >= 0.75)
                 extendTarget += 40;
-            else if (-gamepad2.left_stick_y <= -0.75 && extensionMotor.getCurrentPosition() >= 40)
+            else if (-gamepad2.left_stick_y <= -0.75)
                 extendTarget -= 40;
         }
         //manual tilt arm
-        if (tiltMotorA.getCurrentPosition() >= MIN_TILT_TICKS) { //to tilt out use presets and then fine tuning with manual
-            if (-gamepad2.right_stick_y >= 0.75 && tiltMotorA.getCurrentPosition() < MAX_TILT_TICKS - 25) {
+        if(!gamepad2.dpad_left) {
+            if (tiltMotorA.getCurrentPosition() >= MIN_TILT_TICKS) { //to tilt out use presets and then fine tuning with manual
+                if (-gamepad2.right_stick_y >= 0.75 && tiltMotorA.getCurrentPosition() < MAX_TILT_TICKS - 25) {
+                    tiltTarget += 25;
+                } else if (-gamepad2.right_stick_y <= -0.75 && tiltMotorA.getCurrentPosition() >= 25)
+                    tiltTarget -= 25;
+            }
+        } else {
+            if (-gamepad2.right_stick_y >= 0.75) {
                 tiltTarget += 25;
-            } else if (-gamepad2.right_stick_y <= -0.75 && tiltMotorA.getCurrentPosition() >= 25)
+            } else if (-gamepad2.right_stick_y <= -0.75)
                 tiltTarget -= 25;
+        }
+
+        if(gamepad2.a) {
+            resetEncoders();
         }
 
         //presets
@@ -247,16 +272,8 @@ public class Arm {
     }
 
 
-    public void autonExtend(autonExtendPositions pos) {
-        switch (pos) {
-            case BASE:
-                extendArm(extendBase);
-                break;
-            case EXTEND:
-                extendArm(MAX_EXTEND_TICKS - 100);
-            default:
-                extendArm(extendBase);
-        }
+    public void autonExtend(int ticks) {
+        extendArm(ticks);
     }
 
     public void autonRunIntake(boolean start) {

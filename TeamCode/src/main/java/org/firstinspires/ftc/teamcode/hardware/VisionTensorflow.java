@@ -25,7 +25,7 @@ public class VisionTensorflow {
     private int propPos = 1;
 
     public static int leftBoundary = 200;
-    public static int rightBoundary = 500;
+    public static int rightBoundary = 270;
 
     public boolean onRightSide = true;
 
@@ -47,7 +47,8 @@ public class VisionTensorflow {
             if(onRightSide) {
                 propPos = 1;
             } else {
-                propPos = 3;
+                //obselete
+//                propPos = 3;
             }
         }
         for (Recognition recognition : currentRecognitions) {
@@ -60,13 +61,14 @@ public class VisionTensorflow {
 
             //classifies spike mark position based on x-coords of detected bounding box
             if(onRightSide) {
-                if (x > rightBoundary) propPos = 3;
-                else if (x > leftBoundary) propPos = 2;
-                else propPos = 1;
-            } else {
-                if (x < leftBoundary) propPos = 1;
-                else if (x >= leftBoundary) propPos = 2;
+                if (x <= rightBoundary) propPos = 3;
+                else if (x > rightBoundary) propPos = 2;
                 else propPos = 3;
+            } else {
+                //obselete
+//                if (x < leftBoundary) propPos = 3;
+//                else if (x >= leftBoundary) propPos = 2;
+//                else propPos = 1;
             }
         }
         telemetry.update();
@@ -126,7 +128,7 @@ public class VisionTensorflow {
         visionPortal = builder.build();
 
         // Set confidence threshold for TFOD recognitions, at any time.
-        tfod.setMinResultConfidence(0.30f);
+        tfod.setMinResultConfidence(0.60f);
 
         // Disable or re-enable the TFOD processor at any time.
         visionPortal.setProcessorEnabled(tfod, true);

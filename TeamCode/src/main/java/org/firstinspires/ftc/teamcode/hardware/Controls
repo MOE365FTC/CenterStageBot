@@ -17,6 +17,7 @@ Intake:
     Grabbers:
         [HOLD(Runs while held for one rotation)] Y: Run grabbers
 
+Drone: DPad Right: Launch drone
 
 Gamepad 2:
 

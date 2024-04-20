@@ -21,6 +21,7 @@ public class NexusBlueLeft extends LinearOpMode {
     public static int tiltTarget;
     public static final int slowerStartingVelocity = 30;
     public static double bufferTime = 0.3;
+    public static int armOffset = 100;
     boolean usingVedic = false;
 
     @Override
@@ -28,41 +29,52 @@ public class NexusBlueLeft extends LinearOpMode {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         MOEBot robot = new MOEBot(hardwareMap, gamepad1, gamepad2, telemetry, true, false);
 
-        Pose2d startPose = new Pose2d(-62, 12, Math.toRadians(180));
+        Pose2d startPose = new Pose2d(-62, 10, Math.toRadians(180));
         drive.setPoseEstimate(startPose);
 
         TrajectorySequence pixelLeft = drive.trajectorySequenceBuilder(startPose)
                 .addTemporalMarker(() -> {
                     robot.arm.autonSetBoxGate(false);
                 })
-                .lineToLinearHeading(new Pose2d(-23, 23, Math.toRadians(180)))
+                .strafeRight(6)
+                .lineToLinearHeading(new Pose2d(-31, 32, Math.toRadians(-90)), SampleMecanumDrive.getVelocityConstraint(slowerStartingVelocity, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
+//                .lineToLinearHeading(new Pose2d(-23, 23, Math.toRadians(180)), SampleMecanumDrive.getVelocityConstraint(slowerStartingVelocity, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .addTemporalMarker(() -> {
                     robot.arm.runGrabs(false);
                     robot.arm.autonRunIntake(true, true); //run intake backwards
                 })
-                .waitSeconds(0.25)
+                .waitSeconds(0.5)
                 .addTemporalMarker(() -> {
                     robot.arm.autonRunIntake(false); //stop running intake
                 })
-                .back(10)
-                .lineToLinearHeading(new Pose2d(-16, 39, Math.toRadians(-90)))
+                .back(5)
+//                .lineToLinearHeading(new Pose2d(-11.5, 32, Math.toRadians(-90)))
                 .addTemporalMarker(() -> {
                     robot.arm.autonSetPitchServo(Arm.basePitch);
                 })
-                .waitSeconds(0.25)
-                .addTemporalMarker(() -> {
-                    tiltTarget = Arm.tiltStraight + 100; //tilt arm to scoring position
-                })
-                .waitSeconds(0.25)
-                .addTemporalMarker(() -> {
-                    robot.arm.autonSetPitchServo(Arm.scorePitch); //set pitch servo to scoring position
-                })
-                .lineToSplineHeading(new Pose2d(-42.5,39,Math.toRadians(-90))) //spline to backdrop left position
+                .waitSeconds(0.75)
+                .lineToLinearHeading(new Pose2d(-42.5,37,Math.toRadians(-90))) //spline to backdrop center position
                 .waitSeconds(0.4) //inertia
+                .addTemporalMarker(() -> {
+                    tiltTarget = Arm.tiltStraight + armOffset; //tilt arm to scoring position
+                })
+                .waitSeconds(0.5)
+                .addTemporalMarker(() -> {
+                    robot.arm.autonSetPitchServo(Arm.autonScorePitch); //set pitch servo to scoring position
+                })
+                .waitSeconds(0.75)
+                .addTemporalMarker(() -> {
+                    robot.arm.autonExtend(200);
+                })
+                .waitSeconds(0.5)
                 .addTemporalMarker(() -> {
                     robot.arm.autonSetBoxGate(true); //open scoring box
                 })
-                .waitSeconds(0.2)
+                .waitSeconds(0.75)
+                .addTemporalMarker(() -> {
+                    robot.arm.autonExtend(0);
+                })
+                .waitSeconds(0.5)
                 .addTemporalMarker(() -> {
                     robot.arm.autonSetPitchServo(Arm.basePitch); //set pitch servo to intake position
                 })
@@ -70,7 +82,37 @@ public class NexusBlueLeft extends LinearOpMode {
                 .addTemporalMarker(() -> {
                     tiltTarget = Arm.tiltBase; //tilt arm to intake position
                 })
-                .waitSeconds(0.4)
+                .waitSeconds(0.75)
+//                .lineToLinearHeading(new Pose2d(-34,32,Math.toRadians(-90))) //spline to backdrop center position
+//                .waitSeconds(0.4) //inertia
+//                .addTemporalMarker(() -> {
+//                    tiltTarget = Arm.tiltStraight + armOffset - 50; //tilt arm to scoring position
+//                })
+//                .waitSeconds(0.25)
+//                .addTemporalMarker(() -> {
+//                    robot.arm.autonSetPitchServo(Arm.autonScorePitch); //set pitch servo to scoring position
+//                })
+//                .waitSeconds(0.75)
+//                .addTemporalMarker(() -> {
+//                    robot.arm.autonExtend(550);
+//                })
+//                .waitSeconds(0.5)
+//                .addTemporalMarker(() -> {
+//                    robot.arm.autonSetBoxGate(true); //open scoring box
+//                })
+//                .waitSeconds(0.75)
+//                .addTemporalMarker(() -> {
+//                    robot.arm.autonExtend(0);
+//                })
+//                .waitSeconds(0.5)
+//                .addTemporalMarker(() -> {
+//                    robot.arm.autonSetPitchServo(Arm.basePitch); //set pitch servo to intake position
+//                })
+//                .waitSeconds(0.5)
+//                .addTemporalMarker(() -> {
+//                    tiltTarget = Arm.tiltBase; //tilt arm to intake position
+//                })
+//                .waitSeconds(0.75)
                 .lineToConstantHeading(new Vector2d(-58, 48))
                 .lineToLinearHeading(new Pose2d(-60,60, Math.toRadians(-90))) //park
                 .build();
@@ -79,34 +121,43 @@ public class NexusBlueLeft extends LinearOpMode {
                 .addTemporalMarker(() -> {
                     robot.arm.autonSetBoxGate(false);
                 })
-                .lineToLinearHeading(new Pose2d(-15, 12, Math.toRadians(180)))
+                .strafeRight(6)
+                .lineToLinearHeading(new Pose2d(-23, 22, Math.toRadians(-90)))
                 .addTemporalMarker(() -> {
                     robot.arm.runGrabs(false);
                     robot.arm.autonRunIntake(true, true); //run intake backwards
                 })
-                .waitSeconds(0.25)
+                .waitSeconds(0.5)
                 .addTemporalMarker(() -> {
                     robot.arm.autonRunIntake(false); //stop running intake
                 })
-                .lineToLinearHeading(new Pose2d(-4, 12, Math.toRadians(180)))
-                .lineToLinearHeading(new Pose2d(-16, 39, Math.toRadians(-90)))
+                .back(6)
                 .addTemporalMarker(() -> {
                     robot.arm.autonSetPitchServo(Arm.basePitch);
                 })
                 .waitSeconds(0.25)
+                .lineToLinearHeading(new Pose2d(-35.5,32,Math.toRadians(-90))) //spline to backdrop center position
+                .waitSeconds(0.4) //inertia
                 .addTemporalMarker(() -> {
-                    tiltTarget = Arm.tiltStraight + 100; //tilt arm to scoring position
+                    tiltTarget = Arm.tiltStraight + armOffset; //tilt arm to scoring position
                 })
                 .waitSeconds(0.25)
                 .addTemporalMarker(() -> {
-                    robot.arm.autonSetPitchServo(Arm.scorePitch); //set pitch servo to scoring position
+                    robot.arm.autonSetPitchServo(Arm.autonScorePitch); //set pitch servo to scoring position
                 })
-                .lineToLinearHeading(new Pose2d(-36,38,Math.toRadians(-90))) //spline to backdrop center position
-                .waitSeconds(0.4) //inertia
+                .waitSeconds(0.75)
+                .addTemporalMarker(() -> {
+                    robot.arm.autonExtend(550);
+                })
+                .waitSeconds(0.5)
                 .addTemporalMarker(() -> {
                     robot.arm.autonSetBoxGate(true); //open scoring box
                 })
-                .waitSeconds(0.2)
+                .waitSeconds(0.75)
+                .addTemporalMarker(() -> {
+                    robot.arm.autonExtend(0);
+                })
+                .waitSeconds(0.5)
                 .addTemporalMarker(() -> {
                     robot.arm.autonSetPitchServo(Arm.basePitch); //set pitch servo to intake position
                 })
@@ -114,7 +165,7 @@ public class NexusBlueLeft extends LinearOpMode {
                 .addTemporalMarker(() -> {
                     tiltTarget = Arm.tiltBase; //tilt arm to intake position
                 })
-                .waitSeconds(0.4)
+                .waitSeconds(0.75)
                 .lineToConstantHeading(new Vector2d(-58, 48))
                 .lineToLinearHeading(new Pose2d(-60,60, Math.toRadians(-90))) //park
                 .build();
@@ -123,13 +174,14 @@ public class NexusBlueLeft extends LinearOpMode {
                 .addTemporalMarker(() -> {
                     robot.arm.autonSetBoxGate(false);
                 })
+                .strafeRight(6)
                 .lineTo(new Vector2d(-33, 10)) //go to tick mark
                 .turn(Math.toRadians(90))
                 .addTemporalMarker(() -> {
                     robot.arm.runGrabs(false);
                     robot.arm.autonRunIntake(true, true); //run intake backwards
                 })
-                .waitSeconds(0.25)
+                .waitSeconds(0.5)
                 .addTemporalMarker(() -> {
                     robot.arm.autonRunIntake(false); //stop running intake
                 })
@@ -139,18 +191,35 @@ public class NexusBlueLeft extends LinearOpMode {
                 })
                 .waitSeconds(0.25)
                 .addTemporalMarker(() -> {
-                    tiltTarget = Arm.tiltStraight + 100; //tilt arm to scoring position
+                    tiltTarget = Arm.tiltStraight + armOffset; //tilt arm to scoring position
                 })
                 .waitSeconds(0.25)
                 .addTemporalMarker(() -> {
-                    robot.arm.autonSetPitchServo(Arm.scorePitch); //set pitch servo to scoring position
+                    robot.arm.autonSetPitchServo(Arm.autonScorePitch); //set pitch servo to scoring position
                 })
-                .lineToLinearHeading(new Pose2d(-26,38,Math.toRadians(-90)), SampleMecanumDrive.getVelocityConstraint(slowerStartingVelocity, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
+                .waitSeconds(0.75)
+                .lineToLinearHeading(new Pose2d(-28,32,Math.toRadians(-90))) //spline to backdrop center position
                 .waitSeconds(0.4) //inertia
+                .addTemporalMarker(() -> {
+                    tiltTarget = Arm.tiltStraight + armOffset; //tilt arm to scoring position
+                })
+                .waitSeconds(0.25)
+                .addTemporalMarker(() -> {
+                    robot.arm.autonSetPitchServo(Arm.autonScorePitch); //set pitch servo to scoring position
+                })
+                .waitSeconds(0.75)
+                .addTemporalMarker(() -> {
+                    robot.arm.autonExtend(550);
+                })
+                .waitSeconds(0.5)
                 .addTemporalMarker(() -> {
                     robot.arm.autonSetBoxGate(true); //open scoring box
                 })
-                .waitSeconds(0.2)
+                .waitSeconds(0.75)
+                .addTemporalMarker(() -> {
+                    robot.arm.autonExtend(0);
+                })
+                .waitSeconds(0.5)
                 .addTemporalMarker(() -> {
                     robot.arm.autonSetPitchServo(Arm.basePitch); //set pitch servo to intake position
                 })
@@ -158,7 +227,21 @@ public class NexusBlueLeft extends LinearOpMode {
                 .addTemporalMarker(() -> {
                     tiltTarget = Arm.tiltBase; //tilt arm to intake position
                 })
-                .waitSeconds(0.4)
+                .waitSeconds(0.75)
+//                .lineToLinearHeading(new Pose2d(-26,38,Math.toRadians(-90)), SampleMecanumDrive.getVelocityConstraint(slowerStartingVelocity, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
+//                .waitSeconds(0.4) //inertia
+//                .addTemporalMarker(() -> {
+//                    robot.arm.autonSetBoxGate(true); //open scoring box
+//                })
+//                .waitSeconds(0.2)
+//                .addTemporalMarker(() -> {
+//                    robot.arm.autonSetPitchServo(Arm.basePitch); //set pitch servo to intake position
+//                })
+//                .waitSeconds(0.5)
+//                .addTemporalMarker(() -> {
+//                    tiltTarget = Arm.tiltBase; //tilt arm to intake position
+//                })
+//                .waitSeconds(0.75)
                 .lineToConstantHeading(new Vector2d(-58, 48))
                 .lineToLinearHeading(new Pose2d(-60,60, Math.toRadians(-90))) //park
                 .build();
@@ -182,7 +265,6 @@ public class NexusBlueLeft extends LinearOpMode {
             telemetry.update();
         }
 //
-        robot.outtake.autonIris(true);
         waitForStart();
         if(usingVedic) robot.visionBlob.stopDetecting();
         else robot.visionTensorflow.stopDetecting();

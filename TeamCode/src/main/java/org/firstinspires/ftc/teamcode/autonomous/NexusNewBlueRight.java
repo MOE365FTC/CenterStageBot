@@ -11,13 +11,13 @@ import org.firstinspires.ftc.teamcode.rr.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.rr.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.rr.trajectorysequence.TrajectorySequence;
 
-@Autonomous(group = "Match Autons")
-public class NexusBlueRight extends LinearOpMode {
-    //UPDATED FOR WORLDS : PIXEL LEFT UNTESTED
+@Autonomous
+public class NexusNewBlueRight extends LinearOpMode {
+    //DONT USE YET, NOT UPDATED
     MOEBot robot;
     public static int tiltTarget = 0;
     public static final int slowerStartingVelocity = 30;
-    public static int armOffset = 155;
+    public static int armOffset = 150;
     boolean usingVedic = false;
 
     @Override
@@ -66,7 +66,7 @@ public class NexusBlueRight extends LinearOpMode {
                     robot.arm.autonSetPitchServo(Arm.autonScorePitch); //set pitch servo to scoring position
                 })
                 .waitSeconds(0.75)
-                .lineToConstantHeading(new Vector2d(-21, 39))  //original y before making arm steeper: 42
+                .lineToConstantHeading(new Vector2d(-23, 39))  //original y before making arm steeper: 42
                 .waitSeconds(0.4) //inertia
                 //might have to move into backdrop
                 .addTemporalMarker(() -> {
@@ -92,8 +92,8 @@ public class NexusBlueRight extends LinearOpMode {
                     tiltTarget = Arm.tiltBase; //tilt arm to intake position
                 })
                 .waitSeconds(0.75)
-                .lineToConstantHeading(new Vector2d(-1.5, 39))
-                .lineToConstantHeading(new Vector2d(-1.5, 60))
+                .lineToConstantHeading(new Vector2d(-6.5, 39))
+                .lineToConstantHeading(new Vector2d(-6.5, 60))
                 .build();
 
         TrajectorySequence pixelCenter = drive.trajectorySequenceBuilder(startPose)
@@ -131,7 +131,7 @@ public class NexusBlueRight extends LinearOpMode {
                     robot.arm.autonSetPitchServo(Arm.autonScorePitch); //set pitch servo to scoring position
                 })
                 .waitSeconds(0.75)
-                .lineToConstantHeading(new Vector2d(-23, 39.5))  //original y before making arm steeper: 42
+                .lineToConstantHeading(new Vector2d(-24, 39.5))  //original y before making arm steeper: 42
                 .waitSeconds(0.4) //inertia
                 //might have to move into backdrop
                 .addTemporalMarker(() -> {
@@ -157,8 +157,8 @@ public class NexusBlueRight extends LinearOpMode {
                     tiltTarget = Arm.tiltBase; //tilt arm to intake position
                 })
                 .waitSeconds(0.75)
-                .lineToConstantHeading(new Vector2d(-1.5, 42))
-                .lineToConstantHeading(new Vector2d(-1.5, 60))
+                .lineToConstantHeading(new Vector2d(-6.5, 42))
+                .lineToConstantHeading(new Vector2d(-6.5, 60))
                 .build();
 
         TrajectorySequence pixelRight = drive.trajectorySequenceBuilder(startPose)
@@ -221,8 +221,8 @@ public class NexusBlueRight extends LinearOpMode {
                     tiltTarget = Arm.tiltBase; //tilt arm to intake position
                 })
                 .waitSeconds(0.75)
-                .lineToConstantHeading(new Vector2d(-1.5, 42))
-                .lineToConstantHeading(new Vector2d(-1.5, 60))
+                .lineToConstantHeading(new Vector2d(-6.5, 42))
+                .lineToConstantHeading(new Vector2d(-6.5, 60))
                 .build();
 
 
